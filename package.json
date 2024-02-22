@@ -2,16 +2,14 @@
   "name": "scheduler",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
+  "main": "src/main.ts",
   "scripts": {
-    "start": "electron ./dist/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron dist/main.js"
   },
   "author": "Klaudiusz Petryk",
   "license": "ISC",
   "devDependencies": {
-    "electron": "29.0.0",
-    "electron-vite": "^2.0.0"
+    "electron": "29.0.0"
   },
   "dependencies": {
     "@types/electron": "^1.6.10",

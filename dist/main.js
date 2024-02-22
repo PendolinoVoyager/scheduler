@@ -7,7 +7,6 @@ const createWindow = () => {
         titleBarStyle: 'hidden',
         icon: `${__dirname}/../icon.png`,
         webPreferences: {
-            nodeIntegration: true,
             preload: path.join(__dirname, 'preload.js'),
         },
     });

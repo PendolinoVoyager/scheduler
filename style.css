@@ -1,3 +1,16 @@
+:root {
+  --primary-gradient: linear-gradient(
+    45deg,
+    rgba(102, 238, 246, 1) 0%,
+    rgba(62, 51, 242, 1) 100%
+  );
+  --background-primary: white;
+}
+:root.dark {
+  --background-primary: black;
+}
+
 body {
-  background-color: red;
+  min-height: 94vh;
+  background: var(--background-primary);
 }
