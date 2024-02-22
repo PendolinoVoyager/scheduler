@@ -10,7 +10,7 @@ export default class DarkModeController {
       this.toggleElement.classList.toggle('dark');
     });
   }
-  async #fetchTheme() {
+  async #fetchPreviousTheme() {
     throw new Error('Not implemented yet');
   }
 }

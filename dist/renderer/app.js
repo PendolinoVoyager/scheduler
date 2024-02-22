@@ -5,10 +5,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _App_instances, _App_addDefaultListeners;
 import DarkModeController from './controllers/DarkModeController.js';
+import View from './views/View.js';
+// import Employee from './models/employee.js';
 class App {
     constructor() {
         _App_instances.add(this);
         this.darkModeController = new DarkModeController();
+        const randomView = new View(document.getElementById('calendar'));
+        randomView.renderSpinner();
         __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
     }
 }

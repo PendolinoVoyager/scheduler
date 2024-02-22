@@ -1,6 +1,5 @@
 const ThemeController = require('./IPCControllers/ThemeController');
 const FileSystemController = require('./IPCControllers/FileSystemController');
-
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const createWindow = () => {
@@ -12,6 +11,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
   win.maximize();
   win.loadFile('../static/index.html');
 

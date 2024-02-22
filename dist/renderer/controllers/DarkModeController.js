@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _DarkModeController_instances, _DarkModeController_addListeners, _DarkModeController_fetchTheme;
+var _DarkModeController_instances, _DarkModeController_addListeners, _DarkModeController_fetchPreviousTheme;
 class DarkModeController {
     constructor() {
         _DarkModeController_instances.add(this);
@@ -16,7 +16,7 @@ _DarkModeController_instances = new WeakSet(), _DarkModeController_addListeners 
         const isDarkMode = await window.darkMode.toggle();
         this.toggleElement.classList.toggle('dark');
     });
-}, _DarkModeController_fetchTheme = async function _DarkModeController_fetchTheme() {
+}, _DarkModeController_fetchPreviousTheme = async function _DarkModeController_fetchPreviousTheme() {
     throw new Error('Not implemented yet');
 };
 export default DarkModeController;

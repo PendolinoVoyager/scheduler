@@ -83,9 +83,9 @@ input {
 }
 
 body {
+  margin: 0;
   font-family: 'Roboto-Regular', sans-serif;
   min-height: 100vh;
-  overflow: hidden;
   background: var(--background-primary);
   transition: background 1s linear;
 }
@@ -104,7 +104,7 @@ body {
   gap: 1rem;
   background-color: var(--box-primary);
   margin: 0 auto 1rem auto;
-  width: min(1200px, 100%);
+  max-width: 100%;
   border-radius: var(--radius-square);
   padding: 1rem;
   box-shadow: var(--shadow);
@@ -129,6 +129,10 @@ body {
 }
 .nav-item:hover::after {
   width: 100%;
+}
+.spinner {
+  display: block;
+  margin: auto;
 }
 /* Dark mode button */
 #toggle-dark-mode i {
@@ -159,4 +163,22 @@ body {
 
 #toggle-dark-mode.dark::after {
   transform: translate(calc(75% - 1px), -50%);
+}
+
+#main-info {
+  text-align: center;
+}
+
+#calendar {
+  max-width: 100%;
+  min-height: 200px;
+  display: grid;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-square);
+  background-color: var(--box-primary);
+}
+@media only screen and (min-width: 1000px) {
+  #calendar {
+    margin: auto 1%;
+  }
 }
