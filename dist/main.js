@@ -13,12 +13,15 @@ const createWindow = () => {
         },
     });
     win.maximize();
-    win.loadFile('../index.html');
-    const themeController = new ThemeController(ipcMain);
-    const fileSystemController = new FileSystemController(ipcMain);
+    win.loadFile('../static/index.html');
     return win;
 };
+// App initialization
 app.whenReady().then(() => {
+    //TODO: Refactor to App class.
+    //Make a single file with all ipc handlers, namespaces etc.
+    const themeController = new ThemeController(ipcMain);
+    const fileSystemController = new FileSystemController(ipcMain);
     const win = createWindow();
     //For MacOS
     app.on('activate', () => {
@@ -26,6 +29,7 @@ app.whenReady().then(() => {
             createWindow();
     });
 });
+// App closing
 app.on('window-all-closed', (e) => {
     console.log('goodbye!');
     if (process.platform !== 'darwin')
