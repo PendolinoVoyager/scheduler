@@ -6,5 +6,9 @@ contextBridge.exposeInMainWorld('versions', {
     electron: () => process.versions.electron,
 });
 contextBridge.exposeInMainWorld('fs', {
-    read: (name) => ipcRenderer.invoke('read', name),
+    read: (name) => ipcRenderer.invoke('fs:read', name),
+});
+contextBridge.exposeInMainWorld('darkMode', {
+    toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
+    system: () => ipcRenderer.invoke('dark-mode:system'),
 });

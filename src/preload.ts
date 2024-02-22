@@ -4,6 +4,12 @@ contextBridge.exposeInMainWorld('versions', {
   chrome: () => process.versions.chrome,
   electron: () => process.versions.electron,
 });
+
 contextBridge.exposeInMainWorld('fs', {
-  read: (name: string) => ipcRenderer.invoke('read', name),
+  read: (name: string) => ipcRenderer.invoke('fs:read', name),
+});
+
+contextBridge.exposeInMainWorld('darkMode', {
+  toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
+  system: () => ipcRenderer.invoke('dark-mode:system'),
 });

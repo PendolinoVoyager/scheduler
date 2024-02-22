@@ -1,4 +1,6 @@
 "use strict";
+const ThemeController = require('./IPCControllers/ThemeController');
+const FileSystemController = require('./IPCControllers/FileSystemController');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const createWindow = () => {
@@ -12,6 +14,8 @@ const createWindow = () => {
     });
     win.maximize();
     win.loadFile('../index.html');
+    const themeController = new ThemeController(ipcMain);
+    const fileSystemController = new FileSystemController(ipcMain);
     return win;
 };
 app.whenReady().then(() => {
@@ -20,10 +24,6 @@ app.whenReady().then(() => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0)
             createWindow();
-    });
-    ipcMain.handle('read', (e, fileName) => {
-        console.log(fileName);
-        return 'got it';
     });
 });
 app.on('window-all-closed', (e) => {

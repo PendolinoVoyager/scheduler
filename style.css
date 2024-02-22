@@ -1,15 +1,30 @@
+@import './node_modules/@fortawesome/fontawesome-free/css/all.css';
+
 :root {
   --primary-gradient: linear-gradient(
     45deg,
     rgba(102, 238, 246, 1) 0%,
     rgba(62, 51, 242, 1) 100%
   );
-  --background-primary: white;
-}
-:root.dark {
-  --background-primary: black;
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-primary: white;
+    --font-primary: black;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-primary: black;
+    --font-primary: white;
+  }
+}
+* {
+  color: var(--font-primary);
+  background: var(--background-primary);
+}
 body {
   min-height: 94vh;
   background: var(--background-primary);
