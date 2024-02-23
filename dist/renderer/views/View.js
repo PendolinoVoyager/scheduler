@@ -26,9 +26,9 @@ export default class View {
     clear() {
         this.parentElement.innerHTML = '';
     }
-    renderSpinner() {
+    renderSpinner(width) {
         const markup = `
-          <img class="spinner" src="spinner.svg"></img>
+          <img width="${width || 30}" class="spinner" src="spinner.svg"></img>
         `;
         this.clear();
         this.parentElement.insertAdjacentHTML('afterbegin', markup);

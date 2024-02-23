@@ -4,11 +4,11 @@
 :root {
   --gradient-primary: linear-gradient(
     45deg,
-    rgb(150, 146, 250) 0%,
-    rgba(62, 51, 242, 1) 100%
+    rgb(8, 0, 255) 0%,
+    rgb(10, 0, 197) 100%
   );
-  --color-primary: rgb(150, 146, 250);
-  --color-secondary: rgba(62, 51, 242, 1);
+  --color-primary: rgb(8, 0, 255);
+  --color-secondary: rgb(10, 0, 197);
   --radius-round: 20px;
   --radius-square: 4px;
 }
@@ -164,9 +164,41 @@ body {
 #toggle-dark-mode.dark::after {
   transform: translate(calc(75% - 1px), -50%);
 }
-
-#main-info {
-  text-align: center;
+main {
+  padding: 1rem;
+}
+@media only screen and (max-width: 700px) {
+  main {
+    padding: auto 2px;
+  }
+}
+.calendar-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3rem;
+  justify-content: flex-start;
+}
+#btns-month {
+  display: flex;
+  gap: 1rem;
+}
+#btns-month i {
+  color: lightgrey;
+  background: var(--gradient-primary);
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  border-radius: 100%;
+}
+#btn-month-prev:hover i,
+#btn-month-next:hover i {
+  background: var(--color-secondary);
 }
 
 #calendar {
@@ -177,8 +209,20 @@ body {
   border-radius: var(--radius-square);
   background-color: var(--box-primary);
 }
-@media only screen and (min-width: 1000px) {
-  #calendar {
-    margin: auto 1%;
-  }
+.box-sharp {
+  background: var(--color-primary);
+  color: lightgray;
+  padding: 5px;
+  height: 1.5rem;
+  font-size: 1.5rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+#btn-manage-group:hover {
+  background: var(--color-secondary);
 }

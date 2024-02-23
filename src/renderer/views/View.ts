@@ -1,6 +1,6 @@
-export default class View {
+export default abstract class View {
   public parentElement: HTMLElement;
-  private data: any;
+  abstract data: any;
   constructor(parentElement: HTMLElement) {
     this.parentElement = parentElement;
   }
@@ -35,9 +35,9 @@ export default class View {
     this.parentElement.innerHTML = '';
   }
 
-  renderSpinner() {
+  renderSpinner(width?: number) {
     const markup = `
-          <img class="spinner" src="spinner.svg"></img>
+          <img width="${width || 30}" class="spinner" src="spinner.svg"></img>
         `;
     this.clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);

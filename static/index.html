@@ -17,16 +17,43 @@
     <title>Grafik</title>
   </head>
   <body>
+    <div id="overlay">
+    </div>
+    <div id="modal"></div>
     <nav id="navbar-top">
-      <div class="nav-item">DUPA</div>
+      <div class="nav-item">Wybierz grupę</div>
+      <div class="nav-item">Zapisz</div>
+      <div class="nav-item">Zapisz jako...</div>
+      <div class="nav-item">Załaduj</div>
+      <div class="nav-item">Wybierz miesiąc</div>
+
+      <div class="nav-item">Ustawienia</div>
+
       <div id="toggle-dark-mode">
         <i class="fas fa-moon fa-fw"></i>
         <i class="fas fa-sun fa-fw"></i>
       </div>
     </nav>
-    <h1 class="text-gradient" id="main-info">
-      Grafik: {miesiac, grupa, dodatkowe}
-    </h1>
-    <main id="calendar"></main>
+    <main>
+
+      <div class="calendar-header">
+        <h1 class="text-gradient" id="main-info">
+          Grafik: {miesiac, grupa, dodatkowe}
+        </h1>
+        <div id="btn-manage-group" class="box-sharp">
+          Zarządzaj grupą
+        </div>
+        <div id="btns-month">
+            <div id="btn-month-prev">
+              <i class="fas fa-chevron-left"></i>
+            </div>
+            <div id="btn-month-next">
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        </div>
+      </div>
+
+      <div id="calendar"><div>
+    </main>
   </body>
 </html>
