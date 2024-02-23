@@ -1,18 +1,13 @@
 import DarkModeController from './controllers/DarkModeController.js';
-import Employee from './models/Employee.js';
-
-// import Employee from './models/employee.js';
+import GroupController from './controllers/GroupController.js';
+import ModalController from './controllers/ModalController.js';
+import GroupSettingsController from './controllers/GroupSettingController.js';
 class App {
-  public darkModeController: DarkModeController;
+  public darkModeController = new DarkModeController();
+  public groupController = new GroupController();
+  public modalController = new ModalController();
+  public groupSettingsController = new GroupSettingsController();
   constructor() {
-    this.darkModeController = new DarkModeController();
-    const employee = new Employee('Anna', 1);
-    employee.addCustomPreference(2024, 12, 23, 2);
-    console.log(employee.getPreferencesForMonth(2024, 12));
-    employee.updatePreference(2);
-    employee.addCustomPreference(2024, 12, 23, 1);
-    console.log(employee.getPreferencesForMonth(2024, 12));
-
     this.#addDefaultListeners();
   }
   #addDefaultListeners() {

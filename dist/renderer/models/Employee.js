@@ -29,6 +29,23 @@ class Employee {
             __classPrivateFieldGet(this, _Employee_instances, "m", _Employee_updateGroupedPreference).call(this, groupedPreference);
         return groupedPreference.preferences;
     }
+    removePreference(year, month, day) {
+        const groupedPreference = this.shiftPreferencesGrouped.find((p) => p.year === year && p.month === month);
+        if (!groupedPreference)
+            return;
+        const i = groupedPreference.customPreferences.findIndex((cp) => cp.day === day);
+        if (i === -1)
+            return;
+        groupedPreference.customPreferences.splice(i, 1);
+        __classPrivateFieldGet(this, _Employee_instances, "m", _Employee_updateGroupedPreference).call(this, groupedPreference);
+    }
+    removePreferences(year, month) {
+        const groupedPreference = this.shiftPreferencesGrouped.find((p) => p.year === year && p.month === month);
+        if (!groupedPreference)
+            return;
+        // Splice the whole thang
+        groupedPreference.customPreferences.splice(0, groupedPreference.customPreferences.length);
+    }
     getPreferenceForDay(year, month, day) {
         const monthPreference = this.getPreferencesForMonth(year, month);
         return monthPreference[day - 1];

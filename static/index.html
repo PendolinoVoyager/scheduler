@@ -17,17 +17,22 @@
     <title>Grafik</title>
   </head>
   <body>
-    <div id="overlay">
+    <div id="overlay" class="hidden">
     </div>
-    <div id="modal"></div>
-    <nav id="navbar-top">
-      <div class="nav-item">Wybierz grupę</div>
-      <div class="nav-item">Zapisz</div>
-      <div class="nav-item">Zapisz jako...</div>
-      <div class="nav-item">Załaduj</div>
-      <div class="nav-item">Wybierz miesiąc</div>
+    <div id="modal-box" class="hidden">
+        <i class="fas fa-circle-xmark fa-2xl" id="btn-close-modal"></i>
+      <div id="modal">
 
-      <div class="nav-item">Ustawienia</div>
+      </div>
+    </div>
+    <nav id="navbar-top">
+      <div class="nav-item"><i class="fas fa-people-group"></i> Wybierz grupę</div>
+      <div class="nav-item"><i class="fas fa-file"></i> Zapisz</div>
+      <div class="nav-item"><i class="fas fa-file"></i> Zapisz jako...</div>
+      <div class="nav-item"><i class="fas fa-folder-open"></i> Załaduj</div>
+      <div class="nav-item"><i class="fas fa-calendar"></i> Wybierz miesiąc</div>
+
+      <div class="nav-item"><i class="fas fa-gear"></i> Ustawienia</div>
 
       <div id="toggle-dark-mode">
         <i class="fas fa-moon fa-fw"></i>

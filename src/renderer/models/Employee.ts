@@ -1,12 +1,5 @@
-import type { ShiftPreference } from './types.js';
+import type { ShiftPreference, GroupedPreference } from './types.js';
 
-type GroupedPreference = {
-  year: number;
-  month: number;
-  defaultPreference: number;
-  customPreferences: { day: number; preference: ShiftPreference }[];
-  preferences: ShiftPreference[];
-};
 export default class Employee {
   id: number;
   name: string;
@@ -49,6 +42,30 @@ export default class Employee {
       this.#updateGroupedPreference(groupedPreference);
 
     return groupedPreference.preferences;
+  }
+  removePreference(year: number, month: number, day: number) {
+    const groupedPreference = this.shiftPreferencesGrouped.find(
+      (p) => p.year === year && p.month === month
+    );
+    if (!groupedPreference) return;
+
+    const i = groupedPreference.customPreferences.findIndex(
+      (cp) => cp.day === day
+    );
+    if (i === -1) return;
+    groupedPreference.customPreferences.splice(i, 1);
+    this.#updateGroupedPreference(groupedPreference);
+  }
+  removePreferences(year: number, month: number) {
+    const groupedPreference = this.shiftPreferencesGrouped.find(
+      (p) => p.year === year && p.month === month
+    );
+    if (!groupedPreference) return;
+    // Splice the whole thang
+    groupedPreference.customPreferences.splice(
+      0,
+      groupedPreference.customPreferences.length
+    );
   }
   getPreferenceForDay(
     year: number,
