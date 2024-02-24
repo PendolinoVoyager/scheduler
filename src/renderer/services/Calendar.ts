@@ -6,7 +6,7 @@ export type GridData = {
   numberOfDays: number;
 };
 
-export default class Calendar {
+export default class CalendarService {
   public month: number = new Date().getMonth() + 1;
   public year: number = new Date().getFullYear();
 

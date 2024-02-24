@@ -4,9 +4,11 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _CalendarController_instances, _CalendarController_addListeners, _CalendarController_fetchPreviousTheme;
-import Calendar from '../models/Calendar.js';
-class CalendarController {
+import Calendar from '../services/Calendar.js';
+import { AbstractController } from './AbstractController.js';
+class CalendarController extends AbstractController {
     constructor() {
+        super();
         _CalendarController_instances.add(this);
         this.calendarElement = document.getElementById('calendar');
         this.calendar = new Calendar();

@@ -69,3 +69,10 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+* {
+  box-sizing: border-box;
+}
+input {
+  border: none;
+}

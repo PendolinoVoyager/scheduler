@@ -4,8 +4,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _DarkModeController_instances, _DarkModeController_addListeners, _DarkModeController_fetchPreviousTheme;
-class DarkModeController {
+import { AbstractController } from './AbstractController.js';
+class DarkModeController extends AbstractController {
     constructor() {
+        super();
         _DarkModeController_instances.add(this);
         this.toggleElement = document.getElementById('toggle-dark-mode');
         __classPrivateFieldGet(this, _DarkModeController_instances, "m", _DarkModeController_addListeners).call(this);

@@ -1,6 +1,9 @@
-export default class DarkModeController {
+import { AbstractController } from './AbstractController.js';
+
+export default class DarkModeController extends AbstractController {
   public toggleElement: HTMLElement;
   constructor() {
+    super();
     this.toggleElement = document.getElementById('toggle-dark-mode')!;
     this.#addListeners();
   }

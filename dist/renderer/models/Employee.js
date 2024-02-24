@@ -7,8 +7,9 @@ var _Employee_instances, _Employee_createGroupedPreference, _Employee_updateGrou
 class Employee {
     constructor(name, shiftPreference) {
         _Employee_instances.add(this);
+        this.position = '';
         this.shiftPreferencesGrouped = [];
-        this.id = Math.floor(Math.random() * 100000);
+        this.id = Math.floor(Math.random() * 100000000);
         this.name = name;
         this.shiftPreference = shiftPreference;
     }
@@ -50,7 +51,27 @@ class Employee {
         const monthPreference = this.getPreferencesForMonth(year, month);
         return monthPreference[day - 1];
     }
-    updatePreference(newPreference) {
+    getId() {
+        return this.id;
+    }
+    getName() {
+        return this.name;
+    }
+    getPosition() {
+        return this.position;
+    }
+    getShiftPreference() {
+        return this.shiftPreference;
+    }
+    setName(newName) {
+        if (newName.length < 2)
+            throw new Error('Name too short');
+        this.name = newName;
+    }
+    setPosition(newPosition) {
+        this.position = newPosition;
+    }
+    setShiftPreference(newPreference) {
         this.shiftPreference = newPreference;
     }
 }

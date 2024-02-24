@@ -5,16 +5,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _App_instances, _App_addDefaultListeners;
 import DarkModeController from './controllers/DarkModeController.js';
-import GroupController from './controllers/GroupController.js';
-import ModalController from './controllers/ModalController.js';
-import GroupSettingsController from './controllers/GroupSettingController.js';
+import ModalService from './services/ModalService.js';
+import GroupSettingsController from './controllers/GroupSettingsController.js';
 class App {
     constructor() {
         _App_instances.add(this);
+        this.modalService = new ModalService();
         this.darkModeController = new DarkModeController();
-        this.groupController = new GroupController();
-        this.modalController = new ModalController();
-        this.groupSettingsController = new GroupSettingsController();
+        this.groupSettingsController = new GroupSettingsController(this.modalService);
         __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
     }
 }

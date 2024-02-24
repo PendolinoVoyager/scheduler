@@ -1,12 +1,13 @@
 import type { ShiftPreference, GroupedPreference } from './types.js';
 
 export default class Employee {
-  id: number;
-  name: string;
-  shiftPreference: ShiftPreference;
+  protected id: number;
+  protected name: string;
+  protected position: string = '';
+  protected shiftPreference: ShiftPreference;
   protected shiftPreferencesGrouped: GroupedPreference[] = [];
   constructor(name: string, shiftPreference: ShiftPreference) {
-    this.id = Math.floor(Math.random() * 100000);
+    this.id = Math.floor(Math.random() * 100000000);
     this.name = name;
     this.shiftPreference = shiftPreference;
   }
@@ -110,7 +111,27 @@ export default class Employee {
 
     groupedPreference.preferences[day - 1] = preference;
   }
-  updatePreference(newPreference: ShiftPreference) {
+
+  getId() {
+    return this.id;
+  }
+  getName() {
+    return this.name;
+  }
+  getPosition() {
+    return this.position;
+  }
+  getShiftPreference() {
+    return this.shiftPreference;
+  }
+  setName(newName: string) {
+    if (newName.length < 2) throw new Error('Name too short');
+    this.name = newName;
+  }
+  setPosition(newPosition: string) {
+    this.position = newPosition;
+  }
+  setShiftPreference(newPreference: ShiftPreference) {
     this.shiftPreference = newPreference;
   }
 }

@@ -1,12 +1,14 @@
 import DarkModeController from './controllers/DarkModeController.js';
-import GroupController from './controllers/GroupController.js';
-import ModalController from './controllers/ModalController.js';
-import GroupSettingsController from './controllers/GroupSettingController.js';
+import ModalService from './services/ModalService.js';
+import GroupSettingsController from './controllers/GroupSettingsController.js';
 class App {
+  public modalService = new ModalService();
+
   public darkModeController = new DarkModeController();
-  public groupController = new GroupController();
-  public modalController = new ModalController();
-  public groupSettingsController = new GroupSettingsController();
+  public groupSettingsController = new GroupSettingsController(
+    this.modalService
+  );
+
   constructor() {
     this.#addDefaultListeners();
   }
