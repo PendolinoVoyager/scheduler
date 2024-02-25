@@ -127,7 +127,18 @@ export default class Employee {
 
     groupedPreference.preferences[day - 1] = preference;
   }
-
+  updateFromFormData(data: { [k: string]: FormDataEntryValue }) {
+    // shiftPreference: +data.preferredShift,
+    // disabled: Boolean(data.disability),
+    // position:
+    //   data.position === 'other'
+    //     ? data['custom-position'].toString()
+    //     : data.position.toString(),
+  }
+  getInitials() {
+    const split = this.name.split(' ');
+    return split[0] + split[1][0];
+  }
   getId() {
     return this.id;
   }

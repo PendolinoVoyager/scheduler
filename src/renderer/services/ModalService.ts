@@ -11,6 +11,7 @@ export default class ModalService {
   modal = document.getElementById('modal-box')!;
   btnCloseModal = document.getElementById('btn-close-modal')!;
   writeableElement = document.getElementById('modal')!;
+  onclose: Function | undefined;
   isOpen: boolean = false;
   closing: boolean = false;
   dialog: Promise<any> | null = null;
@@ -59,19 +60,33 @@ export default class ModalService {
     if (this.important) {
       const res = await renderDialog('Zamknąć bez zapisu?');
       this.closing = false;
-      if (!res) return true;
+      if (!res) return false;
     }
+
+    this.onclose && this.onclose();
+
     this.isOpen = false;
     this.important = false;
     this.overlay.classList.add('hidden');
     this.modal.classList.add('hidden');
     this.closing = false;
     this.dialog = null;
+    this.onclose = undefined;
     return true;
   }
   setImportant(sender: AbstractController | null, important: boolean) {
     if (this.owner && this.owner !== sender) return false;
     this.important = important;
     return true;
+  }
+  setOnClose(sender: AbstractController | null, cb: Function) {
+    if (this.important && sender !== this.owner) return false;
+    this.onclose = cb;
+    return true;
+  }
+  removeOnClose(sender: AbstractController | null) {
+    if (this.important && sender !== this.owner) return false;
+    this.onclose = undefined;
+    return;
   }
 }

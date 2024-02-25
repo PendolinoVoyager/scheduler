@@ -61,6 +61,18 @@ class ModalService {
         this.important = important;
         return true;
     }
+    setOnClose(sender, cb) {
+        if (this.important && sender !== this.owner)
+            return false;
+        this.onclose = cb;
+        return true;
+    }
+    removeOnClose(sender) {
+        if (this.important && sender !== this.owner)
+            return false;
+        this.onclose = undefined;
+        return;
+    }
 }
 _ModalService_instances = new WeakSet(), _ModalService_addCloseListeners = function _ModalService_addCloseListeners() {
     this.btnCloseModal.addEventListener('click', __classPrivateFieldGet(this, _ModalService_instances, "m", _ModalService_close).bind(this));
@@ -78,14 +90,16 @@ _ModalService_instances = new WeakSet(), _ModalService_addCloseListeners = funct
         const res = await renderDialog('Zamknąć bez zapisu?');
         this.closing = false;
         if (!res)
-            return true;
+            return false;
     }
+    this.onclose && this.onclose();
     this.isOpen = false;
     this.important = false;
     this.overlay.classList.add('hidden');
     this.modal.classList.add('hidden');
     this.closing = false;
     this.dialog = null;
+    this.onclose = undefined;
     return true;
 };
 export default ModalService;

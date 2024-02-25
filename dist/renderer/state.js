@@ -5,6 +5,7 @@ const testGroup = new Group();
 testGroup.addEmployee(new Employee('Anna Nowa', {
     shiftPreference: ShiftType.Afternoon,
     position: 'Kierownik',
+    disabled: true,
 }));
 testGroup.addEmployee(new Employee('Jan Dupa'));
 testGroup.addEmployee(new Employee('Tadeusz Kościuszko'));

@@ -62,6 +62,18 @@ class Employee {
         const monthPreference = this.getPreferencesForMonth(year, month);
         return monthPreference[day - 1];
     }
+    updateFromFormData(data) {
+        // shiftPreference: +data.preferredShift,
+        // disabled: Boolean(data.disability),
+        // position:
+        //   data.position === 'other'
+        //     ? data['custom-position'].toString()
+        //     : data.position.toString(),
+    }
+    getInitials() {
+        const split = this.name.split(' ');
+        return split[0] + split[1][0];
+    }
     getId() {
         return this.id;
     }

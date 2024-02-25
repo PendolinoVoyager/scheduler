@@ -1,7 +1,7 @@
 import Employee from '../../models/Employee.js';
 import View from '../View.js';
 import { ShiftType } from '../../models/types.js';
-import { CONFIG } from '../../config.js';
+import { renderEmployeeForm } from '../../helpers/renderEmployeeForm.js';
 export default class EmployeeView extends View {
   public data: Employee | null = null;
   constructor(parentElement: HTMLElement) {
@@ -11,35 +11,8 @@ export default class EmployeeView extends View {
     if (!this.data) return '<h2>Wybierz lub dodaj pracownika</h2>';
 
     return `
-          <input type="hidden" name="id" value="${this.data.getId()}">
-          <div class="container-card flex-row space-evenly">
+           ${renderEmployeeForm(this.data)}
 
-            <div class="container-card2 flex-column">
-                <input type="text" value="${this.data.getName()}" name="name" placeholder="Imię i nazwisko">
-                <select name="position">
-                  ${CONFIG.POSITIONS.map(
-                    (p) =>
-                      `<option value="${p}" ${
-                        this.data?.getPosition() === p ? 'selected' : ''
-                      }>${p}</option>`
-                  ).join('')}
-                  <option value="other" ${
-                    !CONFIG.POSITIONS.includes(this.data?.getPosition())
-                      ? 'selected'
-                      : ''
-                  }>Inne</option>
-                </select>
-                <select name="preferredShift">
-                  <option value="1" ${
-                    this.data.getShiftPreference() ? 'selected' : ''
-                  }>
-                  Poranna
-                  </option>
-                  <option value="2" ${
-                    this.data.getShiftPreference() ? 'selected' : ''
-                  }>Popołudniowa</option>
-                </select>
-            </div>
             <div class="container-card2 flex-column">
                     <div class="flex-row space-between">
                     <label for=plannedShift>Zaplanuj zmiany w okresie: </label>
@@ -68,7 +41,6 @@ export default class EmployeeView extends View {
           </div>
           <div class="container-card flex-row space-evenly">
 
-            <button type="submit" class="box-sharp" value="Zapisz">Zapisz</button>
             <button class="box-sharp" id="btn-remove-employee">
               Usuń pracownika
             </button>
@@ -89,6 +61,7 @@ export default class EmployeeView extends View {
 
             </div>
           </div>
+
     `;
   }
 }

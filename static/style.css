@@ -428,3 +428,11 @@ select {
 #btn-remove-employee:hover {
   filter: contrast(0.9);
 }
+
+.modified {
+  color: white;
+  background-color: var(--color-warning);
+}
+.employee-item.modified:hover {
+  background-color: var(--color-warning);
+}

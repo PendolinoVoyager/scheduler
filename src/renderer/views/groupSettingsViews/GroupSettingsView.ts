@@ -20,10 +20,10 @@ export default class GroupSettingsView extends View {
             </li>
         </ul>
       <div id="employee-stats-container">
-        <form id="employee-stats">
+        <div id="employee-stats">
 
 
-        </form>
+        </div>
       </div>
         
     </div>
