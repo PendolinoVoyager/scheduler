@@ -4,14 +4,25 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Employee_instances, _Employee_createGroupedPreference, _Employee_updateGroupedPreference, _Employee_addCustomPreferenceToGroup;
+import { CONFIG } from '../config.js';
+const defaultOptions = {
+    shiftPreference: CONFIG.DEFAULT_SHIFT,
+    position: '',
+    disabled: false,
+    employmentType: CONFIG.DEFAULT_EMPLOYMENT_TYPE,
+};
 class Employee {
-    constructor(name, shiftPreference) {
+    constructor(name, options = {}) {
         _Employee_instances.add(this);
         this.position = '';
+        this.disabled = false;
         this.shiftPreferencesGrouped = [];
         this.id = Math.floor(Math.random() * 100000000);
         this.name = name;
-        this.shiftPreference = shiftPreference;
+        const combinedOptions = { ...defaultOptions, ...options };
+        Object.entries(combinedOptions).forEach(([key, value]) => {
+            this[key] = value;
+        });
     }
     addCustomPreference(year, month, day, shiftPreference) {
         const groupedPreference = this.shiftPreferencesGrouped.find((p) => p.year === year && p.month === month);
@@ -62,6 +73,12 @@ class Employee {
     }
     getShiftPreference() {
         return this.shiftPreference;
+    }
+    isDisabled() {
+        return this.disabled;
+    }
+    setDisabled(disabled) {
+        this.disabled = disabled;
     }
     setName(newName) {
         if (newName.length < 2)

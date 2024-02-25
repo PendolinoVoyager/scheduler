@@ -1,21 +1,37 @@
-import type { ShiftPreference, GroupedPreference } from './types.js';
-
+import { ShiftType, GroupedPreference, EmploymentType } from './types.js';
+import { CONFIG } from '../config.js';
+type EmployeeConstructorOptions = {
+  shiftPreference?: ShiftType.Morning | ShiftType.Afternoon;
+  position?: string;
+  disabled?: boolean;
+  employmentType?: EmploymentType;
+};
+const defaultOptions: EmployeeConstructorOptions = {
+  shiftPreference: CONFIG.DEFAULT_SHIFT,
+  position: '',
+  disabled: false,
+  employmentType: CONFIG.DEFAULT_EMPLOYMENT_TYPE,
+};
 export default class Employee {
   protected id: number;
   protected name: string;
   protected position: string = '';
-  protected shiftPreference: ShiftPreference;
+  protected disabled: boolean = false;
+  protected shiftPreference!: ShiftType;
   protected shiftPreferencesGrouped: GroupedPreference[] = [];
-  constructor(name: string, shiftPreference: ShiftPreference) {
+  constructor(name: string, options: EmployeeConstructorOptions = {}) {
     this.id = Math.floor(Math.random() * 100000000);
     this.name = name;
-    this.shiftPreference = shiftPreference;
+    const combinedOptions = { ...defaultOptions, ...options };
+    Object.entries(combinedOptions).forEach(([key, value]) => {
+      (this as any)[key] = value;
+    });
   }
   addCustomPreference(
     year: number,
     month: number,
     day: number,
-    shiftPreference: ShiftPreference
+    shiftPreference: ShiftType
   ): void {
     const groupedPreference = this.shiftPreferencesGrouped.find(
       (p) => p.year === year && p.month === month
@@ -32,7 +48,7 @@ export default class Employee {
     this.#addCustomPreferenceToGroup(groupedPreference, day, shiftPreference);
   }
 
-  getPreferencesForMonth(year: number, month: number): ShiftPreference[] {
+  getPreferencesForMonth(year: number, month: number): ShiftType[] {
     const groupedPreference = this.shiftPreferencesGrouped.find(
       (p) => p.year === year && p.month === month
     );
@@ -72,7 +88,7 @@ export default class Employee {
     year: number,
     month: number,
     day: number
-  ): ShiftPreference | undefined {
+  ): ShiftType | undefined {
     const monthPreference = this.getPreferencesForMonth(year, month);
 
     return monthPreference[day - 1];
@@ -100,7 +116,7 @@ export default class Employee {
   #addCustomPreferenceToGroup(
     groupedPreference: GroupedPreference,
     day: number,
-    preference: ShiftPreference
+    preference: ShiftType
   ) {
     const customPreference = groupedPreference.customPreferences.find(
       (cp) => cp.day === day
@@ -124,6 +140,12 @@ export default class Employee {
   getShiftPreference() {
     return this.shiftPreference;
   }
+  isDisabled() {
+    return this.disabled;
+  }
+  setDisabled(disabled: boolean) {
+    this.disabled = disabled;
+  }
   setName(newName: string) {
     if (newName.length < 2) throw new Error('Name too short');
     this.name = newName;
@@ -131,7 +153,7 @@ export default class Employee {
   setPosition(newPosition: string) {
     this.position = newPosition;
   }
-  setShiftPreference(newPreference: ShiftPreference) {
+  setShiftPreference(newPreference: ShiftType) {
     this.shiftPreference = newPreference;
   }
 }
