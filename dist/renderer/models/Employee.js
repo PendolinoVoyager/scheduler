@@ -7,9 +7,12 @@ var _Employee_instances, _Employee_createGroupedPreference, _Employee_updateGrou
 import { AbstractEmployee, } from './EmployeeTypes.js';
 class Employee extends AbstractEmployee {
     constructor(name, options = {}) {
-        super(name, options);
+        super(name);
         _Employee_instances.add(this);
         this.shiftPreferencesGrouped = [];
+        Object.entries(options).forEach(([key, value]) => {
+            this[key] = value;
+        });
     }
     addCustomPreference(year, month, day, shiftPreference) {
         const groupedPreference = this.shiftPreferencesGrouped.find((p) => p.year === year && p.month === month);

@@ -1,3 +1,4 @@
+import './config.js';
 import DarkModeController from './controllers/DarkModeController.js';
 import ModalService from './services/ModalService.js';
 import GroupSettingsController from './controllers/GroupSettingsController.js';

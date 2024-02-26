@@ -10,15 +10,14 @@ export class EmployeeFormError extends Error {
     this.value = value;
   }
 }
-export interface iEmployee {
-  id: number;
-  name: string;
-  position: string;
-  disabled: boolean;
-  shiftPreference: ShiftType;
-  employmentType: EmploymentType;
-  shiftPreferencesGrouped: GroupedPreference[];
-}
+export type EmployeeFields = {
+  name?: string;
+  position?: string;
+  disabled?: boolean;
+  shiftPreference?: ShiftType;
+  employmentType?: EmploymentType;
+  shiftPreferencesGrouped?: GroupedPreference[];
+};
 
 export class AbstractEmployee {
   protected id: number;
@@ -27,15 +26,14 @@ export class AbstractEmployee {
   protected disabled!: boolean;
   protected shiftPreference!: ShiftType;
   protected employmentType!: EmploymentType;
-  constructor(name: string, options: EmployeeConstructorOptions = {}) {
+  constructor(name: string) {
     this.id = Math.floor(Math.random() * 100000000);
     this.name = name;
-    const combinedOptions = { ...this.defaultOptions, ...options };
-    Object.entries(combinedOptions).forEach(([key, value]) => {
-      (this as any)[key] = value;
+    Object.entries(this.defaultOptions).forEach(([key, val]) => {
+      (this as any)[key] = val;
     });
   }
-  defaultOptions: EmployeeConstructorOptions = {
+  private defaultOptions: EmployeeFields = {
     shiftPreference: CONFIG.DEFAULT_SHIFT,
     position: '',
     disabled: false,
@@ -50,13 +48,8 @@ export type GroupedPreference = {
   customPreferences: { day: number; preference: ShiftType }[];
   preferences: ShiftType[];
 };
+
 export enum EmploymentType {
   FULL_TIME = 'IDK REALLY',
   PART_TIME = 'Umowa zlecenie',
 }
-export type EmployeeConstructorOptions = {
-  shiftPreference?: ShiftType.Morning | ShiftType.Afternoon;
-  position?: string;
-  disabled?: boolean;
-  employmentType?: EmploymentType;
-};

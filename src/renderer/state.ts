@@ -19,7 +19,7 @@ testGroup.addEmployee(new Employee('Jan Dupa'));
 testGroup.addEmployee(new Employee('Tadeusz Kościuszko'));
 testGroup.addEmployee(new Employee('Jacek Bawełna'));
 testGroup.addEmployee(new Employee('Pan Kierownik'));
-window.group = testGroup;
+
 const state: State = {
   group: testGroup,
   year: new Date().getFullYear(),

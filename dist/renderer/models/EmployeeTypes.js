@@ -7,7 +7,7 @@ export class EmployeeFormError extends Error {
     }
 }
 export class AbstractEmployee {
-    constructor(name, options = {}) {
+    constructor(name) {
         this.defaultOptions = {
             shiftPreference: CONFIG.DEFAULT_SHIFT,
             position: '',
@@ -16,9 +16,8 @@ export class AbstractEmployee {
         };
         this.id = Math.floor(Math.random() * 100000000);
         this.name = name;
-        const combinedOptions = { ...this.defaultOptions, ...options };
-        Object.entries(combinedOptions).forEach(([key, value]) => {
-            this[key] = value;
+        Object.entries(this.defaultOptions).forEach(([key, val]) => {
+            this[key] = val;
         });
     }
 }

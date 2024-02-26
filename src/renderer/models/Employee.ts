@@ -1,9 +1,8 @@
 import {
   GroupedPreference,
   EmploymentType,
-  EmployeeConstructorOptions,
-  iEmployee,
   AbstractEmployee,
+  EmployeeFields,
 } from './EmployeeTypes.js';
 
 import { ShiftType } from './types.js';
@@ -16,8 +15,11 @@ export default class Employee extends AbstractEmployee {
   protected shiftPreference!: ShiftType;
   protected employmentType!: EmploymentType;
   protected shiftPreferencesGrouped: GroupedPreference[] = [];
-  constructor(name: string, options: EmployeeConstructorOptions = {}) {
-    super(name, options);
+  constructor(name: string, options: EmployeeFields = {}) {
+    super(name);
+    Object.entries(options).forEach(([key, value]) => {
+      (this as any)[key] = value;
+    });
   }
   addCustomPreference(
     year: number,
