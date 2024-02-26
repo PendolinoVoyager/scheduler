@@ -6,7 +6,11 @@ import EmployeeView from '../views/groupSettingsViews/EmployeeView.js';
 import Employee from '../models/Employee.js';
 import Group from '../models/Group.js';
 import state from '../state.js';
-import { renderEmployeeForm } from '../helpers/renderEmployeeForm.js';
+import {
+  renderEmployeeForm,
+  addPositionDropdownHandlers,
+} from '../helpers/renderEmployeeForm.js';
+import { CONFIG } from '../config.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: ModalService;
@@ -16,11 +20,11 @@ export default class GroupSettingsController extends AbstractController {
   public employeeView: EmployeeView | undefined;
   public employeeForm: HTMLFormElement | undefined;
   public group: Group = state.group;
-  public selectedEmployee: Employee = this.group.getEmployees()[0];
+  public selectedEmployee: Employee | null = this.group.getEmployees()[0];
   public employeeList: HTMLElement | undefined;
   public selectedItem: HTMLElement | undefined;
   isModifying: boolean = false;
-  waitinfForDialog: boolean = false;
+  waitingfForDialog: boolean = false;
   constructor(modalService: ModalService) {
     super();
     this.modalService = modalService;
@@ -40,52 +44,48 @@ export default class GroupSettingsController extends AbstractController {
 
       this.#renderWindow();
 
-      document
-        .getElementById('employee-list-add')!
-        .addEventListener('click', this.boundHandlers.renderEmptyForm);
-
       this.#renderEmployee();
     });
   }
 
   async #handleSelectedEmployee(e: MouseEvent) {
-    const target = (e.target as HTMLElement)?.closest('.employee-item');
+    const target =
+      (e.target as HTMLElement)?.closest('.employee-item') ??
+      (e.target as any).closest('#employee-list-add');
+
     if (!target) return;
 
-    if (!('dataset' in target)) return; // Check if dataset exists
+    if (target.getAttribute('id') === 'employee-list-add') {
+      this.#renderEmptyForm();
+      return;
+    }
+
     const employee = this.group.findEmployee(+(target.dataset as any).id);
     if (!employee) return;
-
     if (this.isModifying) {
-      if (this.waitinfForDialog) return false;
-      this.waitinfForDialog = true;
+      if (this.waitingfForDialog) return false;
+      this.waitingfForDialog = true;
       const res = await renderDialog('Wyjść bez zapisu?');
-      this.waitinfForDialog = false;
+      this.waitingfForDialog = false;
       if (!res) return;
       this.isModifying = false;
       this.modalService.setImportant(this, false);
       this.selectedItem?.classList.remove('modified');
     }
 
-    if (this.employeeList)
-      [...this.employeeList?.children].forEach((el) =>
-        el.classList.remove('employee-selected')
-      );
-    target.classList.add('employee-selected');
-    this.selectedItem = target as HTMLElement;
+    this.selectedEmployee = employee;
+
+    this.#updateListItems();
     this.#renderEmployee(employee);
   }
   #renderEmployee(employee?: Employee) {
-    // Remove the event listener from previous render
-    this.#removeEmployeeViewHandlers();
-
     this.employeeView = new EmployeeView(
       document.getElementById('employee-stats')!
     );
     this.employeeView.render(employee);
     (this.employeeForm as any) = document.getElementById('employee-info')!;
 
-    this.#addEmployeeViewHandlers();
+    if (employee) this.#addEmployeeViewHandlers();
   }
   #addEmployeeViewHandlers() {
     this.employeeForm?.addEventListener(
@@ -96,29 +96,27 @@ export default class GroupSettingsController extends AbstractController {
       'submit',
       this.boundHandlers.handleFormSubmit
     );
+    addPositionDropdownHandlers();
   }
-  #removeEmployeeViewHandlers() {
-    this.employeeForm?.removeEventListener(
-      'input',
-      this.boundHandlers.handleFormInput
-    );
-    this.employeeForm?.removeEventListener(
-      'submit',
-      this.boundHandlers.handleFormSubmit
-    );
-  }
-  #handleFormInput(e: any) {
+
+  #handleFormInput(e: Event) {
     this.isModifying = true;
     this.modalService.setImportant(this, true);
-    e.target.classList.add('modified');
+    if (!this.employeeForm?.getAttribute('id') && e.target)
+      (e.target as HTMLElement).classList.add('modified');
     this.selectedItem?.classList.add('modified');
   }
   #handleFormSubmit(e: SubmitEvent) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(this.employeeForm));
-    if (isNaN(+data.id)) {
-      this.#addAndSelectEmployee(data);
-    } else this.group.findEmployee(+data.id)?.updateFromFormData(data);
+    try {
+      if (!this.group.getEmployees().some((emp) => emp.getId() === +data.id)) {
+        this.#addAndSelectEmployee(data);
+      } else this.group.findEmployee(+data.id)?.updateFromFormData(data);
+    } catch (err) {
+      this.#handleFormError(err as Error);
+      return;
+    }
     this.modalService.setImportant(this, false);
     this.isModifying = false;
     this.selectedItem?.classList.remove('modified');
@@ -127,49 +125,51 @@ export default class GroupSettingsController extends AbstractController {
     );
   }
   #cleanup() {
-    this.#removeEmployeeViewHandlers();
-    this.employeeList?.removeEventListener(
-      'click',
-      this.boundHandlers.handleSelectedEmployee
-    );
-
-    document
-      .getElementById('employee-list-add')!
-      .removeEventListener('click', this.boundHandlers.renderEmptyForm);
-
     this.isModifying = false;
+    this.selectedEmployee = this.group.getEmployees()[0];
+    // Redundand? Maybe
+    this.groupSettingsView.clear();
     this.modalService.clear();
   }
   #renderEmptyForm() {
-    this.#removeEmployeeViewHandlers();
+    // Should've made it into a view but whatever
     this.employeeView?.clear();
     document
       .getElementById('employee-stats')!
       .insertAdjacentHTML('afterbegin', renderEmployeeForm());
 
-    (this.employeeForm as any) = document.getElementById('employee-info')!;
+    addPositionDropdownHandlers();
 
+    (this.employeeForm as any) = document.getElementById('employee-info')!;
+    this.selectedEmployee = null;
+    this.selectedItem = undefined;
+    this.#updateListItems();
     this.#addEmployeeViewHandlers();
   }
 
   #addAndSelectEmployee(data: { [k: string]: FormDataEntryValue }) {
-    const employee = new Employee(data.name.toString());
-    employee.updateFromFormData(data);
-    state.group.addEmployee(employee);
+    try {
+      if (!data.name.toString().match(CONFIG.EMPLOYEE_NAME_VALIDATOR))
+        throw new Error('Invalid name');
 
-    this.#renderWindow();
+      const employee = new Employee(data.name.toString());
+      (data as any).id = employee.getId();
+      employee.updateFromFormData(data);
+      state.group.addEmployee(employee);
 
-    let targetedElement;
-    if (this.employeeList)
-      [...this.employeeList?.children].forEach((el) => {
-        el.classList.remove('employee-selected');
-        if (+(el as any).dataset.id === employee.getId()) targetedElement = el;
-      });
-    targetedElement!.classList.add('employee-selected');
-    this.selectedItem = targetedElement as any;
-    this.#renderEmployee(employee);
+      this.selectedEmployee = employee;
+      this.#renderWindow();
+
+      this.#updateListItems();
+
+      this.#renderEmployee(employee);
+    } catch (err) {
+      throw err;
+    }
   }
-
+  #handleFormError(err: Error) {
+    console.error(err);
+  }
   boundHandlers = {
     handleSelectedEmployee: this.#handleSelectedEmployee.bind(this),
     handleFormInput: this.#handleFormInput.bind(this),
@@ -186,5 +186,21 @@ export default class GroupSettingsController extends AbstractController {
       'click',
       this.boundHandlers.handleSelectedEmployee
     );
+  }
+  #updateListItems() {
+    let targetedElement;
+    if (this.employeeList)
+      [...this.employeeList?.children].forEach((el) => {
+        el.classList.remove('employee-selected');
+        if (
+          this.selectedEmployee &&
+          +(el as any).dataset.id === this.selectedEmployee.getId()
+        )
+          targetedElement = el;
+      });
+    if (!targetedElement) return;
+
+    (targetedElement as HTMLElement).classList.add('employee-selected');
+    this.selectedItem = targetedElement as any;
   }
 }

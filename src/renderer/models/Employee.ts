@@ -1,31 +1,23 @@
-import { ShiftType, GroupedPreference, EmploymentType } from './types.js';
-import { CONFIG } from '../config.js';
-type EmployeeConstructorOptions = {
-  shiftPreference?: ShiftType.Morning | ShiftType.Afternoon;
-  position?: string;
-  disabled?: boolean;
-  employmentType?: EmploymentType;
-};
-const defaultOptions: EmployeeConstructorOptions = {
-  shiftPreference: CONFIG.DEFAULT_SHIFT,
-  position: '',
-  disabled: false,
-  employmentType: CONFIG.DEFAULT_EMPLOYMENT_TYPE,
-};
-export default class Employee {
-  protected id: number;
-  protected name: string;
-  protected position: string = '';
-  protected disabled: boolean = false;
+import {
+  GroupedPreference,
+  EmploymentType,
+  EmployeeConstructorOptions,
+  iEmployee,
+  AbstractEmployee,
+} from './EmployeeTypes.js';
+
+import { ShiftType } from './types.js';
+
+export default class Employee extends AbstractEmployee {
+  protected id!: number;
+  protected name!: string;
+  protected position!: string;
+  protected disabled!: boolean;
   protected shiftPreference!: ShiftType;
+  protected employmentType!: EmploymentType;
   protected shiftPreferencesGrouped: GroupedPreference[] = [];
   constructor(name: string, options: EmployeeConstructorOptions = {}) {
-    this.id = Math.floor(Math.random() * 100000000);
-    this.name = name;
-    const combinedOptions = { ...defaultOptions, ...options };
-    Object.entries(combinedOptions).forEach(([key, value]) => {
-      (this as any)[key] = value;
-    });
+    super(name, options);
   }
   addCustomPreference(
     year: number,
@@ -128,12 +120,17 @@ export default class Employee {
     groupedPreference.preferences[day - 1] = preference;
   }
   updateFromFormData(data: { [k: string]: FormDataEntryValue }) {
-    // shiftPreference: +data.preferredShift,
-    // disabled: Boolean(data.disability),
-    // position:
-    //   data.position === 'other'
-    //     ? data['custom-position'].toString()
-    //     : data.position.toString(),
+    const parsedOptions = {
+      id: +data.id,
+      shiftPreference: +data.preferredShift,
+      disabled: Boolean(data.disability),
+      position:
+        data.position === 'other'
+          ? data['custom-position'].toString()
+          : data.position.toString(),
+      employmentType: data['employment-type'],
+    };
+    if (parsedOptions.id !== this.getId()) throw new Error();
   }
   getInitials() {
     const split = this.name.split(' ');
@@ -151,6 +148,9 @@ export default class Employee {
   getShiftPreference() {
     return this.shiftPreference;
   }
+  getEmploymentType() {
+    return this.employmentType;
+  }
   isDisabled() {
     return this.disabled;
   }
@@ -166,5 +166,8 @@ export default class Employee {
   }
   setShiftPreference(newPreference: ShiftType) {
     this.shiftPreference = newPreference;
+  }
+  setEmploymentType(newType: EmploymentType) {
+    this.employmentType = newType;
   }
 }

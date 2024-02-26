@@ -1,10 +1,11 @@
 import { CONFIG } from '../config.js';
 import Employee from '../models/Employee.js';
 import { ShiftType } from '../models/types.js';
+import { EmploymentType } from '../models/EmployeeTypes.js';
 
 export function renderEmployeeForm(employee?: Employee) {
   return `<form name="employee-info" id="employee-info">
-<input type="hidden" name="id" value="${employee?.getId() ?? undefined}">
+<input type="hidden" name="id" value="${employee?.getId() ?? ''}">
 <div class="container-card flex-row space-evenly">
 
   <div class="container-card2 flex-column">
@@ -17,7 +18,8 @@ export function renderEmployeeForm(employee?: Employee) {
       </div>
      
       <div class="flex-row space-between">
-        <label for="position" >Stanowisko:&nbsp;</label>
+        <label for="position">Stanowisko:&nbsp;</label>
+        <div class=flex-column>
         <select name="position" id="employee-position">
           ${CONFIG.POSITIONS.map(
             (p, i) =>
@@ -26,15 +28,34 @@ export function renderEmployeeForm(employee?: Employee) {
               }>${p}</option>`
           ).join('')}
           <option value="other" ${
-            !CONFIG.POSITIONS.includes(employee ? employee.getPosition() : '')
+            !CONFIG.POSITIONS.includes(
+              employee ? employee.getPosition() : CONFIG.POSITIONS[0]
+            )
               ? 'selected'
               : ''
           }>Inne</option>
         </select>
+        <input type="text" name="custom-position" id="employee-custom-position" placeholder="Stanowisko" value=${
+          employee?.getPosition() ?? ''
+        }>
+        </div>
       </div>
+      
+      <div class="flex-row space-between">
+      <label for="employment-type" >Umowa:&nbsp;</label>
 
-      <input type="text" name="custom-position" id="employee-custom-position" placeholder="Stanowisko">
+      <select name="employment-type">
 
+      ${Object.entries(EmploymentType)
+        .filter(([key, val]) => isNaN(+key))
+        .map(([enumName, value]) => {
+          return `<option value="${enumName}" ${
+            employee?.getEmploymentType() === value ? 'selected' : ''
+          }>${value}</option>`;
+        })
+        .join('')}
+      </select>
+      </div>
       <div class="flex-row space-between">
         <label for="preferredShift">Domyślna zmiana:&nbsp;</label>
         <select name="preferredShift">
@@ -60,4 +81,22 @@ export function renderEmployeeForm(employee?: Employee) {
   </div>
 
 </form>`;
+}
+
+export function addPositionDropdownHandlers() {
+  const selectElement = document.getElementById(
+    'employee-position'
+  ) as HTMLSelectElement;
+
+  const hiddenInput = document.getElementById('employee-custom-position');
+  if (!selectElement) throw new Error('Form not rendered yet.');
+  if (!hiddenInput) throw new Error('Form manipulated.');
+
+  if (selectElement.value === 'other') hiddenInput.style.display = 'block';
+  else hiddenInput.style.display = 'none';
+
+  selectElement.addEventListener('change', () => {
+    if (selectElement.value === 'other') hiddenInput.style.display = 'block';
+    else hiddenInput.style.display = 'none';
+  });
 }
