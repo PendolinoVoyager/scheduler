@@ -1,6 +1,7 @@
 import Employee from './models/Employee.js';
 import Group from './models/Group.js';
 import { ShiftType } from './models/types.js';
+import CalendarService from './services/CalendarService.js';
 interface State {
   group: Group;
   year: number;
@@ -28,7 +29,8 @@ testGroup.addEmployee(new Employee('Pan Kierownik'));
 
 const state: State = {
   group: testGroup,
-  year: new Date().getFullYear(),
-  month: new Date().getMonth() + 1,
+  year: 0,
+  month: 0,
 };
+
 export default state;

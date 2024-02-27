@@ -1,3 +1,4 @@
+import { CONFIG } from '../config.js';
 import {
   EmploymentType,
   AbstractEmployee,
@@ -132,10 +133,23 @@ export default class Employee extends AbstractEmployee {
       position:
         data.position === 'other'
           ? data['custom-position'].toString()
-          : data.position.toString(),
-      employmentType: data['employment-type'],
+          : CONFIG.POSITIONS[+data.position],
+      employmentType: data['employment-type'].toString(),
     };
-    if (parsedOptions.id !== this.getId()) throw new Error();
+    console.log(data);
+    // Would make a Validation Error but I'm not making a database
+    if (parsedOptions.id !== this.getId()) throw new Error('Invalid ID.');
+    if (!Object.values(ShiftType).includes(parsedOptions.shiftPreference))
+      throw new Error('Invalid ShiftType');
+    if (data.position === 'other' && !parsedOptions.position)
+      throw new Error('Invalid position.');
+    if (!Object.keys(EmploymentType).includes(parsedOptions.employmentType))
+      throw new Error('Invalid employment type.');
+
+    this.shiftPreference = parsedOptions.shiftPreference;
+    this.disabled = parsedOptions.disabled;
+    this.position = parsedOptions.position;
+    this.employmentType = (EmploymentType as any)[parsedOptions.employmentType];
   }
   getInitials() {
     const split = this.name.split(' ');

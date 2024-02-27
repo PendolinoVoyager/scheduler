@@ -41,15 +41,14 @@ export default class EmployeeView extends View {
               </div>
     
           </div>
-            </div> 
+        </div> 
 
-          </div>
-   
+    </div>
       
             <div id="calendar-preview">
 
             </div>
-          </div>
+ </div>
 
     `;
   }

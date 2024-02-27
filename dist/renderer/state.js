@@ -18,7 +18,7 @@ testGroup.addEmployee(new Employee('Jacek Bawełna'));
 testGroup.addEmployee(new Employee('Pan Kierownik'));
 const state = {
     group: testGroup,
-    year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
+    year: 0,
+    month: 0,
 };
 export default state;

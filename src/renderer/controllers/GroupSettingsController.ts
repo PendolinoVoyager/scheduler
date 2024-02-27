@@ -12,6 +12,7 @@ import {
 } from '../helpers/renderEmployeeForm.js';
 import { CONFIG } from '../config.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
+import CalendarService from '../services/CalendarService.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: ModalService;
@@ -25,9 +26,6 @@ export default class GroupSettingsController extends AbstractController {
   public selectedEmployee: Employee | null = this.group.getEmployees()[0];
   public employeeList: HTMLElement | undefined;
   public selectedItem: HTMLElement | undefined;
-
-  public currentMonth: number = state.month;
-  public currentYear: number = state.year;
 
   isModifying: boolean = false;
   waitingfForDialog: boolean = false;
@@ -111,6 +109,9 @@ export default class GroupSettingsController extends AbstractController {
       'submit',
       this.boundHandlers.handleFormSubmit
     );
+
+    // Add Planning input
+
     addPositionDropdownHandlers();
   }
 
@@ -163,16 +164,30 @@ export default class GroupSettingsController extends AbstractController {
   }
   #renderCalendarPreview() {
     const parent = document.getElementById('calendar-preview');
-    if (!parent) return;
+    if (!parent) throw new Error('Something went wrong!');
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
 
     this.CalendarPreviewView.render(
-      this.selectedEmployee?.getPreferencesForMonth(
-        this.currentYear,
-        this.currentMonth
-      )
+      this.selectedEmployee?.getPreferencesForMonth(state.year, state.month)
     );
+    const btnPrev = this.modalService
+      .getWriteableElement()
+      .querySelector('#btn-month-prev');
+    const btnNext = this.modalService
+      .getWriteableElement()
+      .querySelector('#btn-month-next');
+    if (!btnPrev || !btnNext) throw new Error('Something went wrong!');
+
+    btnPrev.addEventListener('click', () => {
+      CalendarService.prevMonth();
+      this.#renderCalendarPreview();
+    });
+
+    btnNext.addEventListener('click', () => {
+      CalendarService.nextMonth();
+      this.#renderCalendarPreview();
+    });
   }
 
   #addAndSelectEmployee(data: { [k: string]: FormDataEntryValue }) {

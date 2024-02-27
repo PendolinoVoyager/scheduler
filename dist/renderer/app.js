@@ -5,6 +5,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _App_instances, _App_addDefaultListeners;
 import './config.js';
+import './state.js';
 import DarkModeController from './controllers/DarkModeController.js';
 import ModalService from './services/ModalService.js';
 import GroupSettingsController from './controllers/GroupSettingsController.js';

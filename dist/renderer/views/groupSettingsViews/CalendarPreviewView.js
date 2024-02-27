@@ -7,9 +7,6 @@ export default class CalendarPreviewView extends View {
         this.calendarService = CalendarService;
     }
     generateMarkup() {
-        console.log(new Array(this.calendarService.getStartingDay())
-            .fill('<div> </div>')
-            .join(''));
         return `
     <div class="container-card flex-column">
     <div class="flex-row"">

@@ -4,7 +4,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Employee_instances, _Employee_createGroupedPreference, _Employee_updateGroupedPreference, _Employee_addCustomPreferenceToGroup;
-import { AbstractEmployee, } from './EmployeeTypes.js';
+import { CONFIG } from '../config.js';
+import { EmploymentType, AbstractEmployee, } from './EmployeeTypes.js';
+import { ShiftType } from './types.js';
 class Employee extends AbstractEmployee {
     constructor(name, options = {}) {
         super(name);
@@ -59,11 +61,23 @@ class Employee extends AbstractEmployee {
             disabled: Boolean(data.disability),
             position: data.position === 'other'
                 ? data['custom-position'].toString()
-                : data.position.toString(),
-            employmentType: data['employment-type'],
+                : CONFIG.POSITIONS[+data.position],
+            employmentType: data['employment-type'].toString(),
         };
+        console.log(data);
+        // Would make a Validation Error but I'm not making a database
         if (parsedOptions.id !== this.getId())
-            throw new Error();
+            throw new Error('Invalid ID.');
+        if (!Object.values(ShiftType).includes(parsedOptions.shiftPreference))
+            throw new Error('Invalid ShiftType');
+        if (data.position === 'other' && !parsedOptions.position)
+            throw new Error('Invalid position.');
+        if (!Object.keys(EmploymentType).includes(parsedOptions.employmentType))
+            throw new Error('Invalid employment type.');
+        this.shiftPreference = parsedOptions.shiftPreference;
+        this.disabled = parsedOptions.disabled;
+        this.position = parsedOptions.position;
+        this.employmentType = EmploymentType[parsedOptions.employmentType];
     }
     getInitials() {
         const split = this.name.split(' ');

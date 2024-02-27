@@ -13,6 +13,7 @@ import state from '../state.js';
 import { renderEmployeeForm, addPositionDropdownHandlers, } from '../helpers/renderEmployeeForm.js';
 import { CONFIG } from '../config.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
+import CalendarService from '../services/CalendarService.js';
 class GroupSettingsController extends AbstractController {
     constructor(modalService) {
         super();
@@ -20,8 +21,6 @@ class GroupSettingsController extends AbstractController {
         this.btnManageGroup = document.getElementById('btn-manage-group');
         this.group = state.group;
         this.selectedEmployee = this.group.getEmployees()[0];
-        this.currentMonth = state.month;
-        this.currentYear = state.year;
         this.isModifying = false;
         this.waitingfForDialog = false;
         this.boundHandlers = {
@@ -88,6 +87,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
 }, _GroupSettingsController_addEmployeeViewHandlers = function _GroupSettingsController_addEmployeeViewHandlers() {
     this.employeeForm?.addEventListener('input', this.boundHandlers.handleFormInput);
     this.employeeForm?.addEventListener('submit', this.boundHandlers.handleFormSubmit);
+    // Add Planning input
     addPositionDropdownHandlers();
 }, _GroupSettingsController_handleFormInput = function _GroupSettingsController_handleFormInput(e) {
     this.isModifying = true;
@@ -134,10 +134,26 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
 }, _GroupSettingsController_renderCalendarPreview = function _GroupSettingsController_renderCalendarPreview() {
     const parent = document.getElementById('calendar-preview');
     if (!parent)
-        return;
+        throw new Error('Something went wrong!');
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
-    this.CalendarPreviewView.render(this.selectedEmployee?.getPreferencesForMonth(this.currentYear, this.currentMonth));
+    this.CalendarPreviewView.render(this.selectedEmployee?.getPreferencesForMonth(state.year, state.month));
+    const btnPrev = this.modalService
+        .getWriteableElement()
+        .querySelector('#btn-month-prev');
+    const btnNext = this.modalService
+        .getWriteableElement()
+        .querySelector('#btn-month-next');
+    if (!btnPrev || !btnNext)
+        throw new Error('Something went wrong!');
+    btnPrev.addEventListener('click', () => {
+        CalendarService.prevMonth();
+        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
+    });
+    btnNext.addEventListener('click', () => {
+        CalendarService.nextMonth();
+        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
+    });
 }, _GroupSettingsController_addAndSelectEmployee = function _GroupSettingsController_addAndSelectEmployee(data) {
     try {
         if (!data.name.toString().match(CONFIG.EMPLOYEE_NAME_VALIDATOR))

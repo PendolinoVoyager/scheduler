@@ -1,4 +1,5 @@
 import { CalendarData } from '../models/types.js';
+import state from '../state.js';
 
 class CalendarService {
   public month: number = new Date().getMonth() + 1;
@@ -15,6 +16,8 @@ class CalendarService {
       this.month = month;
     }
     this.year = year ?? this.year;
+    state.month = this.month;
+    state.year = this.year;
   }
   getCalendarData(): CalendarData {
     return {
@@ -53,6 +56,20 @@ class CalendarService {
     const date = new Date(year, month - 1, day);
     if (date.getDay() === 7) return true;
     return false;
+  }
+  nextMonth() {
+    if (this.month === 12) {
+      this.setDate(1, this.year + 1);
+    } else {
+      this.setDate(this.month + 1);
+    }
+  }
+  prevMonth() {
+    if (this.month === 1) {
+      this.setDate(12, this.year - 1);
+    } else {
+      this.setDate(this.month - 1);
+    }
   }
 }
 export default new CalendarService();
