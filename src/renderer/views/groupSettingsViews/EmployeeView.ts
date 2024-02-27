@@ -25,7 +25,8 @@ export default class EmployeeView extends View {
                         .join('')}
                       
                       </select>
-                     </div>
+                      </div>
+
                   <div class="flex-row space-between">
                     <input type="date" name="begin" value="${new Date()
                       .toISOString()
@@ -38,25 +39,13 @@ export default class EmployeeView extends View {
 
                   <button class="box-sharp">Dodaj planowane zmiany w okresie</button>
               </div>
-              <button class="box-sharp" id="btn-remove-employee">
-              Usuń pracownika
-            </button>
+    
           </div>
             </div> 
 
           </div>
    
-          <div class="container-card flex-column">
-             <div class="flex-row"">
-              <div id="btns-month">
-                <div id="btn-month-prev">
-                    <i class="fas fa-chevron-left"></i>
-                </div>
-                <div id="btn-month-next">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                </div>
-                <h2>Podgląd</h2>
+      
             <div id="calendar-preview">
 
             </div>

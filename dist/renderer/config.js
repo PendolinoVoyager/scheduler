@@ -15,5 +15,6 @@ export const DEFAULT_CONFIG = {
         { TYPE: EmploymentType.PART_TIME, HOURS: 160 },
     ],
     EMPLOYEE_NAME_VALIDATOR: /^(\w{3,}\s\w{3,})$/,
+    FREE_DAYS: [6, 7],
 };
 export const CONFIG = Object.assign(DEFAULT_CONFIG, {});

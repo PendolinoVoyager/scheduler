@@ -23,6 +23,6 @@ export class AbstractEmployee {
 }
 export var EmploymentType;
 (function (EmploymentType) {
-    EmploymentType["FULL_TIME"] = "IDK REALLY";
+    EmploymentType["FULL_TIME"] = "Umowa o prac\u0119";
     EmploymentType["PART_TIME"] = "Umowa zlecenie";
 })(EmploymentType || (EmploymentType = {}));

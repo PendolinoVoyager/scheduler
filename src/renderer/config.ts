@@ -7,6 +7,7 @@ type Config = {
   DEFAULT_EMPLOYMENT_TYPE: EmploymentType;
   EMPLOYMENT_TYPE_HOURS: { TYPE: EmploymentType; HOURS: number }[];
   EMPLOYEE_NAME_VALIDATOR: RegExp;
+  FREE_DAYS: number[];
 };
 export const DEFAULT_CONFIG: Config = {
   DEFAULT_SHIFT: 1,
@@ -24,5 +25,6 @@ export const DEFAULT_CONFIG: Config = {
     { TYPE: EmploymentType.PART_TIME, HOURS: 160 },
   ],
   EMPLOYEE_NAME_VALIDATOR: /^(\w{3,}\s\w{3,})$/,
+  FREE_DAYS: [6, 7],
 };
 export const CONFIG = Object.assign(DEFAULT_CONFIG, {});

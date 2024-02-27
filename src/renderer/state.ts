@@ -15,6 +15,12 @@ testGroup.addEmployee(
     disabled: true,
   })
 );
+testGroup.getEmployees()[0].addCustomPreference(2024, 2, 1, ShiftType.None);
+testGroup.getEmployees()[0].addCustomPreference(2024, 2, 2, ShiftType.Training);
+testGroup.getEmployees()[0].addCustomPreference(2024, 2, 3, ShiftType.Vacation);
+testGroup.getEmployees()[0].addCustomPreference(2024, 2, 4, ShiftType.Custom);
+testGroup.getEmployees()[0].addCustomPreference(2024, 2, 5, ShiftType.Morning);
+
 testGroup.addEmployee(new Employee('Jan Dupa'));
 testGroup.addEmployee(new Employee('Tadeusz Kościuszko'));
 testGroup.addEmployee(new Employee('Jacek Bawełna'));

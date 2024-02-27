@@ -50,6 +50,6 @@ export type MonthlyShiftTypes = {
 };
 
 export enum EmploymentType {
-  FULL_TIME = 'IDK REALLY',
+  FULL_TIME = 'Umowa o pracę',
   PART_TIME = 'Umowa zlecenie',
 }

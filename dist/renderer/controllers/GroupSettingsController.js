@@ -46,17 +46,15 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this);
     });
 }, _GroupSettingsController_handleSelectedEmployee = async function _GroupSettingsController_handleSelectedEmployee(e) {
-    const target = e.target?.closest('.employee-item') ??
+    const target = e.target.closest('#btn-remove-employee') ??
+        e.target?.closest('.employee-item') ??
         e.target.closest('#employee-list-add');
     if (!target)
         return;
-    if (target.getAttribute('id') === 'employee-list-add') {
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmptyForm).call(this);
+    if (target.getAttribute('id') === 'btn-remove-employee') {
+        console.log('deleting');
         return;
     }
-    const employee = this.group.findEmployee(+target.dataset.id);
-    if (!employee)
-        return;
     if (this.isModifying) {
         if (this.waitingfForDialog)
             return false;
@@ -69,6 +67,13 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
         this.modalService.setImportant(this, false);
         this.selectedItem?.classList.remove('modified');
     }
+    if (target.getAttribute('id') === 'employee-list-add') {
+        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmptyForm).call(this);
+        return;
+    }
+    const employee = this.group.findEmployee(+target.dataset.id);
+    if (!employee)
+        return;
     this.selectedEmployee = employee;
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, employee);
@@ -132,7 +137,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
         return;
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
-    console.log(this.selectedEmployee?.getPreferencesForMonth(this.currentYear, this.currentMonth));
     this.CalendarPreviewView.render(this.selectedEmployee?.getPreferencesForMonth(this.currentYear, this.currentMonth));
 }, _GroupSettingsController_addAndSelectEmployee = function _GroupSettingsController_addAndSelectEmployee(data) {
     try {

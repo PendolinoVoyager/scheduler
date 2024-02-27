@@ -56,18 +56,16 @@ export default class GroupSettingsController extends AbstractController {
 
   async #handleSelectedEmployee(e: MouseEvent) {
     const target =
+      (e.target as any).closest('#btn-remove-employee') ??
       (e.target as HTMLElement)?.closest('.employee-item') ??
       (e.target as any).closest('#employee-list-add');
-
     if (!target) return;
 
-    if (target.getAttribute('id') === 'employee-list-add') {
-      this.#renderEmptyForm();
+    if (target.getAttribute('id') === 'btn-remove-employee') {
+      console.log('deleting');
       return;
     }
 
-    const employee = this.group.findEmployee(+(target.dataset as any).id);
-    if (!employee) return;
     if (this.isModifying) {
       if (this.waitingfForDialog) return false;
       this.waitingfForDialog = true;
@@ -78,6 +76,14 @@ export default class GroupSettingsController extends AbstractController {
       this.modalService.setImportant(this, false);
       this.selectedItem?.classList.remove('modified');
     }
+
+    if (target.getAttribute('id') === 'employee-list-add') {
+      this.#renderEmptyForm();
+      return;
+    }
+
+    const employee = this.group.findEmployee(+(target.dataset as any).id);
+    if (!employee) return;
 
     this.selectedEmployee = employee;
 
@@ -160,12 +166,7 @@ export default class GroupSettingsController extends AbstractController {
     if (!parent) return;
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
-    console.log(
-      this.selectedEmployee?.getPreferencesForMonth(
-        this.currentYear,
-        this.currentMonth
-      )
-    );
+
     this.CalendarPreviewView.render(
       this.selectedEmployee?.getPreferencesForMonth(
         this.currentYear,

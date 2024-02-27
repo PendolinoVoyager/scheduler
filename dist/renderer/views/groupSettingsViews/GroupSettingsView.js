@@ -38,8 +38,16 @@ class GroupSettingsView extends View {
 _GroupSettingsView_instances = new WeakSet(), _GroupSettingsView_generateEmployeeItem = function _GroupSettingsView_generateEmployeeItem(employee) {
     return `
     <li class="employee-item" data-id=${employee.getId()}>
+                <div class="flex-row space-between">
+                <div class="flex-column">
                 <p class="employee-name">${employee.getName()}</p>
                 <p class="employee-position">${employee.getPosition() || 'Brak stanowiska'}</p>
+                </div>
+                <button class="box-sharp" id="btn-remove-employee">
+                <i class="fas fa-trash"></i>
+                </button>
+                </div>
+
       </li>
     
     `;
