@@ -271,6 +271,14 @@ main {
   background-color: rgba(0, 0, 0, 0.4);
   transition: opacity 0.2s linear;
 }
+.overlayer {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  z-index: 200;
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.2s linear;
+}
 
 #btn-close-modal {
   cursor: pointer;
@@ -288,7 +296,7 @@ main {
   background-color: var(--box-primary);
   padding: 20px;
   box-shadow: var(--shadow);
-  z-index: 102;
+  z-index: 201;
   border-radius: var(--radius-square);
 }
 .dialog-buttons {
@@ -435,4 +443,7 @@ select {
 }
 .employee-item.modified:hover {
   background-color: var(--color-warning);
+}
+.shift-preview-calendar {
+  display: grid;
 }

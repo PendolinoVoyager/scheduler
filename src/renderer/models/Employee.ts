@@ -1,8 +1,8 @@
 import {
-  GroupedPreference,
   EmploymentType,
   AbstractEmployee,
   EmployeeFields,
+  MonthlyShiftTypes,
 } from './EmployeeTypes.js';
 
 import { ShiftType } from './types.js';
@@ -14,7 +14,7 @@ export default class Employee extends AbstractEmployee {
   protected disabled!: boolean;
   protected shiftPreference!: ShiftType;
   protected employmentType!: EmploymentType;
-  protected shiftPreferencesGrouped: GroupedPreference[] = [];
+  protected shiftPreferencesGrouped: MonthlyShiftTypes[] = [];
   constructor(name: string, options: EmployeeFields = {}) {
     super(name);
     Object.entries(options).forEach(([key, value]) => {
@@ -42,18 +42,18 @@ export default class Employee extends AbstractEmployee {
     this.#addCustomPreferenceToGroup(groupedPreference, day, shiftPreference);
   }
 
-  getPreferencesForMonth(year: number, month: number): ShiftType[] {
+  getPreferencesForMonth(year: number, month: number): MonthlyShiftTypes {
     const groupedPreference = this.shiftPreferencesGrouped.find(
       (p) => p.year === year && p.month === month
     );
-    if (!groupedPreference)
-      return this.#createGroupedPreference(year, month).preferences;
+    if (!groupedPreference) return this.#createGroupedPreference(year, month);
 
     if (groupedPreference.defaultPreference !== this.shiftPreference)
       this.#updateGroupedPreference(groupedPreference);
 
-    return groupedPreference.preferences;
+    return groupedPreference;
   }
+
   removePreference(year: number, month: number, day: number) {
     const groupedPreference = this.shiftPreferencesGrouped.find(
       (p) => p.year === year && p.month === month
@@ -83,11 +83,14 @@ export default class Employee extends AbstractEmployee {
     month: number,
     day: number
   ): ShiftType | undefined {
-    const monthPreference = this.getPreferencesForMonth(year, month);
+    const monthPreference = this.getPreferencesForMonth(
+      year,
+      month
+    ).preferences;
 
     return monthPreference[day - 1];
   }
-  #createGroupedPreference(year: number, month: number): GroupedPreference {
+  #createGroupedPreference(year: number, month: number): MonthlyShiftTypes {
     const newPreferenceMonth = {
       year,
       month,
@@ -100,7 +103,7 @@ export default class Employee extends AbstractEmployee {
     this.shiftPreferencesGrouped.push(newPreferenceMonth);
     return newPreferenceMonth;
   }
-  #updateGroupedPreference(groupedPreference: GroupedPreference) {
+  #updateGroupedPreference(groupedPreference: MonthlyShiftTypes) {
     groupedPreference.defaultPreference = this.shiftPreference;
     groupedPreference.preferences.fill(this.shiftPreference);
     groupedPreference.customPreferences.forEach((cp) => {
@@ -108,7 +111,7 @@ export default class Employee extends AbstractEmployee {
     });
   }
   #addCustomPreferenceToGroup(
-    groupedPreference: GroupedPreference,
+    groupedPreference: MonthlyShiftTypes,
     day: number,
     preference: ShiftType
   ) {

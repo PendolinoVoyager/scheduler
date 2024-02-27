@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _GroupSettingsController_instances, _GroupSettingsController_addHandlers, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_handleFormError, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems;
+var _GroupSettingsController_instances, _GroupSettingsController_addHandlers, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_renderCalendarPreview, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_handleFormError, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems;
 import { AbstractController } from './AbstractController.js';
 import { renderDialog } from '../helpers/yesNoDialog.js';
 import GroupSettingsView from '../views/groupSettingsViews/GroupSettingsView.js';
@@ -12,6 +12,7 @@ import Employee from '../models/Employee.js';
 import state from '../state.js';
 import { renderEmployeeForm, addPositionDropdownHandlers, } from '../helpers/renderEmployeeForm.js';
 import { CONFIG } from '../config.js';
+import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 class GroupSettingsController extends AbstractController {
     constructor(modalService) {
         super();
@@ -19,6 +20,8 @@ class GroupSettingsController extends AbstractController {
         this.btnManageGroup = document.getElementById('btn-manage-group');
         this.group = state.group;
         this.selectedEmployee = this.group.getEmployees()[0];
+        this.currentMonth = state.month;
+        this.currentYear = state.year;
         this.isModifying = false;
         this.waitingfForDialog = false;
         this.boundHandlers = {
@@ -73,8 +76,10 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
     this.employeeView = new EmployeeView(document.getElementById('employee-stats'));
     this.employeeView.render(employee);
     this.employeeForm = document.getElementById('employee-info');
-    if (employee)
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addEmployeeViewHandlers).call(this);
+    if (!employee)
+        return;
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addEmployeeViewHandlers).call(this);
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
 }, _GroupSettingsController_addEmployeeViewHandlers = function _GroupSettingsController_addEmployeeViewHandlers() {
     this.employeeForm?.addEventListener('input', this.boundHandlers.handleFormInput);
     this.employeeForm?.addEventListener('submit', this.boundHandlers.handleFormSubmit);
@@ -121,6 +126,14 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_add
     this.selectedItem = undefined;
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addEmployeeViewHandlers).call(this);
+}, _GroupSettingsController_renderCalendarPreview = function _GroupSettingsController_renderCalendarPreview() {
+    const parent = document.getElementById('calendar-preview');
+    if (!parent)
+        return;
+    this.CalendarPreviewView = new CalendarPreviewView(parent);
+    this.CalendarPreviewView.renderSpinner();
+    console.log(this.selectedEmployee?.getPreferencesForMonth(this.currentYear, this.currentMonth));
+    this.CalendarPreviewView.render(this.selectedEmployee?.getPreferencesForMonth(this.currentYear, this.currentMonth));
 }, _GroupSettingsController_addAndSelectEmployee = function _GroupSettingsController_addAndSelectEmployee(data) {
     try {
         if (!data.name.toString().match(CONFIG.EMPLOYEE_NAME_VALIDATOR))

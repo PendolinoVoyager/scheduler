@@ -1,4 +1,4 @@
-import Calendar from '../services/Calendar.js';
+import Calendar from '../services/CalendarService.js';
 import { AbstractController } from './AbstractController.js';
 
 export default class CalendarController extends AbstractController {

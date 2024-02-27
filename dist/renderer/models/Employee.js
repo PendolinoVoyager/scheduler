@@ -26,10 +26,10 @@ class Employee extends AbstractEmployee {
     getPreferencesForMonth(year, month) {
         const groupedPreference = this.shiftPreferencesGrouped.find((p) => p.year === year && p.month === month);
         if (!groupedPreference)
-            return __classPrivateFieldGet(this, _Employee_instances, "m", _Employee_createGroupedPreference).call(this, year, month).preferences;
+            return __classPrivateFieldGet(this, _Employee_instances, "m", _Employee_createGroupedPreference).call(this, year, month);
         if (groupedPreference.defaultPreference !== this.shiftPreference)
             __classPrivateFieldGet(this, _Employee_instances, "m", _Employee_updateGroupedPreference).call(this, groupedPreference);
-        return groupedPreference.preferences;
+        return groupedPreference;
     }
     removePreference(year, month, day) {
         const groupedPreference = this.shiftPreferencesGrouped.find((p) => p.year === year && p.month === month);
@@ -49,7 +49,7 @@ class Employee extends AbstractEmployee {
         groupedPreference.customPreferences.splice(0, groupedPreference.customPreferences.length);
     }
     getPreferenceForDay(year, month, day) {
-        const monthPreference = this.getPreferencesForMonth(year, month);
+        const monthPreference = this.getPreferencesForMonth(year, month).preferences;
         return monthPreference[day - 1];
     }
     updateFromFormData(data) {

@@ -11,6 +11,7 @@ import {
   addPositionDropdownHandlers,
 } from '../helpers/renderEmployeeForm.js';
 import { CONFIG } from '../config.js';
+import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: ModalService;
@@ -18,11 +19,16 @@ export default class GroupSettingsController extends AbstractController {
     document.getElementById('btn-manage-group')!;
   public groupSettingsView: GroupSettingsView;
   public employeeView: EmployeeView | undefined;
+  public CalendarPreviewView: CalendarPreviewView | undefined;
   public employeeForm: HTMLFormElement | undefined;
   public group: Group = state.group;
   public selectedEmployee: Employee | null = this.group.getEmployees()[0];
   public employeeList: HTMLElement | undefined;
   public selectedItem: HTMLElement | undefined;
+
+  public currentMonth: number = state.month;
+  public currentYear: number = state.year;
+
   isModifying: boolean = false;
   waitingfForDialog: boolean = false;
   constructor(modalService: ModalService) {
@@ -85,7 +91,10 @@ export default class GroupSettingsController extends AbstractController {
     this.employeeView.render(employee);
     (this.employeeForm as any) = document.getElementById('employee-info')!;
 
-    if (employee) this.#addEmployeeViewHandlers();
+    if (!employee) return;
+
+    this.#addEmployeeViewHandlers();
+    this.#renderCalendarPreview();
   }
   #addEmployeeViewHandlers() {
     this.employeeForm?.addEventListener(
@@ -146,6 +155,24 @@ export default class GroupSettingsController extends AbstractController {
     this.#updateListItems();
     this.#addEmployeeViewHandlers();
   }
+  #renderCalendarPreview() {
+    const parent = document.getElementById('calendar-preview');
+    if (!parent) return;
+    this.CalendarPreviewView = new CalendarPreviewView(parent);
+    this.CalendarPreviewView.renderSpinner();
+    console.log(
+      this.selectedEmployee?.getPreferencesForMonth(
+        this.currentYear,
+        this.currentMonth
+      )
+    );
+    this.CalendarPreviewView.render(
+      this.selectedEmployee?.getPreferencesForMonth(
+        this.currentYear,
+        this.currentMonth
+      )
+    );
+  }
 
   #addAndSelectEmployee(data: { [k: string]: FormDataEntryValue }) {
     try {
@@ -170,6 +197,7 @@ export default class GroupSettingsController extends AbstractController {
   #handleFormError(err: Error) {
     console.error(err);
   }
+
   boundHandlers = {
     handleSelectedEmployee: this.#handleSelectedEmployee.bind(this),
     handleFormInput: this.#handleFormInput.bind(this),

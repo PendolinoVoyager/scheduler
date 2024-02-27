@@ -1,18 +1,11 @@
-export type GridData = {
-  month: number;
-  year: number;
-  dateString: string;
-  startingDay: number;
-  numberOfDays: number;
-};
+import { CalendarData } from '../models/types.js';
 
-export default class CalendarService {
+class CalendarService {
   public month: number = new Date().getMonth() + 1;
   public year: number = new Date().getFullYear();
 
   constructor(month?: number, year?: number) {
     this.setDate(month, year);
-    this.year = year ?? new Date().getFullYear();
   }
 
   setDate(month?: number, year?: number) {
@@ -21,7 +14,7 @@ export default class CalendarService {
     }
     this.year = year ?? this.year;
   }
-  getGridData(): GridData {
+  getCalendarData(): CalendarData {
     return {
       month: this.month,
       year: this.year,
@@ -45,3 +38,4 @@ export default class CalendarService {
     return new Date(this.year, this.month, 0).getDate();
   }
 }
+export default new CalendarService();

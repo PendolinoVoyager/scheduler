@@ -7,9 +7,16 @@ export enum ShiftType {
   Custom = 6,
 }
 
-interface Shift {
+export interface Shift {
   type: ShiftType;
   startTime?: string;
   endTime?: string;
   hours?: number;
 }
+export type CalendarData = {
+  month: number;
+  year: number;
+  dateString: string;
+  startingDay: number;
+  numberOfDays: number;
+};

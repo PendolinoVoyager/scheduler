@@ -16,7 +16,7 @@ export type EmployeeFields = {
   disabled?: boolean;
   shiftPreference?: ShiftType;
   employmentType?: EmploymentType;
-  shiftPreferencesGrouped?: GroupedPreference[];
+  shiftPreferencesGrouped?: MonthlyShiftTypes[];
 };
 
 export class AbstractEmployee {
@@ -41,7 +41,7 @@ export class AbstractEmployee {
   };
 }
 
-export type GroupedPreference = {
+export type MonthlyShiftTypes = {
   year: number;
   month: number;
   defaultPreference: number;
