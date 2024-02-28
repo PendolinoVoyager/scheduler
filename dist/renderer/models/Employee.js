@@ -64,7 +64,6 @@ class Employee extends AbstractEmployee {
                 : CONFIG.POSITIONS[+data.position],
             employmentType: data['employment-type'].toString(),
         };
-        console.log(data);
         // Would make a Validation Error but I'm not making a database
         if (parsedOptions.id !== this.getId())
             throw new Error('Invalid ID.');

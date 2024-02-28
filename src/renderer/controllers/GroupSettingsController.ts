@@ -13,7 +13,8 @@ import {
 import { CONFIG } from '../config.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 import CalendarService from '../services/CalendarService.js';
-
+import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
+import { ShiftType } from '../models/types.js';
 export default class GroupSettingsController extends AbstractController {
   public modalService: ModalService;
   public btnManageGroup: HTMLElement =
@@ -36,10 +37,10 @@ export default class GroupSettingsController extends AbstractController {
       modalService.getWriteableElement()
     );
 
-    this.#addHandlers();
+    this.#init();
   }
 
-  #addHandlers() {
+  #init() {
     this.btnManageGroup.addEventListener('click', (e) => {
       this.modalService.open(this, false);
       this.modalService.setOnClose(this, this.boundHandlers.cleanup);
@@ -60,7 +61,7 @@ export default class GroupSettingsController extends AbstractController {
     if (!target) return;
 
     if (target.getAttribute('id') === 'btn-remove-employee') {
-      console.log('deleting');
+      this.#handleEmployeeRemove(target);
       return;
     }
 
@@ -88,9 +89,30 @@ export default class GroupSettingsController extends AbstractController {
     this.#updateListItems();
     this.#renderEmployee(employee);
   }
+  async #handleEmployeeRemove(target: HTMLElement) {
+    const targetEmployee = this.group.findEmployee(+(target.dataset as any).id);
+    if (!targetEmployee) throw new Error('Something went wrong!');
+
+    let res = await renderDialog(
+      `Na pewno usunąć pracownika ${targetEmployee.getName()}?`
+    );
+    if (!res) return;
+    res = await renderDialog(
+      `🟥 Na pewno usunąć pracownika ${targetEmployee.getName()}?🟥`
+    );
+    if (!res) return;
+    this.group.removeEmployee(+(target.dataset as any).id);
+    this.modalService.clear();
+
+    this.groupSettingsView.render(this.group.getEmployees());
+
+    this.#renderWindow();
+
+    this.#renderEmployee();
+  }
   #renderEmployee(employee?: Employee) {
     this.employeeView = new EmployeeView(
-      document.getElementById('employee-stats')!
+      document.getElementById('employee-stats-container')!
     );
     this.employeeView.render(employee);
     (this.employeeForm as any) = document.getElementById('employee-info')!;
@@ -109,7 +131,9 @@ export default class GroupSettingsController extends AbstractController {
       'submit',
       this.boundHandlers.handleFormSubmit
     );
-
+    document
+      .getElementById('plan-shifts')
+      ?.addEventListener('submit', this.boundHandlers.handlePlanSubmit);
     // Add Planning input
 
     addPositionDropdownHandlers();
@@ -151,7 +175,7 @@ export default class GroupSettingsController extends AbstractController {
     // Should've made it into a view but whatever
     this.employeeView?.clear();
     document
-      .getElementById('employee-stats')!
+      .getElementById('employee-stats-container')!
       .insertAdjacentHTML('afterbegin', renderEmployeeForm());
 
     addPositionDropdownHandlers();
@@ -168,9 +192,19 @@ export default class GroupSettingsController extends AbstractController {
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
 
-    this.CalendarPreviewView.render(
-      this.selectedEmployee?.getPreferencesForMonth(state.year, state.month)
+    const calendarData = this.selectedEmployee!.getPreferencesForMonth(
+      state.year,
+      state.month
     );
+
+    // TODO: Check if the day is actually disabled in main calendar
+    // calendarData.preferences.forEach((p, i) => {
+    //   if (CalendarService.isFreeDayInPoland(i + 1)) {
+    //     calendarData.preferences[i] = ShiftType.None;
+    //   }
+    // });
+
+    this.CalendarPreviewView.render(calendarData);
     const btnPrev = this.modalService
       .getWriteableElement()
       .querySelector('#btn-month-prev');
@@ -219,6 +253,7 @@ export default class GroupSettingsController extends AbstractController {
     handleFormInput: this.#handleFormInput.bind(this),
     handleFormSubmit: this.#handleFormSubmit.bind(this),
     renderEmptyForm: this.#renderEmptyForm.bind(this),
+    handlePlanSubmit: this.#handlePlanSubmit.bind(this),
     renderWindow: this.#renderWindow.bind(this),
     cleanup: this.#cleanup.bind(this),
   };
@@ -246,5 +281,36 @@ export default class GroupSettingsController extends AbstractController {
 
     (targetedElement as HTMLElement).classList.add('employee-selected');
     this.selectedItem = targetedElement as any;
+  }
+  async #handlePlanSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    if (!form) return;
+    try {
+      const data = new FormData(form);
+      const parsedData = {
+        shiftType: +data.get('plannedShift')!,
+        start: data.get('begin')!.toString(),
+        end: data.get('end')!.toString(),
+      };
+      const res = await renderDialog(
+        `Zatwierdzić ${ShiftType[parsedData.shiftType]} w okresie ${
+          parsedData.start
+        } - ${parsedData.end} dla ${this.selectedEmployee?.getName()}?`
+      );
+      if (!res) return;
+      daySpanFromForm(parsedData.start, parsedData.end).forEach((d) => {
+        this.selectedEmployee?.addCustomPreference(
+          d.year,
+          d.month,
+          d.day,
+          parsedData.shiftType
+        );
+      });
+      this.#renderCalendarPreview();
+    } catch (err) {
+      this.#handleFormError(err as Error);
+      return;
+    }
   }
 }

@@ -4,82 +4,82 @@ import { ShiftType } from '../models/types.js';
 import { EmploymentType } from '../models/EmployeeTypes.js';
 
 export function renderEmployeeForm(employee?: Employee) {
-  return `<form name="employee-info" id="employee-info">
-<input type="hidden" name="id" value="${employee?.getId() ?? ''}">
-<div class="container-card flex-row space-evenly">
+  return `
+  <form name="employee-info" id="employee-info">
+    <input type="hidden" name="id" value="${employee?.getId() ?? ''}">
+        <div class="container-card2 flex-column">
 
-  <div class="container-card2 flex-column">
+          <div class="flex-row space-between">
 
-      <div class="flex-row space-between">
-          <label for="name">Imię i nazwisko:&nbsp;</label>
-          <input type="text" value="${
-            employee?.getName() ?? ''
-          }" name="name" placeholder="Imię i nazwisko">
-      </div>
+            <label for="name">Imię i nazwisko:&nbsp;</label>
+            <input type="text" value="${
+              employee?.getName() ?? ''
+            }" name="name" placeholder="Imię i nazwisko">
+
+          </div>
      
-      <div class="flex-row space-between">
-        <label for="position">Stanowisko:&nbsp;</label>
-        <div class=flex-column>
-        <select name="position" id="employee-position">
-          ${CONFIG.POSITIONS.map(
-            (p, i) =>
-              `<option value="${i}" ${
-                employee?.getPosition() === p ? 'selected' : ''
-              }>${p}</option>`
-          ).join('')}
-          <option value="other" ${
-            !CONFIG.POSITIONS.includes(
-              employee ? employee.getPosition() : CONFIG.POSITIONS[0]
-            )
-              ? 'selected'
-              : ''
-          }>Inne</option>
-        </select>
-        <input type="text" name="custom-position" id="employee-custom-position" placeholder="Stanowisko" value=${
-          employee?.getPosition() ?? ''
-        }>
-        </div>
-      </div>
+          <div class="flex-row space-between">
+            <label for="position">Stanowisko:&nbsp;</label>
+            <div class=flex-column>
+              <select name="position" id="employee-position">
+              ${CONFIG.POSITIONS.map(
+                (p, i) =>
+                  `<option value="${i}" ${
+                    employee?.getPosition() === p ? 'selected' : ''
+                  }>${p}</option>`
+              ).join('')}
+              <option value="other" ${
+                !CONFIG.POSITIONS.includes(
+                  employee ? employee.getPosition() : CONFIG.POSITIONS[0]
+                )
+                  ? 'selected'
+                  : ''
+              }>Inne</option>
+              </select>
+              <input type="text" name="custom-position" id="employee-custom-position" placeholder="Stanowisko" value=${
+                employee?.getPosition() ?? ''
+              }>
+            </div>
+          </div>
       
-      <div class="flex-row space-between">
-      <label for="employment-type" >Umowa:&nbsp;</label>
+          <div class="flex-row space-between">
+            <label for="employment-type" >Umowa:&nbsp;</label>
 
-      <select name="employment-type">
+            <select name="employment-type">
 
-      ${Object.entries(EmploymentType)
-        .filter(([key, val]) => isNaN(+key))
-        .map(([enumName, value]) => {
-          return `<option value="${enumName}" ${
-            employee?.getEmploymentType() === value ? 'selected' : ''
-          }>${value}</option>`;
-        })
-        .join('')}
-      </select>
-      </div>
-      <div class="flex-row space-between">
-        <label for="preferredShift">Domyślna zmiana:&nbsp;</label>
-        <select name="preferredShift">
-        ${Object.entries(ShiftType)
-          .filter(([key, val]) => isNaN(+key))
-          .map(([enumName, value]) => {
-            return `<option value="${value}" ${
-              employee?.getShiftPreference() === value ? 'selected' : ''
-            }>${enumName}</option>`;
-          })
-          .join('')}
-        </select>
-      </div>
+            ${Object.entries(EmploymentType)
+              .filter(([key, val]) => isNaN(+key))
+              .map(([enumName, value]) => {
+                return `<option value="${enumName}" ${
+                  employee?.getEmploymentType() === value ? 'selected' : ''
+                }>${value}</option>`;
+              })
+              .join('')}
+            </select>
+         </div>
+         <div class="flex-row space-between">
+            <label for="preferredShift">Domyślna zmiana:&nbsp;</label>
+            <select name="preferredShift">
+            ${Object.entries(ShiftType)
+              .filter(([key, val]) => isNaN(+key))
+              .map(([enumName, value]) => {
+                return `<option value="${value}" ${
+                  employee?.getShiftPreference() === value ? 'selected' : ''
+                }>${enumName}</option>`;
+              })
+              .join('')}
+            </select>
+          </div>
 
-      <div class="flex-row">
-      <label for="disability">Niepełnosprawność</label>
-      <input name="disability" type="checkbox" ${
-        employee?.isDisabled() ? 'checked' : ''
-      }> 
-      </div>
+          <div class="flex-row space-between">
+            <label for="disability">Niepełnosprawność</label>
+            <input name="disability" type="checkbox" ${
+              employee?.isDisabled() ? 'checked' : ''
+            }> 
+         </div>
       <button type="submit" class="box-sharp" value="Zapisz">Zapisz</button>
 
-  </div>
-
+    </div>
 </form>`;
 }
 

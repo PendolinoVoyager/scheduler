@@ -43,9 +43,9 @@ class CalendarService {
     getNumOfDays() {
         return new Date(this.year, this.month, 0).getDate();
     }
-    isFreeDayInPoland(year, month, day) {
+    isFreeDayInPoland(day, year = this.year, month = this.month) {
         const date = new Date(year, month - 1, day);
-        if (date.getDay() === 7)
+        if (date.getDay() === 6)
             return true;
         return false;
     }

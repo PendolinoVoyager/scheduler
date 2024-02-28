@@ -52,9 +52,13 @@ class CalendarService {
     }
     this.weekDays = shortWeekdays;
   }
-  isFreeDayInPoland(year: number, month: number, day: number): boolean {
+  isFreeDayInPoland(
+    day: number,
+    year: number = this.year,
+    month: number = this.month
+  ): boolean {
     const date = new Date(year, month - 1, day);
-    if (date.getDay() === 7) return true;
+    if (date.getDay() === 6) return true;
     return false;
   }
   nextMonth() {

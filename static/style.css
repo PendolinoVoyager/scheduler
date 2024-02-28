@@ -99,6 +99,9 @@ button {
   border: none;
   color: white;
 }
+i {
+  text-align: center;
+}
 
 body {
   margin: 0;
@@ -375,18 +378,12 @@ main {
   width: 100%;
   height: 100%;
   overflow: auto;
+  padding: 0.5rem;
 
   background-color: var(--box-primary);
   box-shadow: var(--box-primary);
   display: flex;
   flex-direction: column;
-}
-#employee-stats {
-  padding: 0.5rem;
-
-  display: flex;
-  flex-direction: column;
-
   gap: 2rem;
 }
 
@@ -497,4 +494,12 @@ select {
 }
 .calendar-preview-day.custom {
   background-color: var(--color-custom);
+}
+
+#employee-info .flex-row {
+  flex-wrap: nowrap;
+}
+
+#employee-manage div {
+  max-width: 330px;
 }
