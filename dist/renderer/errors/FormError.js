@@ -21,10 +21,12 @@ class FormError extends Error {
     }
 }
 _FormError_instances = new WeakSet(), _FormError_addListeners = function _FormError_addListeners() {
-    this.issues.forEach((issue) => {
+    this.issues.forEach((issue, i) => {
         if (!issue.element)
             return;
         issue.element.addEventListener('input', this.boundRemoveIssueHighlight);
+        console.log(issue.description);
+        // HoverBoxService.attach(`issue${i}`, issue.element, issue.description);
     });
 }, _FormError_removeIssueHighlight = function _FormError_removeIssueHighlight(e) {
     if (!e.target)

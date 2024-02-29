@@ -5,7 +5,7 @@ import { renderDialog } from '../helpers/yesNoDialog.js';
  *  controllers requiring modal access.
  *
  */
-export default class ModalService {
+class ModalService {
   owner: AbstractController | null = null;
   overlay = document.getElementById('overlay')!;
   modal = document.getElementById('modal-box')!;
@@ -90,3 +90,5 @@ export default class ModalService {
     return;
   }
 }
+
+export default new ModalService();

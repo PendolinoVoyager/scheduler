@@ -102,4 +102,4 @@ _ModalService_instances = new WeakSet(), _ModalService_addCloseListeners = funct
     this.onclose = undefined;
     return true;
 };
-export default ModalService;
+export default new ModalService();

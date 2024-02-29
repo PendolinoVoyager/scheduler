@@ -262,6 +262,15 @@ main {
 #btn-manage-group:hover {
   background: var(--color-hover);
 }
+.hover-box {
+  padding: 1rem;
+  height: 125px;
+  position: absolute;
+  z-index: 300;
+  box-shadow: var(--shadow);
+  background-color: var(--box-secondary);
+}
+
 .hidden {
   visibility: hidden;
   opacity: 0;

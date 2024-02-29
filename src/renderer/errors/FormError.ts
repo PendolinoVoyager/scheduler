@@ -1,5 +1,7 @@
+import HoverBoxService from '../services/HoverBoxService.js';
+
 export type Issue = {
-  element: Element | null;
+  element: HTMLElement | null;
   description: string;
 };
 
@@ -17,12 +19,14 @@ export default class FormError extends Error {
   }
 
   #addListeners() {
-    this.issues.forEach((issue) => {
+    this.issues.forEach((issue, i) => {
       if (!issue.element) return;
       issue.element.addEventListener(
         'input',
         this.boundRemoveIssueHighlight as EventListenerOrEventListenerObject
       );
+      console.log(issue.description);
+      // HoverBoxService.attach(`issue${i}`, issue.element, issue.description);
     });
   }
 
