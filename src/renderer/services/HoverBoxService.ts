@@ -6,6 +6,7 @@ type Subscriber = {
     onshow?: (e: MouseEvent) => void;
     onhide?: (e: MouseEvent) => void;
     eventType: 'click' | 'mouseenter';
+    namespace?: string;
   };
   callbacks: { show: (e: MouseEvent) => void; hide: (e: MouseEvent) => void };
 };
@@ -13,12 +14,14 @@ class CHoverBoxService {
   offsetFromBorder: number = 15;
   private hoverBox: HTMLDivElement | null = null;
   private subscribers: Subscriber[] = [];
-  constructor() {}
+  constructor() {
+    setInterval(this.#cleanupOprhans.bind(this), 10000);
+  }
   attach(
     alias: string,
     element: HTMLElement,
     content: string,
-    options: Subscriber['options']
+    options?: Subscriber['options']
   ) {
     const subscriber: Subscriber = {
       alias,
@@ -27,7 +30,8 @@ class CHoverBoxService {
       options: {
         onshow: options?.onshow ?? undefined,
         onhide: options?.onhide ?? undefined,
-        eventType: options?.eventType ?? 'click',
+        eventType: options?.eventType ?? 'mouseenter',
+        namespace: options?.namespace ?? undefined,
       },
       callbacks: {
         show: (e: MouseEvent) => {
@@ -35,7 +39,7 @@ class CHoverBoxService {
           subscriber.options!.onshow && subscriber.options!.onshow(e);
         },
         hide: (e: MouseEvent) => {
-          this.#hideHoverBox(subscriber, e);
+          this.#hideHoverBox();
           subscriber.options!.onhide && subscriber.options!.onhide(e);
         },
       },
@@ -52,11 +56,12 @@ class CHoverBoxService {
 
     this.subscribers.push(subscriber);
   }
-  remove(alias: string) {
+
+  remove(alias?: string) {
     const subscriber = this.subscribers.find((sub) => sub.alias === alias);
     if (!subscriber) return;
+    this.#hideHoverBox();
     const index = this.subscribers.indexOf(subscriber);
-
     subscriber.element.removeEventListener(
       subscriber.options!.eventType,
       subscriber.callbacks.show
@@ -69,13 +74,19 @@ class CHoverBoxService {
     this.subscribers[index] = lastElement;
     this.subscribers.pop();
   }
+  removeMany(namespace: string) {
+    const subsToCleanup = this.subscribers.filter(
+      (sub) => sub.options?.namespace !== namespace
+    );
+    subsToCleanup.forEach((sub) => this.remove(sub.alias));
+  }
   update(alias: string, content: string) {
     const subscriber = this.subscribers.find((sub) => sub.alias === alias);
     if (!subscriber) return;
     subscriber.content = content;
   }
   #showHoverBox(subscriber: Subscriber, e: MouseEvent) {
-    this.#hideHoverBox(subscriber, e);
+    this.#hideHoverBox();
     this.hoverBox = document.createElement('div');
     this.hoverBox.innerHTML = subscriber.content;
     this.hoverBox.classList.add('hover-box');
@@ -87,12 +98,18 @@ class CHoverBoxService {
       e.clientX + this.offsetFromBorder * (direction ? -1 : 1) + 'px';
     this.hoverBox.style.top = top + 'px';
     this.hoverBox.style.transform = `translateX(${direction ? '-100%' : '0'})`;
-
-    subscriber.element.appendChild(this.hoverBox);
+    if (subscriber.element.tagName === 'DIV')
+      subscriber.element.appendChild(this.hoverBox);
+    else subscriber.element.insertAdjacentElement('afterend', this.hoverBox);
   }
-  #hideHoverBox(subscriber: Subscriber, e: MouseEvent) {
+  #hideHoverBox() {
     this.hoverBox?.remove();
     this.hoverBox = null;
+  }
+  #cleanupOprhans() {
+    this.subscribers = this.subscribers.filter(
+      (sub) => sub.element.isConnected
+    );
   }
 }
 export default new CHoverBoxService();

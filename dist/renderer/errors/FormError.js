@@ -4,6 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _FormError_instances, _FormError_addListeners, _FormError_removeIssueHighlight;
+import HoverBoxService from '../services/HoverBoxService.js';
 class FormError extends Error {
     constructor(displayError = true, ...issues) {
         super();
@@ -25,12 +26,15 @@ _FormError_instances = new WeakSet(), _FormError_addListeners = function _FormEr
         if (!issue.element)
             return;
         issue.element.addEventListener('input', this.boundRemoveIssueHighlight);
-        console.log(issue.description);
-        // HoverBoxService.attach(`issue${i}`, issue.element, issue.description);
+        HoverBoxService.attach('issue', issue.element, issue.description, {
+            eventType: 'mouseenter',
+            namespace: 'form-error',
+        });
     });
 }, _FormError_removeIssueHighlight = function _FormError_removeIssueHighlight(e) {
     if (!e.target)
         return;
+    HoverBoxService.remove('issue');
     e.target.classList.remove('error');
     e.target.removeEventListener('input', this.boundRemoveIssueHighlight);
 };

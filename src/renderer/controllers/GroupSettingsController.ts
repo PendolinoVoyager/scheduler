@@ -14,9 +14,11 @@ import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView
 import CalendarService from '../services/CalendarService.js';
 import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
 import { ShiftType } from '../models/types.js';
+import FormError from '../errors/FormError.js';
+import HoverBoxService from '../services/HoverBoxService.js';
 
 export default class GroupSettingsController extends AbstractController {
-  public modalService: ModalService;
+  public modalService: typeof ModalService;
   public btnManageGroup: HTMLElement =
     document.getElementById('btn-manage-group')!;
   public groupSettingsView: GroupSettingsView;
@@ -27,14 +29,16 @@ export default class GroupSettingsController extends AbstractController {
   public selectedEmployee: Employee | null = this.group.getEmployees()[0];
   public employeeList: HTMLElement | undefined;
   public selectedItem: HTMLElement | undefined;
-
   isModifying: boolean = false;
   waitingfForDialog: boolean = false;
-  constructor(modalService: ModalService) {
+  hoverBoxService: typeof HoverBoxService;
+
+  constructor() {
     super();
-    this.modalService = modalService;
+    this.modalService = ModalService;
+    this.hoverBoxService = HoverBoxService;
     this.groupSettingsView = new GroupSettingsView(
-      modalService.getWriteableElement()
+      this.modalService.getWriteableElement()
     );
 
     this.#init();
@@ -76,6 +80,7 @@ export default class GroupSettingsController extends AbstractController {
       this.selectedItem?.classList.remove('modified');
     }
 
+    this.hoverBoxService.removeMany('form-error');
     if (target.getAttribute('id') === 'employee-list-add') {
       this.#renderEmptyForm();
       return;
@@ -157,12 +162,13 @@ export default class GroupSettingsController extends AbstractController {
         this.#addAndSelectEmployee();
       }
     } catch (err) {
-      console.error(err);
-      return;
+      if (err instanceof FormError) return;
+      else throw err;
     }
     this.modalService.setImportant(this, false);
     this.isModifying = false;
     this.selectedItem?.classList.remove('modified');
+    this.#renderWindow();
     this.#renderEmployee(
       this.group.findEmployee(+this.selectedItem!.dataset.id!)
     );
@@ -170,6 +176,7 @@ export default class GroupSettingsController extends AbstractController {
   #cleanup() {
     this.isModifying = false;
     this.selectedEmployee = this.group.getEmployees()[0];
+    this.hoverBoxService.removeMany('form-error');
     // Redundand? Maybe
     this.groupSettingsView.clear();
     this.modalService.clear();

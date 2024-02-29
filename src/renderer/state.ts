@@ -1,7 +1,6 @@
 import Employee from './models/Employee.js';
 import Group from './models/Group.js';
 import { ShiftType } from './models/types.js';
-import CalendarService from './services/CalendarService.js';
 interface State {
   group: Group;
   year: number;

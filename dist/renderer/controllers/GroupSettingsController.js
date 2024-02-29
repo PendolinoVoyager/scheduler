@@ -4,6 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _GroupSettingsController_instances, _GroupSettingsController_init, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_handleEmployeeRemove, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_renderCalendarPreview, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems, _GroupSettingsController_handlePlanSubmit;
+import ModalService from '../services/ModalService.js';
 import { AbstractController } from './AbstractController.js';
 import { renderDialog } from '../helpers/yesNoDialog.js';
 import GroupSettingsView from '../views/groupSettingsViews/GroupSettingsView.js';
@@ -15,8 +16,10 @@ import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView
 import CalendarService from '../services/CalendarService.js';
 import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
 import { ShiftType } from '../models/types.js';
+import FormError from '../errors/FormError.js';
+import HoverBoxService from '../services/HoverBoxService.js';
 class GroupSettingsController extends AbstractController {
-    constructor(modalService) {
+    constructor() {
         super();
         _GroupSettingsController_instances.add(this);
         this.btnManageGroup = document.getElementById('btn-manage-group');
@@ -33,8 +36,9 @@ class GroupSettingsController extends AbstractController {
             renderWindow: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).bind(this),
             cleanup: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_cleanup).bind(this),
         };
-        this.modalService = modalService;
-        this.groupSettingsView = new GroupSettingsView(modalService.getWriteableElement());
+        this.modalService = ModalService;
+        this.hoverBoxService = HoverBoxService;
+        this.groupSettingsView = new GroupSettingsView(this.modalService.getWriteableElement());
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_init).call(this);
     }
 }
@@ -68,6 +72,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         this.modalService.setImportant(this, false);
         this.selectedItem?.classList.remove('modified');
     }
+    this.hoverBoxService.removeMany('form-error');
     if (target.getAttribute('id') === 'employee-list-add') {
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmptyForm).call(this);
         return;
@@ -129,16 +134,20 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         }
     }
     catch (err) {
-        console.error(err);
-        return;
+        if (err instanceof FormError)
+            return;
+        else
+            throw err;
     }
     this.modalService.setImportant(this, false);
     this.isModifying = false;
     this.selectedItem?.classList.remove('modified');
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, this.group.findEmployee(+this.selectedItem.dataset.id));
 }, _GroupSettingsController_cleanup = function _GroupSettingsController_cleanup() {
     this.isModifying = false;
     this.selectedEmployee = this.group.getEmployees()[0];
+    this.hoverBoxService.removeMany('form-error');
     // Redundand? Maybe
     this.groupSettingsView.clear();
     this.modalService.clear();

@@ -266,7 +266,7 @@ main {
   padding: 1rem;
   height: 125px;
   position: absolute;
-  z-index: 300;
+  z-index: 250;
   box-shadow: var(--shadow);
   background-color: var(--box-secondary);
 }
@@ -484,24 +484,24 @@ select {
   color: white;
   text-shadow: var(--shadow);
 }
-.calendar-preview-day.morning {
+.morning {
   background-color: var(--color-morning);
   /* color: black; */
 }
-.calendar-preview-day.afternoon {
+.afternoon {
   background-color: var(--color-afternoon);
   /* color: white; */
 }
-.calendar-preview-day.none {
+.none {
   background-color: var(--color-none);
 }
-.calendar-preview-day.vacation {
+.vacation {
   background-color: var(--color-vacation);
 }
-.calendar-preview-day.training {
+.training {
   background-color: var(--color-training);
 }
-.calendar-preview-day.custom {
+.custom {
   background-color: var(--color-custom);
 }
 

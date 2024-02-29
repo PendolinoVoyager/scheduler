@@ -25,13 +25,17 @@ export default class FormError extends Error {
         'input',
         this.boundRemoveIssueHighlight as EventListenerOrEventListenerObject
       );
-      console.log(issue.description);
-      // HoverBoxService.attach(`issue${i}`, issue.element, issue.description);
+      HoverBoxService.attach('issue', issue.element, issue.description, {
+        eventType: 'mouseenter',
+        namespace: 'form-error',
+      });
     });
   }
 
   #removeIssueHighlight(e: InputEvent) {
     if (!e.target) return;
+    HoverBoxService.remove('issue');
+
     (e.target as HTMLElement).classList.remove('error');
     e.target.removeEventListener(
       'input',
