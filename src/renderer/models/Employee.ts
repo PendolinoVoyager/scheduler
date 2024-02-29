@@ -1,4 +1,5 @@
 import { CONFIG } from '../config.js';
+import FormError, { Issue } from '../errors/FormError.js';
 import {
   EmploymentType,
   AbstractEmployee,
@@ -16,7 +17,7 @@ export default class Employee extends AbstractEmployee {
   protected shiftPreference!: ShiftType;
   protected employmentType!: EmploymentType;
   protected shiftPreferencesGrouped: MonthlyShiftTypes[] = [];
-  constructor(name: string, options: EmployeeFields = {}) {
+  constructor(name?: string, options: EmployeeFields = {}) {
     super(name);
     Object.entries(options).forEach(([key, value]) => {
       (this as any)[key] = value;
@@ -126,30 +127,54 @@ export default class Employee extends AbstractEmployee {
 
     groupedPreference.preferences[day - 1] = preference;
   }
-  updateFromFormData(data: { [k: string]: FormDataEntryValue }) {
-    const parsedOptions = {
+  updateFromFormData(form: HTMLFormElement) {
+    function getFormElement(form: HTMLFormElement, name: string) {
+      return form.querySelector(`[name="${name}"]`);
+    }
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    const parsedData = {
       id: +data.id,
-      shiftPreference: +data.preferredShift,
-      disabled: Boolean(data.disability),
+      name: data.name.toString(),
+      shiftPreference: +data.shiftPreference,
+      disabled: Boolean(data.disabled),
       position:
         data.position === 'other'
           ? data['custom-position'].toString()
           : CONFIG.POSITIONS[+data.position],
-      employmentType: data['employment-type'].toString(),
+      employmentType: data['employmentType'].toString(),
     };
-    // Would make a Validation Error but I'm not making a database
-    if (parsedOptions.id !== this.getId()) throw new Error('Invalid ID.');
-    if (!Object.values(ShiftType).includes(parsedOptions.shiftPreference))
-      throw new Error('Invalid ShiftType');
-    if (data.position === 'other' && !parsedOptions.position)
-      throw new Error('Invalid position.');
-    if (!Object.keys(EmploymentType).includes(parsedOptions.employmentType))
-      throw new Error('Invalid employment type.');
+    const issues: Issue[] = [];
+    if (!parsedData.name.match(CONFIG.EMPLOYEE_NAME_VALIDATOR))
+      issues.push({
+        element: getFormElement(form, 'name'),
+        description: CONFIG.EMPLOYEE_NAME_ERROR_DESCRIPTION,
+      });
 
-    this.shiftPreference = parsedOptions.shiftPreference;
-    this.disabled = parsedOptions.disabled;
-    this.position = parsedOptions.position;
-    this.employmentType = (EmploymentType as any)[parsedOptions.employmentType];
+    if (parsedData.id !== this.getId()) throw new Error('Invalid ID.');
+
+    if (!Object.values(ShiftType).includes(parsedData.shiftPreference))
+      issues.push({
+        element: getFormElement(form, 'shiftPreference'),
+        description: 'Invalid value.',
+      });
+    if (data.position === 'other' && !parsedData.position)
+      issues.push({
+        element: getFormElement(form, 'position'),
+        description: 'Brak stanowiska.',
+      });
+    if (!Object.keys(EmploymentType).includes(parsedData.employmentType))
+      issues.push({
+        element: getFormElement(form, 'employmentType'),
+        description: 'Invalid value.',
+      });
+    if (issues.length > 0) throw new FormError(true, ...issues);
+
+    this.name = parsedData.name;
+    this.shiftPreference = parsedData.shiftPreference;
+    this.disabled = parsedData.disabled;
+    this.position = parsedData.position;
+    this.employmentType = (EmploymentType as any)[parsedData.employmentType];
   }
   getInitials() {
     const split = this.name.split(' ');

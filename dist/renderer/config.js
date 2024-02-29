@@ -14,7 +14,8 @@ export const DEFAULT_CONFIG = {
         { TYPE: EmploymentType.FULL_TIME, HOURS: 160 },
         { TYPE: EmploymentType.PART_TIME, HOURS: 160 },
     ],
-    EMPLOYEE_NAME_VALIDATOR: /^(\w{3,}\s\w{3,})$/,
+    EMPLOYEE_NAME_VALIDATOR: /^([\p{L}\d\s]{3,}\s[\p{L}\d\s]{3,})$/u,
+    EMPLOYEE_NAME_ERROR_DESCRIPTION: 'Minimum 2 wyrazy po 3 znaki wymagane.',
     FREE_DAYS: [6, 7],
 };
 export const CONFIG = Object.assign(DEFAULT_CONFIG, {});

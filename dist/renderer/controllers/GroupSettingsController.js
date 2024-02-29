@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _GroupSettingsController_instances, _GroupSettingsController_init, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_handleEmployeeRemove, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_renderCalendarPreview, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_handleFormError, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems, _GroupSettingsController_handlePlanSubmit;
+var _GroupSettingsController_instances, _GroupSettingsController_init, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_handleEmployeeRemove, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_renderCalendarPreview, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems, _GroupSettingsController_handlePlanSubmit;
 import { AbstractController } from './AbstractController.js';
 import { renderDialog } from '../helpers/yesNoDialog.js';
 import GroupSettingsView from '../views/groupSettingsViews/GroupSettingsView.js';
@@ -11,7 +11,6 @@ import EmployeeView from '../views/groupSettingsViews/EmployeeView.js';
 import Employee from '../models/Employee.js';
 import state from '../state.js';
 import { renderEmployeeForm, addPositionDropdownHandlers, } from '../helpers/renderEmployeeForm.js';
-import { CONFIG } from '../config.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 import CalendarService from '../services/CalendarService.js';
 import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
@@ -86,7 +85,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     let res = await renderDialog(`Na pewno usunąć pracownika ${targetEmployee.getName()}?`);
     if (!res)
         return;
-    res = await renderDialog(`🟥 Na pewno usunąć pracownika ${targetEmployee.getName()}?🟥`);
+    res = await renderDialog(`🟥 Na pewno usunąć pracownika ${targetEmployee.getName()}? 🟥`);
     if (!res)
         return;
     this.group.removeEmployee(+target.dataset.id);
@@ -118,16 +117,19 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.selectedItem?.classList.add('modified');
 }, _GroupSettingsController_handleFormSubmit = function _GroupSettingsController_handleFormSubmit(e) {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(this.employeeForm));
+    const formData = new FormData(this.employeeForm);
     try {
-        if (!this.group.getEmployees().some((emp) => emp.getId() === +data.id)) {
-            __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addAndSelectEmployee).call(this, data);
+        if (!this.employeeForm)
+            throw new Error('Form tampered');
+        const targetEmployee = this.group.findEmployee(+formData.get('id'));
+        if (targetEmployee)
+            targetEmployee.updateFromFormData(this.employeeForm);
+        else {
+            __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addAndSelectEmployee).call(this);
         }
-        else
-            this.group.findEmployee(+data.id)?.updateFromFormData(data);
     }
     catch (err) {
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_handleFormError).call(this, err);
+        console.error(err);
         return;
     }
     this.modalService.setImportant(this, false);
@@ -159,12 +161,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
     const calendarData = this.selectedEmployee.getPreferencesForMonth(state.year, state.month);
-    // TODO: Check if the day is actually disabled in main calendar
-    // calendarData.preferences.forEach((p, i) => {
-    //   if (CalendarService.isFreeDayInPoland(i + 1)) {
-    //     calendarData.preferences[i] = ShiftType.None;
-    //   }
-    // });
     this.CalendarPreviewView.render(calendarData);
     const btnPrev = this.modalService
         .getWriteableElement()
@@ -182,13 +178,16 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         CalendarService.nextMonth();
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
     });
-}, _GroupSettingsController_addAndSelectEmployee = function _GroupSettingsController_addAndSelectEmployee(data) {
+}, _GroupSettingsController_addAndSelectEmployee = function _GroupSettingsController_addAndSelectEmployee() {
     try {
-        if (!data.name.toString().match(CONFIG.EMPLOYEE_NAME_VALIDATOR))
-            throw new Error('Invalid name');
-        const employee = new Employee(data.name.toString());
-        data.id = employee.getId();
-        employee.updateFromFormData(data);
+        const employee = new Employee();
+        if (!this.employeeForm)
+            throw new Error('Stop doing this, please.');
+        const idElement = this.employeeForm.querySelector('[name="id"]');
+        if (!idElement)
+            return;
+        idElement.value = employee.getId().toString();
+        employee.updateFromFormData(this.employeeForm);
         state.group.addEmployee(employee);
         this.selectedEmployee = employee;
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
@@ -198,8 +197,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     catch (err) {
         throw err;
     }
-}, _GroupSettingsController_handleFormError = function _GroupSettingsController_handleFormError(err) {
-    console.error(err);
 }, _GroupSettingsController_renderWindow = function _GroupSettingsController_renderWindow() {
     this.groupSettingsView.render(this.group.getEmployees());
     this.employeeList = document.getElementById('employee-list');
@@ -229,16 +226,16 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
             start: data.get('begin').toString(),
             end: data.get('end').toString(),
         };
+        const dayspan = daySpanFromForm(parsedData.start, parsedData.end);
         const res = await renderDialog(`Zatwierdzić ${ShiftType[parsedData.shiftType]} w okresie ${parsedData.start} - ${parsedData.end} dla ${this.selectedEmployee?.getName()}?`);
         if (!res)
             return;
-        daySpanFromForm(parsedData.start, parsedData.end).forEach((d) => {
+        dayspan.forEach((d) => {
             this.selectedEmployee?.addCustomPreference(d.year, d.month, d.day, parsedData.shiftType);
         });
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
     }
     catch (err) {
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_handleFormError).call(this, err);
         return;
     }
 };

@@ -21,12 +21,12 @@ export type EmployeeFields = {
 
 export class AbstractEmployee {
   protected id: number;
-  protected name: string;
+  protected name: string | undefined;
   protected position!: string;
   protected disabled!: boolean;
   protected shiftPreference!: ShiftType;
   protected employmentType!: EmploymentType;
-  constructor(name: string) {
+  constructor(name?: string) {
     this.id = Math.floor(Math.random() * 100000000);
     this.name = name;
     Object.entries(this.defaultOptions).forEach(([key, val]) => {

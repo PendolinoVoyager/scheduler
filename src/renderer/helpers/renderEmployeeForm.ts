@@ -12,7 +12,7 @@ export function renderEmployeeForm(employee?: Employee) {
           <div class="flex-row space-between">
 
             <label for="name">Imię i nazwisko:&nbsp;</label>
-            <input type="text" value="${
+            <input type="text" id="name-input" value="${
               employee?.getName() ?? ''
             }" name="name" placeholder="Imię i nazwisko">
 
@@ -43,9 +43,9 @@ export function renderEmployeeForm(employee?: Employee) {
           </div>
       
           <div class="flex-row space-between">
-            <label for="employment-type" >Umowa:&nbsp;</label>
+            <label for="employmentType" >Umowa:&nbsp;</label>
 
-            <select name="employment-type">
+            <select name="employmentType" id="employment-type-select">
 
             ${Object.entries(EmploymentType)
               .filter(([key, val]) => isNaN(+key))
@@ -58,8 +58,8 @@ export function renderEmployeeForm(employee?: Employee) {
             </select>
          </div>
          <div class="flex-row space-between">
-            <label for="preferredShift">Domyślna zmiana:&nbsp;</label>
-            <select name="preferredShift">
+            <label for="shiftPreference">Domyślna zmiana:&nbsp;</label>
+            <select name="shiftPreference" id="preferredShift-select">
             ${Object.entries(ShiftType)
               .filter(([key, val]) => isNaN(+key))
               .map(([enumName, value]) => {
@@ -72,8 +72,8 @@ export function renderEmployeeForm(employee?: Employee) {
           </div>
 
           <div class="flex-row space-between">
-            <label for="disability">Niepełnosprawność</label>
-            <input name="disability" type="checkbox" ${
+            <label for="disabled">Niepełnosprawność</label>
+            <input name="disabled" type="checkbox" ${
               employee?.isDisabled() ? 'checked' : ''
             }> 
          </div>

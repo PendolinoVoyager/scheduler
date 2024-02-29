@@ -503,3 +503,9 @@ select {
 #employee-manage div {
   max-width: 330px;
 }
+.error {
+  background-color: var(--color-danger);
+}
+.warning {
+  background-color: var(--color-warning);
+}

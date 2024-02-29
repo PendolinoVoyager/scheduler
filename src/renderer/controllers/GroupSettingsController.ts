@@ -10,11 +10,11 @@ import {
   renderEmployeeForm,
   addPositionDropdownHandlers,
 } from '../helpers/renderEmployeeForm.js';
-import { CONFIG } from '../config.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 import CalendarService from '../services/CalendarService.js';
 import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
 import { ShiftType } from '../models/types.js';
+
 export default class GroupSettingsController extends AbstractController {
   public modalService: ModalService;
   public btnManageGroup: HTMLElement =
@@ -98,7 +98,7 @@ export default class GroupSettingsController extends AbstractController {
     );
     if (!res) return;
     res = await renderDialog(
-      `🟥 Na pewno usunąć pracownika ${targetEmployee.getName()}?🟥`
+      `🟥 Na pewno usunąć pracownika ${targetEmployee.getName()}? 🟥`
     );
     if (!res) return;
     this.group.removeEmployee(+(target.dataset as any).id);
@@ -148,13 +148,16 @@ export default class GroupSettingsController extends AbstractController {
   }
   #handleFormSubmit(e: SubmitEvent) {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(this.employeeForm));
+    const formData = new FormData(this.employeeForm);
     try {
-      if (!this.group.getEmployees().some((emp) => emp.getId() === +data.id)) {
-        this.#addAndSelectEmployee(data);
-      } else this.group.findEmployee(+data.id)?.updateFromFormData(data);
+      if (!this.employeeForm) throw new Error('Form tampered');
+      const targetEmployee = this.group.findEmployee(+formData.get('id')!);
+      if (targetEmployee) targetEmployee.updateFromFormData(this.employeeForm);
+      else {
+        this.#addAndSelectEmployee();
+      }
     } catch (err) {
-      this.#handleFormError(err as Error);
+      console.error(err);
       return;
     }
     this.modalService.setImportant(this, false);
@@ -197,13 +200,6 @@ export default class GroupSettingsController extends AbstractController {
       state.month
     );
 
-    // TODO: Check if the day is actually disabled in main calendar
-    // calendarData.preferences.forEach((p, i) => {
-    //   if (CalendarService.isFreeDayInPoland(i + 1)) {
-    //     calendarData.preferences[i] = ShiftType.None;
-    //   }
-    // });
-
     this.CalendarPreviewView.render(calendarData);
     const btnPrev = this.modalService
       .getWriteableElement()
@@ -224,14 +220,16 @@ export default class GroupSettingsController extends AbstractController {
     });
   }
 
-  #addAndSelectEmployee(data: { [k: string]: FormDataEntryValue }) {
+  #addAndSelectEmployee() {
     try {
-      if (!data.name.toString().match(CONFIG.EMPLOYEE_NAME_VALIDATOR))
-        throw new Error('Invalid name');
-
-      const employee = new Employee(data.name.toString());
-      (data as any).id = employee.getId();
-      employee.updateFromFormData(data);
+      const employee = new Employee();
+      if (!this.employeeForm) throw new Error('Stop doing this, please.');
+      const idElement = this.employeeForm.querySelector(
+        '[name="id"]'
+      ) as HTMLInputElement;
+      if (!idElement) return;
+      idElement.value = employee.getId().toString();
+      employee.updateFromFormData(this.employeeForm);
       state.group.addEmployee(employee);
 
       this.selectedEmployee = employee;
@@ -243,9 +241,6 @@ export default class GroupSettingsController extends AbstractController {
     } catch (err) {
       throw err;
     }
-  }
-  #handleFormError(err: Error) {
-    console.error(err);
   }
 
   boundHandlers = {
@@ -293,13 +288,14 @@ export default class GroupSettingsController extends AbstractController {
         start: data.get('begin')!.toString(),
         end: data.get('end')!.toString(),
       };
+      const dayspan = daySpanFromForm(parsedData.start, parsedData.end);
       const res = await renderDialog(
         `Zatwierdzić ${ShiftType[parsedData.shiftType]} w okresie ${
           parsedData.start
         } - ${parsedData.end} dla ${this.selectedEmployee?.getName()}?`
       );
       if (!res) return;
-      daySpanFromForm(parsedData.start, parsedData.end).forEach((d) => {
+      dayspan.forEach((d) => {
         this.selectedEmployee?.addCustomPreference(
           d.year,
           d.month,
@@ -309,7 +305,6 @@ export default class GroupSettingsController extends AbstractController {
       });
       this.#renderCalendarPreview();
     } catch (err) {
-      this.#handleFormError(err as Error);
       return;
     }
   }
