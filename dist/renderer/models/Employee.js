@@ -7,7 +7,6 @@ var _Employee_instances, _Employee_createGroupedPreference, _Employee_updateGrou
 import { CONFIG } from '../config.js';
 import FormError from '../errors/FormError.js';
 import { EmploymentType, AbstractEmployee, } from './EmployeeTypes.js';
-import { ShiftType } from './types.js';
 class Employee extends AbstractEmployee {
     constructor(name, options = {}) {
         super(name);
@@ -64,7 +63,7 @@ class Employee extends AbstractEmployee {
         const parsedData = {
             id: +data.id,
             name: data.name.toString(),
-            shiftPreference: +data.shiftPreference,
+            shiftPreference: data.shiftPreference.toString(),
             disabled: Boolean(data.disabled),
             position: data.position === 'other'
                 ? data['custom-position'].toString()
@@ -79,7 +78,7 @@ class Employee extends AbstractEmployee {
             });
         if (parsedData.id !== this.getId())
             throw new Error('Invalid ID.');
-        if (!Object.values(ShiftType).includes(parsedData.shiftPreference))
+        if (!Object.keys(CONFIG.SHIFT_TYPES).includes(parsedData.shiftPreference))
             issues.push({
                 element: getFormElement(form, 'shiftPreference'),
                 description: 'Invalid value.',

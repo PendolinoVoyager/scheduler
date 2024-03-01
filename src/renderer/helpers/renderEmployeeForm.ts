@@ -1,6 +1,5 @@
 import { CONFIG } from '../config.js';
 import Employee from '../models/Employee.js';
-import { ShiftType } from '../models/types.js';
 import { EmploymentType } from '../models/EmployeeTypes.js';
 
 export function renderEmployeeForm(employee?: Employee) {
@@ -60,12 +59,11 @@ export function renderEmployeeForm(employee?: Employee) {
          <div class="flex-row space-between">
             <label for="shiftPreference">Domyślna zmiana:&nbsp;</label>
             <select name="shiftPreference" id="preferredShift-select">
-            ${Object.entries(ShiftType)
-              .filter(([key, val]) => isNaN(+key))
-              .map(([enumName, value]) => {
-                return `<option value="${value}" ${
-                  employee?.getShiftPreference() === value ? 'selected' : ''
-                }>${enumName}</option>`;
+            ${Object.entries(CONFIG.SHIFT_TYPES)
+              .map(([key, value]) => {
+                return `<option value="${key}" ${
+                  employee?.getShiftPreference() === key ? 'selected' : ''
+                }>${value.translation}</option>`;
               })
               .join('')}
             </select>

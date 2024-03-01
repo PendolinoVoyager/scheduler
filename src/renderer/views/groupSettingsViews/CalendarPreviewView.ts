@@ -1,7 +1,7 @@
 import View from '../View.js';
 import { MonthlyShiftTypes } from '../../models/EmployeeTypes.js';
 import CalendarService from '../../services/CalendarService.js';
-import { ShiftType } from '../../models/types.js';
+import { ShiftTypes } from '../../models/types.js';
 export default class CalendarPreviewView extends View {
   data!: MonthlyShiftTypes;
   calendarService = CalendarService;
@@ -32,8 +32,8 @@ export default class CalendarPreviewView extends View {
         .join('')}
        ${this.data.preferences
          .map(
-           (num, i) =>
-             `<div class="calendar-preview-day ${this.selectShiftClass(num)}">${
+           (key, i) =>
+             `<div class="calendar-preview-day ${this.selectShiftClass(key)}">${
                i + 1
              }</div>`
          )
@@ -43,27 +43,29 @@ export default class CalendarPreviewView extends View {
     `;
   }
 
-  selectShiftClass(shift: ShiftType): string {
+  selectShiftClass(shift: keyof ShiftTypes): string {
     let CSSClassName;
     switch (shift) {
-      case ShiftType.Morning:
+      case 'Morning':
         CSSClassName = 'morning';
         break;
-      case ShiftType.Afternoon:
+      case 'Afternoon':
         CSSClassName = 'afternoon';
         break;
-      case ShiftType.None:
+      case 'None':
         CSSClassName = 'none';
         break;
-      case ShiftType.Vacation:
+      case 'Vacation':
         CSSClassName = 'vacation';
         break;
-      case ShiftType.Training:
+      case 'Training':
         CSSClassName = 'training';
         break;
-      case ShiftType.Custom:
+      case 'Custom':
         CSSClassName = 'custom';
         break;
+      default:
+        CSSClassName = 'custom';
     }
     return CSSClassName;
   }

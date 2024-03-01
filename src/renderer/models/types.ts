@@ -1,18 +1,18 @@
-export enum ShiftType {
-  Morning = 1,
-  Afternoon = 2,
-  None = 3,
-  Vacation = 4,
-  Training = 5,
-  Custom = 6,
+type CustomHours = {
+  day: number;
+  startTime: number;
+  endTime: number;
+};
+
+interface ShiftInfo {
+  translation: string;
+  startTime?: number;
+  endTime?: number;
+  customHours: CustomHours[];
 }
 
-export interface Shift {
-  type: ShiftType;
-  startTime?: string;
-  endTime?: string;
-  hours?: number;
-}
+export type ShiftTypes = Record<string, ShiftInfo>;
+
 export type CalendarData = {
   month: number;
   year: number;

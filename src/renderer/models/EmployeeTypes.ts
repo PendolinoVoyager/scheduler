@@ -1,5 +1,5 @@
 import { CONFIG } from '../config.js';
-import { ShiftType } from './types.js';
+import { ShiftTypes } from './types.js';
 
 export class EmployeeFormError extends Error {
   public property;
@@ -14,7 +14,7 @@ export type EmployeeFields = {
   name?: string;
   position?: string;
   disabled?: boolean;
-  shiftPreference?: ShiftType;
+  shiftPreference?: keyof ShiftTypes;
   employmentType?: EmploymentType;
   shiftPreferencesGrouped?: MonthlyShiftTypes[];
 };
@@ -24,7 +24,7 @@ export class AbstractEmployee {
   protected name: string | undefined;
   protected position!: string;
   protected disabled!: boolean;
-  protected shiftPreference!: ShiftType;
+  protected shiftPreference!: keyof ShiftTypes;
   protected employmentType!: EmploymentType;
   constructor(name?: string) {
     this.id = Math.floor(Math.random() * 100000000);
@@ -44,9 +44,9 @@ export class AbstractEmployee {
 export type MonthlyShiftTypes = {
   year: number;
   month: number;
-  defaultPreference: number;
-  customPreferences: { day: number; preference: ShiftType }[];
-  preferences: ShiftType[];
+  defaultPreference: keyof ShiftTypes;
+  customPreferences: { day: number; preference: keyof ShiftTypes }[];
+  preferences: (keyof ShiftTypes)[];
 };
 
 export enum EmploymentType {

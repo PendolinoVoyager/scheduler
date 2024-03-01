@@ -1,7 +1,7 @@
 import Employee from '../../models/Employee.js';
 import View from '../View.js';
-import { ShiftType } from '../../models/types.js';
 import { renderEmployeeForm } from '../../helpers/renderEmployeeForm.js';
+import { CONFIG } from '../../config.js';
 export default class EmployeeView extends View {
   public data: Employee | null = null;
   constructor(parentElement: HTMLElement) {
@@ -17,10 +17,9 @@ export default class EmployeeView extends View {
             <div class="flex-row space-between">
                 <label for=plannedShift>Zaplanuj zmiany w okresie: </label>
                 <select name="plannedShift">
-                ${Object.entries(ShiftType)
-                  .filter(([key, val]) => isNaN(+key))
-                  .map(([enumName, value]) => {
-                    return `<option value="${value}">${enumName}</option>`;
+                ${Object.entries(CONFIG.SHIFT_TYPES)
+                  .map(([key, value]) => {
+                    return `<option value="${key}">${key}</option>`;
                   })
                   .join('')}
                 

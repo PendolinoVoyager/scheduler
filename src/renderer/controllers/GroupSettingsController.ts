@@ -13,9 +13,9 @@ import {
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 import CalendarService from '../services/CalendarService.js';
 import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
-import { ShiftType } from '../models/types.js';
 import FormError from '../errors/FormError.js';
 import HoverBoxService from '../services/HoverBoxService.js';
+import { CONFIG } from '../config.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: typeof ModalService;
@@ -291,15 +291,17 @@ export default class GroupSettingsController extends AbstractController {
     try {
       const data = new FormData(form);
       const parsedData = {
-        shiftType: +data.get('plannedShift')!,
+        shiftType: data.get('plannedShift')?.toString()!,
         start: data.get('begin')!.toString(),
         end: data.get('end')!.toString(),
       };
       const dayspan = daySpanFromForm(parsedData.start, parsedData.end);
       const res = await renderDialog(
-        `Zatwierdzić ${ShiftType[parsedData.shiftType]} w okresie ${
-          parsedData.start
-        } - ${parsedData.end} dla ${this.selectedEmployee?.getName()}?`
+        `Zatwierdzić ${
+          CONFIG.SHIFT_TYPES[parsedData.shiftType].translation
+        } w okresie ${parsedData.start} - ${
+          parsedData.end
+        } dla ${this.selectedEmployee?.getName()}?`
       );
       if (!res) return;
       dayspan.forEach((d) => {

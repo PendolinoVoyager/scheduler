@@ -6,7 +6,7 @@
   --color-primary: #6078ea; /* Cornflower Blue */
   --color-secondary: #ff6b6b; /* Vivid Red */
   --color-hover: #3b4b9b;
-  --color-danger: #f44336; /* Red */
+  --color-danger: #ff655b; /* Red */
   --color-warning: #ff9800; /* Orange */
   --color-good: #4caf50; /* Green */
 
@@ -20,9 +20,9 @@
   --color-morning: #cccc00;
   --color-afternoon: #006cc4;
   --color-none: #919191;
-  --color-vacation: #8be679;
-  --color-training: #a63aff;
-  --color-custom: #ffad4f;
+  --color-vacation: #79e6b3;
+  --color-training: #00c92b;
+  --color-custom: #a63aff;
 
   --radius-round: 20px;
   --radius-square: 4px;

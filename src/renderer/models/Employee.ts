@@ -6,15 +6,14 @@ import {
   EmployeeFields,
   MonthlyShiftTypes,
 } from './EmployeeTypes.js';
-
-import { ShiftType } from './types.js';
+import { ShiftTypes } from './types.js';
 
 export default class Employee extends AbstractEmployee {
   protected id!: number;
   protected name!: string;
   protected position!: string;
   protected disabled!: boolean;
-  protected shiftPreference!: ShiftType;
+  protected shiftPreference!: keyof ShiftTypes;
   protected employmentType!: EmploymentType;
   protected shiftPreferencesGrouped: MonthlyShiftTypes[] = [];
   constructor(name?: string, options: EmployeeFields = {}) {
@@ -27,7 +26,7 @@ export default class Employee extends AbstractEmployee {
     year: number,
     month: number,
     day: number,
-    shiftPreference: ShiftType
+    shiftPreference: keyof ShiftTypes
   ): void {
     const groupedPreference = this.shiftPreferencesGrouped.find(
       (p) => p.year === year && p.month === month
@@ -84,7 +83,7 @@ export default class Employee extends AbstractEmployee {
     year: number,
     month: number,
     day: number
-  ): ShiftType | undefined {
+  ): keyof ShiftTypes | undefined {
     const monthPreference = this.getPreferencesForMonth(
       year,
       month
@@ -116,7 +115,7 @@ export default class Employee extends AbstractEmployee {
   #addCustomPreferenceToGroup(
     groupedPreference: MonthlyShiftTypes,
     day: number,
-    preference: ShiftType
+    preference: keyof ShiftTypes
   ) {
     const customPreference = groupedPreference.customPreferences.find(
       (cp) => cp.day === day
@@ -129,14 +128,14 @@ export default class Employee extends AbstractEmployee {
   }
   updateFromFormData(form: HTMLFormElement) {
     function getFormElement(form: HTMLFormElement, name: string) {
-      return form.querySelector(`[name="${name}"]`);
+      return form.querySelector(`[name="${name}"]`) as HTMLElement;
     }
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     const parsedData = {
       id: +data.id,
       name: data.name.toString(),
-      shiftPreference: +data.shiftPreference,
+      shiftPreference: data.shiftPreference.toString(),
       disabled: Boolean(data.disabled),
       position:
         data.position === 'other'
@@ -153,7 +152,7 @@ export default class Employee extends AbstractEmployee {
 
     if (parsedData.id !== this.getId()) throw new Error('Invalid ID.');
 
-    if (!Object.values(ShiftType).includes(parsedData.shiftPreference))
+    if (!Object.keys(CONFIG.SHIFT_TYPES).includes(parsedData.shiftPreference))
       issues.push({
         element: getFormElement(form, 'shiftPreference'),
         description: 'Invalid value.',
@@ -208,7 +207,7 @@ export default class Employee extends AbstractEmployee {
   setPosition(newPosition: string) {
     this.position = newPosition;
   }
-  setShiftPreference(newPreference: ShiftType) {
+  setShiftPreference(newPreference: keyof ShiftTypes) {
     this.shiftPreference = newPreference;
   }
   setEmploymentType(newType: EmploymentType) {

@@ -1,7 +1,7 @@
 import HoverBoxService from '../services/HoverBoxService.js';
 
 export type Issue = {
-  element: HTMLElement | null;
+  element: HTMLElement | null | undefined;
   description: string;
 };
 

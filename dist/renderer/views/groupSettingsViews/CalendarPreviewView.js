@@ -1,6 +1,5 @@
 import View from '../View.js';
 import CalendarService from '../../services/CalendarService.js';
-import { ShiftType } from '../../models/types.js';
 export default class CalendarPreviewView extends View {
     constructor(parentElement) {
         super(parentElement);
@@ -29,7 +28,7 @@ export default class CalendarPreviewView extends View {
             .fill('<div></div>')
             .join('')}
        ${this.data.preferences
-            .map((num, i) => `<div class="calendar-preview-day ${this.selectShiftClass(num)}">${i + 1}</div>`)
+            .map((key, i) => `<div class="calendar-preview-day ${this.selectShiftClass(key)}">${i + 1}</div>`)
             .join('')}
     </div>
     </div>
@@ -38,24 +37,26 @@ export default class CalendarPreviewView extends View {
     selectShiftClass(shift) {
         let CSSClassName;
         switch (shift) {
-            case ShiftType.Morning:
+            case 'Morning':
                 CSSClassName = 'morning';
                 break;
-            case ShiftType.Afternoon:
+            case 'Afternoon':
                 CSSClassName = 'afternoon';
                 break;
-            case ShiftType.None:
+            case 'None':
                 CSSClassName = 'none';
                 break;
-            case ShiftType.Vacation:
+            case 'Vacation':
                 CSSClassName = 'vacation';
                 break;
-            case ShiftType.Training:
+            case 'Training':
                 CSSClassName = 'training';
                 break;
-            case ShiftType.Custom:
+            case 'Custom':
                 CSSClassName = 'custom';
                 break;
+            default:
+                CSSClassName = 'custom';
         }
         return CSSClassName;
     }
