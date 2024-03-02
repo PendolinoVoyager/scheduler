@@ -49,8 +49,6 @@ export default class GroupSettingsController extends AbstractController {
       this.modalService.open(this, false);
       this.modalService.setOnClose(this, this.boundHandlers.cleanup);
 
-      this.groupSettingsView.render(this.group.getEmployees());
-
       this.#renderWindow();
 
       this.#renderEmployee();
@@ -88,10 +86,8 @@ export default class GroupSettingsController extends AbstractController {
 
     const employee = this.group.findEmployee(+(target.dataset as any).id);
     if (!employee) return;
-
     this.selectedEmployee = employee;
 
-    this.#updateListItems();
     this.#renderEmployee(employee);
   }
   async #handleEmployeeRemove(target: HTMLElement) {
@@ -123,6 +119,7 @@ export default class GroupSettingsController extends AbstractController {
     (this.employeeForm as any) = document.getElementById('employee-info')!;
 
     if (!employee) return;
+    this.#updateListItems();
 
     this.#addEmployeeViewHandlers();
     this.#renderCalendarPreview();
@@ -169,8 +166,9 @@ export default class GroupSettingsController extends AbstractController {
     this.isModifying = false;
     this.selectedItem?.classList.remove('modified');
     this.#renderWindow();
+    this.#updateListItems();
     this.#renderEmployee(
-      this.group.findEmployee(+this.selectedItem!.dataset.id!)
+      this.group.findEmployee(this.selectedEmployee!.getId())
     );
   }
   #cleanup() {
@@ -240,11 +238,6 @@ export default class GroupSettingsController extends AbstractController {
       state.group.addEmployee(employee);
 
       this.selectedEmployee = employee;
-      this.#renderWindow();
-
-      this.#updateListItems();
-
-      this.#renderEmployee(employee);
     } catch (err) {
       throw err;
     }
@@ -268,6 +261,7 @@ export default class GroupSettingsController extends AbstractController {
       this.boundHandlers.handleSelectedEmployee
     );
   }
+
   #updateListItems() {
     let targetedElement;
     if (this.employeeList)
@@ -280,7 +274,6 @@ export default class GroupSettingsController extends AbstractController {
           targetedElement = el;
       });
     if (!targetedElement) return;
-
     (targetedElement as HTMLElement).classList.add('employee-selected');
     this.selectedItem = targetedElement as any;
   }

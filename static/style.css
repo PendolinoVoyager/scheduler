@@ -136,6 +136,7 @@ body {
   user-select: none;
   padding: 0.5rem;
   transition: all 0;
+  user-select: none;
 }
 
 .nav-item::after {
@@ -148,6 +149,7 @@ body {
   width: 0;
   transition: width 0.2s ease-out;
 }
+
 .nav-item:hover::after {
   width: 100%;
 }
@@ -370,6 +372,7 @@ main {
   cursor: pointer;
   background-color: var(--box-secondary);
   transition: background-color 0.2s linear;
+  -webkit-user-drag: none;
 }
 .employee-item:hover {
   background-color: var(--color-hover);

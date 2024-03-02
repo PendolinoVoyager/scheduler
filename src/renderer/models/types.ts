@@ -8,7 +8,7 @@ interface ShiftInfo {
   translation: string;
   startTime?: number;
   endTime?: number;
-  customHours: CustomHours[];
+  customHours?: CustomHours[];
 }
 
 export type ShiftTypes = Record<string, ShiftInfo>;

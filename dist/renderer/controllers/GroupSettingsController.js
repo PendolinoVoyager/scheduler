@@ -46,7 +46,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.btnManageGroup.addEventListener('click', (e) => {
         this.modalService.open(this, false);
         this.modalService.setOnClose(this, this.boundHandlers.cleanup);
-        this.groupSettingsView.render(this.group.getEmployees());
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
         __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this);
     });
@@ -81,7 +80,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     if (!employee)
         return;
     this.selectedEmployee = employee;
-    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, employee);
 }, _GroupSettingsController_handleEmployeeRemove = async function _GroupSettingsController_handleEmployeeRemove(target) {
     const targetEmployee = this.group.findEmployee(+target.dataset.id);
@@ -104,6 +102,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.employeeForm = document.getElementById('employee-info');
     if (!employee)
         return;
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addEmployeeViewHandlers).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
 }, _GroupSettingsController_addEmployeeViewHandlers = function _GroupSettingsController_addEmployeeViewHandlers() {
@@ -143,7 +142,8 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.isModifying = false;
     this.selectedItem?.classList.remove('modified');
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
-    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, this.group.findEmployee(+this.selectedItem.dataset.id));
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, this.group.findEmployee(this.selectedEmployee.getId()));
 }, _GroupSettingsController_cleanup = function _GroupSettingsController_cleanup() {
     this.isModifying = false;
     this.selectedEmployee = this.group.getEmployees()[0];
@@ -199,9 +199,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         employee.updateFromFormData(this.employeeForm);
         state.group.addEmployee(employee);
         this.selectedEmployee = employee;
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, employee);
     }
     catch (err) {
         throw err;

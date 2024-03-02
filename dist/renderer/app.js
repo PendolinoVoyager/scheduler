@@ -5,7 +5,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _App_instances, _App_addDefaultListeners;
 import './config.js';
-import './state.js';
 import DarkModeController from './controllers/DarkModeController.js';
 import ModalService from './services/ModalService.js';
 import HoverBoxService from './services/HoverBoxService.js';
@@ -18,11 +17,8 @@ class App {
         this.HoverBoxService = HoverBoxService;
         //Controllers
         this.darkModeController = new DarkModeController();
-        this.groupSettingsController = new GroupSettingsController(this.ModalService);
+        this.groupSettingsController = new GroupSettingsController();
         __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
-        HoverBoxService.attach('dupa', document.querySelector('.calendar-header'), 'DUPA', {
-            eventType: 'click',
-        });
     }
 }
 _App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefaultListeners() {

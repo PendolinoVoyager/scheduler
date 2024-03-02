@@ -35,13 +35,25 @@ export const DEFAULT_CONFIG: Config = {
       translation: 'Poranek',
       startTime: 5.5,
       endTime: 14.5,
-      customHours: [],
+      customHours: [{ day: 1, startTime: 5, endTime: 14.5 }],
     },
     Afternoon: {
       translation: 'Popołudnie',
       startTime: 14,
       endTime: 23,
       customHours: [],
+    },
+    None: {
+      translation: 'Wolne',
+    },
+    Vacation: {
+      translation: 'Urlop',
+    },
+    Training: {
+      translation: 'Szkolenie',
+    },
+    Custom: {
+      translation: 'Inne',
     },
   },
 };

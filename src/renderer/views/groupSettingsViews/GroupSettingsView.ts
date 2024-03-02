@@ -31,7 +31,7 @@ export default class GroupSettingsView extends View {
   }
   #generateEmployeeItem(employee: Employee): string {
     return `
-    <li role="button" tabindex="0" class="employee-item" data-id=${employee.getId()}>
+    <li class="employee-item" data-id=${employee.getId()}>
                 <div class="flex-row space-between">
                   <div class="flex-column">
                     <p class="employee-name">${employee.getName()}</p>
