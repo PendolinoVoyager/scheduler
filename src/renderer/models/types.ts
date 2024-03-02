@@ -12,11 +12,3 @@ interface ShiftInfo {
 }
 
 export type ShiftTypes = Record<string, ShiftInfo>;
-
-export type CalendarData = {
-  month: number;
-  year: number;
-  dateString: string;
-  startingDay: number;
-  numberOfDays: number;
-};

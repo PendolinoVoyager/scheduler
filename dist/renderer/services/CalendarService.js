@@ -40,8 +40,8 @@ class CalendarService {
     getStartingDay() {
         return new Date(`${this.year}-${this.month}-01`).getDay();
     }
-    getNumOfDays() {
-        return new Date(this.year, this.month, 0).getDate();
+    getNumOfDays(year = this.year, month = this.month) {
+        return new Date(year, month, 0).getDate();
     }
     isFreeDayInPoland(day, year = this.year, month = this.month) {
         const date = new Date(year, month - 1, day);

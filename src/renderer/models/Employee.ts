@@ -51,7 +51,6 @@ export default class Employee extends AbstractEmployee {
 
     if (groupedPreference.defaultPreference !== this.shiftPreference)
       this.#updateGroupedPreference(groupedPreference);
-
     return groupedPreference;
   }
 
@@ -83,7 +82,7 @@ export default class Employee extends AbstractEmployee {
     year: number,
     month: number,
     day: number
-  ): keyof ShiftTypes | undefined {
+  ): keyof ShiftTypes {
     const monthPreference = this.getPreferencesForMonth(
       year,
       month

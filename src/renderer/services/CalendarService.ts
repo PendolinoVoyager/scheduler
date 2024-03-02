@@ -1,4 +1,3 @@
-import { CalendarData } from '../models/types.js';
 import state from '../state.js';
 
 class CalendarService {
@@ -19,7 +18,7 @@ class CalendarService {
     state.month = this.month;
     state.year = this.year;
   }
-  getCalendarData(): CalendarData {
+  getCalendarData() {
     return {
       month: this.month,
       year: this.year,
@@ -38,8 +37,8 @@ class CalendarService {
   getStartingDay(): number {
     return new Date(`${this.year}-${this.month}-01`).getDay();
   }
-  getNumOfDays(): number {
-    return new Date(this.year, this.month, 0).getDate();
+  getNumOfDays(year: number = this.year, month: number = this.month): number {
+    return new Date(year, month, 0).getDate();
   }
   #generateWeekDays() {
     const weekday = new Intl.DateTimeFormat('en', { weekday: 'short' });
