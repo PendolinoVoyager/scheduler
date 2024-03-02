@@ -1,3 +1,4 @@
+// @ts-ignore
 const { IPCController } = require('./IPCController');
 module.exports = class FileSystemController extends IPCController {
   constructor(ipcMain: any) {

@@ -4,7 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _FormError_instances, _FormError_addListeners, _FormError_removeIssueHighlight;
-import HoverBoxService from '../services/HoverBoxService.js';
+import HoverBoxService from '../services/HoverBox.js';
 class FormError extends Error {
     constructor(displayError = true, ...issues) {
         super();

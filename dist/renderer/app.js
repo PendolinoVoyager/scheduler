@@ -7,7 +7,7 @@ var _App_instances, _App_addDefaultListeners;
 import './config.js';
 import DarkModeController from './controllers/DarkModeController.js';
 import ModalService from './services/ModalService.js';
-import HoverBoxService from './services/HoverBoxService.js';
+import HoverBoxService from './services/HoverBox.js';
 import GroupSettingsController from './controllers/GroupSettingsController.js';
 import { Schedule } from './models/Schedule.js';
 import state from './state.js';

@@ -14,7 +14,7 @@ import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView
 import CalendarService from '../services/CalendarService.js';
 import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
 import FormError from '../errors/FormError.js';
-import HoverBoxService from '../services/HoverBoxService.js';
+import HoverBoxService from '../services/HoverBox.js';
 import { CONFIG } from '../config.js';
 
 export default class GroupSettingsController extends AbstractController {

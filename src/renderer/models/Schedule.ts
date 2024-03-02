@@ -15,21 +15,23 @@ export class Schedule extends AbstractSchedule {
     if (cellData) this.fillFromCellData(cellData);
     else {
       this.group.getEmployees().forEach((emp) => {
-        this.fillRowfromPreference(emp);
+        this.fillRowfromPreference(emp.getId());
       });
     }
     console.log(this.cells);
   }
-  fillRowfromPreference(employee: Employee): void {
+  fillRowfromPreference(id: Employee['id']): void {
     for (let i = 0; i < this.length; i++)
-      this.fillCellFromPreference(employee, i + 1);
+      this.fillCellFromPreference(id, i + 1);
   }
   fillFromCellData(cellData: CellData[][]): void {
     this.cells = cellData;
   }
-  fillCellFromPreference(employee: Employee, day: number): void {
+  fillCellFromPreference(id: Employee['id'], day: number): void {
+    const employee = this.group.findEmployee(id);
+    if (!employee) throw new Error('Employee not found');
     const preference = employee.getPreferenceForDay(this.year, this.month, day);
-    this.fillFromShiftType(employee, day, preference);
+    this.fillFromShiftType(id, day, preference);
   }
   get length() {
     return CalendarService.getNumOfDays();
@@ -38,12 +40,12 @@ export class Schedule extends AbstractSchedule {
     return CalendarService.getStartingDay();
   }
   fillFromShiftType(
-    employee: Employee,
+    id: Employee['id'],
     day: number,
     shiftType: keyof ShiftTypes
   ) {
-    if (!this.validateColRow(employee, day)) throw new Error('Out of range');
-    const employeeIndex = this.group.findEmployeeIndex(employee.getId())!;
+    if (!this.validateColRow(id, day)) throw new Error('Out of range');
+    const employeeIndex = this.group.findEmployeeIndex(id)!;
 
     const dayOfWeek = new Date(this.year, this.month - 1, day).getDay();
     const customHours = CONFIG.SHIFT_TYPES[shiftType].customHours!.find(
@@ -54,21 +56,21 @@ export class Schedule extends AbstractSchedule {
       startTime:
         customHours?.startTime ?? CONFIG.SHIFT_TYPES[shiftType].startTime,
       endTime: customHours?.endTime ?? CONFIG.SHIFT_TYPES[shiftType].endTime,
-      employee,
+      id,
     };
     this.cells[employeeIndex!][day - 1] = cellData;
   }
-  updateCell(employee: Employee, day: number, data: CellData): void {
-    if (!this.validateColRow(employee, day)) throw new Error('Out of range');
-    const employeeIndex = this.group.findEmployeeIndex(employee.getId())!;
+  updateCell(id: Employee['id'], day: number, data: CellData): void {
+    if (!this.validateColRow(id, day)) throw new Error('Out of range');
+    const employeeIndex = this.group.findEmployeeIndex(id)!;
     this.cells[employeeIndex][day - 1] = data;
   }
-  getCellData(employee: Employee, day: number): CellData {
-    this.validateColRow(employee, day);
-    return this.cells[this.group.findEmployeeIndex(employee.getId())!][day - 1];
+  getCellData(id: Employee['id'], day: number): CellData {
+    this.validateColRow(id, day);
+    return this.cells[this.group.findEmployeeIndex(id)!][day - 1];
   }
-  validateColRow(employee: Employee, day: number): boolean {
-    const employeeIndex = this.group.findEmployeeIndex(employee.getId());
+  validateColRow(id: Employee['id'], day: number): boolean {
+    const employeeIndex = this.group.findEmployeeIndex(id);
     if (employeeIndex === undefined || day > this.length) return false;
     return true;
   }

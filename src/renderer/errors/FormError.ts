@@ -1,4 +1,4 @@
-import HoverBoxService from '../services/HoverBoxService.js';
+import HoverBoxService from '../services/HoverBox.js';
 
 export type Issue = {
   element: HTMLElement | null | undefined;

@@ -11,6 +11,7 @@ type Config = {
   EMPLOYEE_NAME_ERROR_DESCRIPTION: string;
   FREE_DAYS: number[];
   SHIFT_TYPES: ShiftTypes;
+  CUTOFF_DATE: { year: number; month: number };
 };
 export const DEFAULT_CONFIG: Config = {
   DEFAULT_SHIFT: 'Morning',
@@ -55,5 +56,6 @@ export const DEFAULT_CONFIG: Config = {
       translation: 'Inne',
     },
   },
+  CUTOFF_DATE: { year: 2024, month: 1 },
 };
 export const CONFIG = Object.assign(DEFAULT_CONFIG, {});

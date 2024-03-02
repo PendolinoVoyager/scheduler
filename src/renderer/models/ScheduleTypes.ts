@@ -4,7 +4,7 @@ import { ShiftTypes } from './types.js';
 
 export type CellData = {
   shiftType: keyof ShiftTypes;
-  employee: Employee;
+  id: Employee['id'];
   startTime?: number;
   endTime?: number;
 };
@@ -31,17 +31,17 @@ export abstract class AbstractSchedule {
   }
   abstract get length(): number;
   abstract get startingDay(): number;
-  abstract fillRowfromPreference(employee: Employee): void;
+  abstract fillRowfromPreference(id: Employee['id']): void;
   abstract fillFromCellData(cellData: CellData[][]): void;
-  abstract fillCellFromPreference(employee: Employee, day: number): void;
+  abstract fillCellFromPreference(id: Employee['id'], day: number): void;
   abstract fillFromShiftType(
-    employee: Employee,
+    id: Employee['id'],
     day: number,
     shiftType: keyof ShiftTypes
   ): void;
-  abstract updateCell(employee: Employee, day: number, data: CellData): void;
-  abstract getCellData(employee: Employee, day: number): CellData;
-  abstract validateColRow(employee: Employee, day: number): boolean;
+  abstract updateCell(id: Employee['id'], day: number, data: CellData): void;
+  abstract getCellData(id: Employee['id'], day: number): CellData;
+  abstract validateColRow(id: Employee['id'], day: number): boolean;
   abstract exportJSON(): string;
   abstract exportCSV(): string;
   abstract importJSON(): void;

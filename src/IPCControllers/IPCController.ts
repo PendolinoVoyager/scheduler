@@ -1,4 +1,5 @@
-module.exports.IPCController = class IPCController {
+// @ts-ignore
+class IPCController {
   protected ipcMain: any;
   constructor(ipcMain: any) {
     this.ipcMain = ipcMain;
@@ -8,4 +9,5 @@ module.exports.IPCController = class IPCController {
   addHandlers(): void {
     throw new Error(`Method addHandlers isn't implemented.`);
   }
-};
+}
+module.exports = { IPCController };

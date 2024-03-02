@@ -42,5 +42,6 @@ export const DEFAULT_CONFIG = {
             translation: 'Inne',
         },
     },
+    CUTOFF_DATE: { year: 2024, month: 1 },
 };
 export const CONFIG = Object.assign(DEFAULT_CONFIG, {});

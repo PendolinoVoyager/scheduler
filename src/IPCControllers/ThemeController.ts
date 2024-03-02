@@ -1,5 +1,7 @@
 const { nativeTheme } = require('electron');
+// @ts-ignore
 const { IPCController } = require('./IPCController');
+
 module.exports = class ThemeController extends IPCController {
   constructor(ipcMain: any) {
     super(ipcMain);
