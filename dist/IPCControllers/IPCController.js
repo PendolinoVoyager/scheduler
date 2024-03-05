@@ -1,5 +1,6 @@
 "use strict";
-module.exports.IPCController = class IPCController {
+// @ts-ignore
+class IPCController {
     constructor(ipcMain) {
         this.ipcMain = ipcMain;
         this.addHandlers();
@@ -7,4 +8,5 @@ module.exports.IPCController = class IPCController {
     addHandlers() {
         throw new Error(`Method addHandlers isn't implemented.`);
     }
-};
+}
+module.exports = { IPCController };

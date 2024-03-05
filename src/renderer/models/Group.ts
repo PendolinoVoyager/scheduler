@@ -12,7 +12,7 @@ export default class Group {
   }
   removeEmployee(id: number) {
     const index = this.findEmployeeIndex(id);
-    if (index === undefined) return;
+    if (index == null) return;
     this.employees.splice(index, 1);
   }
   sort(order: 'ascending' | 'descending' = 'ascending') {
@@ -30,7 +30,7 @@ export default class Group {
   moveEmployee(employee: Employee, index: number) {
     const targetIndex = Math.max(Math.min(this.employees.length, index), 0);
     const employeeIndex = this.findEmployeeIndex(employee.getId());
-    if (employeeIndex === undefined) return;
+    if (employeeIndex == null) return;
     const newArray = this.employees.filter((emp) => emp !== employee);
     const adjustedTargetIndex =
       targetIndex > employeeIndex ? targetIndex - 1 : targetIndex;

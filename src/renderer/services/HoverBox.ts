@@ -14,9 +14,7 @@ class CHoverBoxService {
   offsetFromBorder: number = 15;
   private hoverBox: HTMLDivElement | null = null;
   private subscribers: Subscriber[] = [];
-  constructor() {
-    setInterval(this.#cleanupOprhans.bind(this), 10000);
-  }
+  constructor() {}
   attach(
     alias: string,
     element: HTMLElement,

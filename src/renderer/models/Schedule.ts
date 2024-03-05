@@ -18,7 +18,6 @@ export class Schedule extends AbstractSchedule {
         this.fillRowfromPreference(emp.getId());
       });
     }
-    console.log(this.cells);
   }
   fillRowfromPreference(id: Employee['id']): void {
     for (let i = 0; i < this.length; i++)
@@ -53,6 +52,7 @@ export class Schedule extends AbstractSchedule {
     );
     const cellData: CellData = {
       shiftType,
+      day,
       startTime:
         customHours?.startTime ?? CONFIG.SHIFT_TYPES[shiftType].startTime,
       endTime: customHours?.endTime ?? CONFIG.SHIFT_TYPES[shiftType].endTime,
@@ -71,8 +71,20 @@ export class Schedule extends AbstractSchedule {
   }
   validateColRow(id: Employee['id'], day: number): boolean {
     const employeeIndex = this.group.findEmployeeIndex(id);
-    if (employeeIndex === undefined || day > this.length) return false;
+    if (employeeIndex == null || day > this.length) return false;
     return true;
+  }
+  disableDay(day: number): void {
+    if (day > this.length || day <= 0)
+      throw new Error(`Out of range: day ${day}.`);
+    this.disabledDays.add(day);
+  }
+  enableDay(day: number): void {
+    this.disabledDays.delete(day);
+    //Update existing cells
+  }
+  getDisabledDays() {
+    return [...this.disabledDays];
   }
   exportJSON(): string {
     throw new Error('Method not implemented.');

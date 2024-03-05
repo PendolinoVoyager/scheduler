@@ -10,7 +10,6 @@ class CHoverBoxService {
         this.offsetFromBorder = 15;
         this.hoverBox = null;
         this.subscribers = [];
-        setInterval(__classPrivateFieldGet(this, _CHoverBoxService_instances, "m", _CHoverBoxService_cleanupOprhans).bind(this), 10000);
     }
     attach(alias, element, content, options) {
         const subscriber = {

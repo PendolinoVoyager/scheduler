@@ -4,7 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Employee_instances, _Employee_createGroupedPreference, _Employee_updateGroupedPreference, _Employee_addCustomPreferenceToGroup;
-import { CONFIG } from '../config.js';
+import { CONFIG } from '../config';
 import FormError from '../errors/FormError.js';
 import { EmploymentType, AbstractEmployee, } from './EmployeeTypes.js';
 class Employee extends AbstractEmployee {

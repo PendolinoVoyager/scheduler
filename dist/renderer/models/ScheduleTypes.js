@@ -7,6 +7,7 @@ export class AbstractSchedule {
         this.group = group;
         this.year = year;
         this.month = month;
+        this.disabledDays = new Set();
         this.initCellArray();
     }
     initCellArray() {
