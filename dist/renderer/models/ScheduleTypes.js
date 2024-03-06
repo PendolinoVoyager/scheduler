@@ -1,6 +1,5 @@
 /**
  * Zero-indexed! Schedule is independent of column and row headers.
- *
  */
 export class AbstractSchedule {
     constructor(group, year, month) {
@@ -11,6 +10,10 @@ export class AbstractSchedule {
         this.initCellArray();
     }
     initCellArray() {
-        this.cells = new Array(this.group.getEmployees().length).fill(new Array(this.length));
+        const numEmployees = this.group.getEmployees().length;
+        this.cells = new Array(numEmployees);
+        for (let i = 0; i < numEmployees; i++) {
+            this.cells[i] = new Array(this.length);
+        }
     }
 }

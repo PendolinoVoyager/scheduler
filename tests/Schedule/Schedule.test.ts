@@ -124,6 +124,7 @@ describe('Schedule', () => {
       const emp1 = group.getEmployees()[0];
       const emp2 = group.getEmployees()[1];
       const sut = new Schedule(group, 2024, 2);
+      sut.disableDay(1);
       const expected: ScheduleJSON = {
         archived: false,
         groupId: group.id,
@@ -142,7 +143,7 @@ describe('Schedule', () => {
         year: 2024,
         month: 2,
         length: 29,
-        disabledDays: [],
+        disabledDays: [1],
         data: sut.cells,
       };
       const actual = sut.exportJSON();

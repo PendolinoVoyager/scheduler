@@ -16,5 +16,6 @@ const state = {
     group: testGroup,
     year: 0,
     month: 0,
+    workingSchedule: null,
 };
 export default state;
