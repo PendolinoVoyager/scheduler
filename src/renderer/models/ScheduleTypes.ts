@@ -9,6 +9,9 @@ export type CellData = {
   startTime?: number;
   endTime?: number;
 };
+export type ExcludeId<T> = {
+  [K in keyof T as Exclude<K, 'id'>]: T[K];
+};
 
 /**
  * Zero-indexed! Schedule is independent of column and row headers.
@@ -37,30 +40,31 @@ export abstract class AbstractSchedule {
   abstract get length(): number;
   abstract get startingDay(): number;
   abstract fillRowfromPreference(id: Employee['id']): void;
-  abstract fillFromCellData(cellData: CellData[][]): void;
   abstract fillCellFromPreference(id: Employee['id'], day: number): void;
   abstract fillFromShiftType(
     id: Employee['id'],
     day: number,
     shiftType: keyof ShiftTypes
   ): void;
-  abstract updateCell(id: Employee['id'], day: number, data: CellData): void;
+  abstract updateCell(
+    id: Employee['id'],
+    day: number,
+    data: Partial<ExcludeId<CellData>>
+  ): void;
   abstract getCellData(id: Employee['id'], day: number): CellData;
-  abstract validateColRow(id: Employee['id'], day: number): boolean;
+  abstract validateColRow(id: Employee['id'], day: number): void | never;
   abstract disableDay(day: number): void;
   abstract enableDay(day: number): void;
-  abstract exportJSON(): string;
+  abstract exportJSON(): ScheduleJSON;
   abstract exportCSV(): string;
-  abstract importJSON(): void;
 }
 
 export type ScheduleJSON = {
   archived: boolean;
   groupId: number;
-  employees: {
-    id: Employee['id'] | null;
-    data?: { name: string; position: string };
-  }[];
+  employees: { id?: Employee['id']; name: string; position: string }[];
+  year: number;
+  month: number;
   length: number;
   disabledDays: number[];
   data: CellData[][];

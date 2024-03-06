@@ -1,11 +1,13 @@
 import { CONFIG } from './config.js';
 import Employee from './models/Employee.js';
 import Group from './models/Group.js';
+import { Schedule } from './models/Schedule.js';
 
 interface State {
   group: Group;
   year: number;
   month: number;
+  workingSchedule: Schedule | null;
 }
 
 const testGroup = new Group();
@@ -27,6 +29,7 @@ const state: State = {
   group: testGroup,
   year: 0,
   month: 0,
+  workingSchedule: null,
 };
 
 export default state;

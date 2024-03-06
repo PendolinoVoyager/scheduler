@@ -44,7 +44,7 @@ export default class Group {
   findEmployee(id: number): Employee | undefined {
     return this.employees.find((emp) => emp.getId() === id);
   }
-  findEmployeeIndex(id: number): number | undefined {
+  findEmployeeIndex(id: number): number {
     return this.employees.findIndex((emp) => emp.getId() === id);
   }
   setEmployeeIndex(id: number, index: number) {

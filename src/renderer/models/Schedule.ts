@@ -2,21 +2,19 @@ import { CONFIG } from '../config.js';
 import CalendarService from '../services/CalendarService.js';
 import Employee from './Employee.js';
 import Group from './Group.js';
-import { AbstractSchedule, CellData } from './ScheduleTypes.js';
+import {
+  AbstractSchedule,
+  CellData,
+  ExcludeId,
+  ScheduleJSON,
+} from './ScheduleTypes.js';
 import { ShiftTypes } from './types.js';
 export class Schedule extends AbstractSchedule {
-  constructor(
-    group: Group,
-    year: number,
-    month: number,
-    cellData?: CellData[][]
-  ) {
+  constructor(group: Group, year: number, month: number) {
     super(group, year, month);
 
     if (this.month > 12 || this.month < 1)
       throw new Error('Invalid month: ' + month);
-
-    if (cellData) this.fillFromCellData(cellData);
     else {
       this.group.getEmployees().forEach((emp, i) => {
         this.fillRowfromPreference(emp.getId());
@@ -26,9 +24,6 @@ export class Schedule extends AbstractSchedule {
   fillRowfromPreference(id: Employee['id']): void {
     for (let i = 0; i < this.length; i++)
       this.fillCellFromPreference(id, i + 1);
-  }
-  fillFromCellData(cellData: CellData[][]): void {
-    this.cells = cellData;
   }
   fillCellFromPreference(id: Employee['id'], day: number): void {
     const employee = this.group.findEmployee(id);
@@ -47,7 +42,7 @@ export class Schedule extends AbstractSchedule {
     day: number,
     shiftType: keyof ShiftTypes
   ) {
-    if (!this.validateColRow(id, day)) throw new Error('Out of range');
+    this.validateColRow(id, day);
     const employeeIndex = this.group.findEmployeeIndex(id)!;
 
     const dayOfWeek = new Date(this.year, this.month - 1, day).getDay();
@@ -64,19 +59,29 @@ export class Schedule extends AbstractSchedule {
     };
     this.cells[employeeIndex][day - 1] = cellData;
   }
-  updateCell(id: Employee['id'], day: number, data: CellData): void {
-    if (!this.validateColRow(id, day)) throw new Error('Out of range');
+  updateCell(
+    id: Employee['id'],
+    day: number,
+    data: Partial<ExcludeId<CellData>>
+  ): void {
+    this.validateColRow(id, day);
     const employeeIndex = this.group.findEmployeeIndex(id)!;
-    this.cells[employeeIndex][day - 1] = data;
+    const currentCell = this.cells[employeeIndex][day - 1];
+    if (Object.keys(data).includes('id'))
+      throw new Error("Can't change to id " + id);
+    this.cells[employeeIndex][day - 1] = { ...currentCell, ...data };
   }
   getCellData(id: Employee['id'], day: number): CellData {
     this.validateColRow(id, day);
     return this.cells[this.group.findEmployeeIndex(id)!][day - 1];
   }
-  validateColRow(id: Employee['id'], day: number): boolean {
+  validateColRow(id: Employee['id'], day: number): void | never {
     const employeeIndex = this.group.findEmployeeIndex(id);
-    if (employeeIndex == null || day > this.length) return false;
-    return true;
+
+    if (employeeIndex === -1 || day > this.length || day < 1)
+      throw new Error(
+        `Invalid column or row: row(${employeeIndex}, day ${day})`
+      );
   }
   disableDay(day: number): void {
     if (day > this.length || day <= 0)
@@ -85,18 +90,29 @@ export class Schedule extends AbstractSchedule {
   }
   enableDay(day: number): void {
     this.disabledDays.delete(day);
-    //Update existing cells
   }
   getDisabledDays() {
     return [...this.disabledDays];
   }
-  exportJSON(): string {
-    throw new Error('Method not implemented.');
+  exportJSON(): ScheduleJSON {
+    return {
+      archived: false,
+      groupId: this.group.id,
+      employees: this.group.getEmployees().map((emp) => {
+        return {
+          id: emp.getId(),
+          name: emp.getName(),
+          position: emp.getPosition(),
+        };
+      }),
+      year: this.year,
+      month: this.month,
+      length: this.length,
+      disabledDays: this.getDisabledDays(),
+      data: this.cells,
+    };
   }
   exportCSV(): string {
-    throw new Error('Method not implemented.');
-  }
-  importJSON(): void {
     throw new Error('Method not implemented.');
   }
 }
