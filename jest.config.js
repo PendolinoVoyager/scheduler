@@ -3,7 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: {
-    // Map imports of .js files to corresponding TypeScript files
+    // Map imports of .js files to corresponding TypeScript files. Thanks electron :)
     '^(.*)\\.js$': '$1',
   },
 };

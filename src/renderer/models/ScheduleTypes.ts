@@ -12,7 +12,6 @@ export type CellData = {
 
 /**
  * Zero-indexed! Schedule is independent of column and row headers.
- *
  */
 export abstract class AbstractSchedule {
   public group: Group;
@@ -24,13 +23,16 @@ export abstract class AbstractSchedule {
     this.group = group;
     this.year = year;
     this.month = month;
+
     this.disabledDays = new Set<number>();
     this.initCellArray();
   }
   initCellArray() {
-    this.cells = new Array<CellData[]>(this.group.getEmployees().length).fill(
-      new Array<CellData>(this.length)
-    );
+    const numEmployees = this.group.getEmployees().length;
+    this.cells = new Array<CellData[]>(numEmployees);
+    for (let i = 0; i < numEmployees; i++) {
+      this.cells[i] = new Array<CellData>(this.length);
+    }
   }
   abstract get length(): number;
   abstract get startingDay(): number;

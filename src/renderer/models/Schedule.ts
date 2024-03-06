@@ -12,9 +12,13 @@ export class Schedule extends AbstractSchedule {
     cellData?: CellData[][]
   ) {
     super(group, year, month);
+
+    if (this.month > 12 || this.month < 1)
+      throw new Error('Invalid month: ' + month);
+
     if (cellData) this.fillFromCellData(cellData);
     else {
-      this.group.getEmployees().forEach((emp) => {
+      this.group.getEmployees().forEach((emp, i) => {
         this.fillRowfromPreference(emp.getId());
       });
     }
@@ -33,10 +37,10 @@ export class Schedule extends AbstractSchedule {
     this.fillFromShiftType(id, day, preference);
   }
   get length() {
-    return CalendarService.getNumOfDays();
+    return CalendarService.getNumOfDays(this.year, this.month);
   }
   get startingDay() {
-    return CalendarService.getStartingDay();
+    return CalendarService.getStartingDay(this.year, this.month);
   }
   fillFromShiftType(
     id: Employee['id'],
@@ -47,7 +51,7 @@ export class Schedule extends AbstractSchedule {
     const employeeIndex = this.group.findEmployeeIndex(id)!;
 
     const dayOfWeek = new Date(this.year, this.month - 1, day).getDay();
-    const customHours = CONFIG.SHIFT_TYPES[shiftType].customHours!.find(
+    const customHours = CONFIG.SHIFT_TYPES[shiftType]?.customHours?.find(
       (ch) => ch.day === dayOfWeek
     );
     const cellData: CellData = {
@@ -58,7 +62,7 @@ export class Schedule extends AbstractSchedule {
       endTime: customHours?.endTime ?? CONFIG.SHIFT_TYPES[shiftType].endTime,
       id,
     };
-    this.cells[employeeIndex!][day - 1] = cellData;
+    this.cells[employeeIndex][day - 1] = cellData;
   }
   updateCell(id: Employee['id'], day: number, data: CellData): void {
     if (!this.validateColRow(id, day)) throw new Error('Out of range');

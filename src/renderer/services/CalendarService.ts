@@ -34,8 +34,8 @@ class CalendarService {
       year: 'numeric',
     }).format(timestamp);
   }
-  getStartingDay(): number {
-    return new Date(`${this.year}-${this.month}-01`).getDay();
+  getStartingDay(year: number = this.year, month: number = this.year): number {
+    return new Date(`${year}-${month}-01`).getDay();
   }
   getNumOfDays(year: number = this.year, month: number = this.month): number {
     return new Date(year, month, 0).getDate();
