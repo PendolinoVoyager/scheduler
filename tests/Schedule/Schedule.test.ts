@@ -3,6 +3,11 @@ import Employee from '../../src/renderer/models/Employee';
 import Group from '../../src/renderer/models/Group';
 import { Schedule } from '../../src/renderer/models/Schedule';
 import { ScheduleJSON } from '../../src/renderer/models/ScheduleTypes';
+import {
+  createGroup,
+  createSchedule,
+  arrangeTestSchedule,
+} from '../testHelpers';
 
 describe('Schedule', () => {
   describe('cells', () => {
@@ -41,7 +46,7 @@ describe('Schedule', () => {
           .getPreferenceForDay(sut.year, sut.month, 2)
       ).toBe(newShift);
       expect(
-        sut.getCellData(sut.getGroup().getEmployees()[0].getId(), 2).shiftType
+        sut.getCell(sut.getGroup().getEmployees()[0].getId(), 2).shiftType
       ).toBe(newShift);
     });
   });
@@ -79,7 +84,7 @@ describe('Schedule', () => {
 
       sut.updateCell(employee.getId(), 2, { shiftType: newShift });
 
-      expect(sut.getCellData(employee.getId(), 2).shiftType).toBe(newShift);
+      expect(sut.getCell(employee.getId(), 2).shiftType).toBe(newShift);
     });
     test('updates startTime and endTime', () => {
       const sut = arrangeTestSchedule();
@@ -90,8 +95,8 @@ describe('Schedule', () => {
         endTime: 22,
       });
 
-      expect(sut.getCellData(employee.getId(), 3).startTime).toBe(16);
-      expect(sut.getCellData(employee.getId(), 3).endTime).toBe(22);
+      expect(sut.getCell(employee.getId(), 3).startTime).toBe(16);
+      expect(sut.getCell(employee.getId(), 3).endTime).toBe(22);
     });
     test('throws on id update attempt', () => {
       const sut = arrangeTestSchedule();
@@ -162,21 +167,3 @@ describe('Schedule', () => {
     });
   });
 });
-
-function createGroup(numEmployees: number) {
-  const group = new Group();
-  for (let i = 0; i < numEmployees; i++) {
-    group.addEmployee(createEmployee());
-  }
-  return group;
-}
-function createEmployee() {
-  return new Employee('Random Random' + Math.floor(Math.random() * 1000));
-}
-function createSchedule(group: Group, year: number, month: number) {
-  return new Schedule(group, year, month);
-}
-function arrangeTestSchedule(year: number = 2024, month: number = 2) {
-  const group = createGroup(10);
-  return new Schedule(group, year, month);
-}

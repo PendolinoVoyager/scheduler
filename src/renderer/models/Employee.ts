@@ -178,9 +178,7 @@ export default class Employee extends AbstractEmployee {
     const split = this.name.split(' ');
     return split[0] + split[1][0];
   }
-  getId() {
-    return this.id;
-  }
+
   getName() {
     return this.name;
   }
@@ -200,7 +198,8 @@ export default class Employee extends AbstractEmployee {
     this.disabled = disabled;
   }
   setName(newName: string) {
-    if (newName.length < 2) throw new Error('Name too short');
+    if (!CONFIG.EMPLOYEE_NAME_VALIDATOR.test(newName))
+      throw new Error(CONFIG.EMPLOYEE_NAME_ERROR_DESCRIPTION);
     this.name = newName;
   }
   setPosition(newPosition: string) {

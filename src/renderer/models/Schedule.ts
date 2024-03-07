@@ -69,7 +69,7 @@ export class Schedule extends AbstractSchedule {
       throw new Error("Can't change to id " + id);
     this.cells[employeeIndex][day - 1] = { ...currentCell, ...data };
   }
-  getCellData(id: Employee['id'], day: number): CellData {
+  getCell(id: Employee['id'], day: number): CellData {
     this.validateColRow(id, day);
     return this.cells[this.group.findEmployeeIndex(id)!][day - 1];
   }

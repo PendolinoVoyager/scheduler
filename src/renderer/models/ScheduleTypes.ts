@@ -52,7 +52,7 @@ export abstract class AbstractSchedule extends Entity {
     day: number,
     data: Partial<ExcludeId<CellData>>
   ): void;
-  abstract getCellData(id: Employee['id'], day: number): CellData;
+  abstract getCell(id: Employee['id'], day: number): CellData;
   abstract validateColRow(id: Employee['id'], day: number): void | never;
   abstract disableDay(day: number): void;
   abstract enableDay(day: number): void;
