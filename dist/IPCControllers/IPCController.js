@@ -5,8 +5,6 @@ class IPCController {
         this.ipcMain = ipcMain;
         this.addHandlers();
     }
-    addHandlers() {
-        throw new Error(`Method addHandlers isn't implemented.`);
-    }
+    addHandlers() { }
 }
 module.exports = { IPCController };

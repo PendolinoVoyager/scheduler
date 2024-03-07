@@ -12,8 +12,8 @@ describe('Schedule', () => {
       const month = 2;
       const sut = createSchedule(group, year, month);
 
-      expect(sut.cells.length).toBe(10);
-      sut.cells.forEach((cellArray) => {
+      expect(sut.getCells().length).toBe(10);
+      sut.getCells().forEach((cellArray) => {
         expect(cellArray.length).toBe(29);
       });
     });
@@ -29,15 +29,19 @@ describe('Schedule', () => {
       const newShift = Object.keys(CONFIG.SHIFT_TYPES)[0];
       const sut = arrangeTestSchedule();
 
-      sut.group
+      sut
+        .getGroup()
         .getEmployees()[0]
         .addCustomPreference(sut.year, sut.month, 2, newShift);
 
       expect(
-        sut.group.getEmployees()[0].getPreferenceForDay(sut.year, sut.month, 2)
+        sut
+          .getGroup()
+          .getEmployees()[0]
+          .getPreferenceForDay(sut.year, sut.month, 2)
       ).toBe(newShift);
       expect(
-        sut.getCellData(sut.group.getEmployees()[0].getId(), 2).shiftType
+        sut.getCellData(sut.getGroup().getEmployees()[0].getId(), 2).shiftType
       ).toBe(newShift);
     });
   });
@@ -49,7 +53,7 @@ describe('Schedule', () => {
     });
     test('invalid day throws', () => {
       const sut = arrangeTestSchedule();
-      const id = sut.group.getEmployees()[0].getId();
+      const id = sut.getGroup().getEmployees()[0].getId();
       const actual1 = sut.validateColRow.bind(sut, id, 0);
       const actual2 = sut.validateColRow.bind(sut, id, 32);
       expect(actual1).toThrow();
@@ -62,7 +66,7 @@ describe('Schedule', () => {
     });
     test("valid day and employeeId don't throw", () => {
       const sut = arrangeTestSchedule();
-      const id = sut.group.getEmployees()[0].getId();
+      const id = sut.getGroup().getEmployees()[0].getId();
       const actual = sut.validateColRow.bind(sut, id, 10);
       expect(actual()).toBeUndefined();
     });
@@ -70,7 +74,7 @@ describe('Schedule', () => {
   describe('updateCell', () => {
     test('updates shiftType', () => {
       const sut = arrangeTestSchedule();
-      const employee = sut.group.getEmployees()[0];
+      const employee = sut.getGroup().getEmployees()[0];
       const newShift = Object.keys(CONFIG.SHIFT_TYPES)[0];
 
       sut.updateCell(employee.getId(), 2, { shiftType: newShift });
@@ -80,7 +84,7 @@ describe('Schedule', () => {
     test('updates startTime and endTime', () => {
       const sut = arrangeTestSchedule();
 
-      const employee = sut.group.getEmployees()[0];
+      const employee = sut.getGroup().getEmployees()[0];
       sut.updateCell(employee.getId(), 3, {
         startTime: 16,
         endTime: 22,
@@ -91,10 +95,10 @@ describe('Schedule', () => {
     });
     test('throws on id update attempt', () => {
       const sut = arrangeTestSchedule();
-      const employee = sut.group.getEmployees()[0];
+      const employee = sut.getGroup().getEmployees()[0];
       const actual = sut.updateCell.bind(sut, employee.getId(), 3, {
         // @ts-ignore
-        id: 100,
+        id: -100,
       });
       expect(actual).toThrow();
     });
@@ -108,14 +112,21 @@ describe('Schedule', () => {
     test('disables day', () => {
       const sut = arrangeTestSchedule();
       sut.disableDay(10);
-      expect(sut.disabledDays.has(10)).toBeTruthy();
+
       expect(sut.getDisabledDays()[0]).toBe(10);
     });
     test('enables day', () => {
       const sut = arrangeTestSchedule();
       sut.disableDay(10);
       sut.enableDay(10);
-      expect(sut.disabledDays.has(10)).toBeFalsy();
+      expect(sut.getDisabledDays().includes(10)).toBeFalsy();
+    });
+    test('disalbeFreeDaysInPoland disables sundays', () => {
+      const sut = arrangeTestSchedule();
+
+      sut.disableFreeDaysInPoland();
+      expect(sut.getDisabledDays().length).toBe(4);
+      expect(sut.getDisabledDays()).toStrictEqual([4, 11, 18, 25]);
     });
   });
   describe('exporting', () => {
@@ -127,7 +138,7 @@ describe('Schedule', () => {
       sut.disableDay(1);
       const expected: ScheduleJSON = {
         archived: false,
-        groupId: group.id,
+        groupId: group.getId(),
         employees: [
           {
             id: emp1.getId(),
@@ -144,7 +155,7 @@ describe('Schedule', () => {
         month: 2,
         length: 29,
         disabledDays: [1],
-        data: sut.cells,
+        data: sut.getCells(),
       };
       const actual = sut.exportJSON();
       expect(actual).toStrictEqual(expected);

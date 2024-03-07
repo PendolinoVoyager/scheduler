@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron/renderer');
+
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,
   chrome: () => process.versions.chrome,
@@ -7,6 +8,7 @@ contextBridge.exposeInMainWorld('versions', {
 
 contextBridge.exposeInMainWorld('fs', {
   read: (name: string) => ipcRenderer.invoke('fs:read', name),
+  write: (text: string) => ipcRenderer.invoke('fs:write', text),
 });
 
 contextBridge.exposeInMainWorld('darkMode', {

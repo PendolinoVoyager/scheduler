@@ -1,11 +1,10 @@
-import Employee from './Employee';
+import Employee from './Employee.js';
+import Entity from './Entity.js';
 
-export default class Group {
-  id: number;
+export default class Group extends Entity {
   private employees: Employee[] = [];
   constructor() {
-    //TODO: Change ID generation
-    this.id = Math.floor(Math.random() * 1000000);
+    super();
   }
   addEmployee(employee: Employee) {
     this.employees.push(employee);

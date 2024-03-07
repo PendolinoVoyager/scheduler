@@ -16,7 +16,7 @@ export class Schedule extends AbstractSchedule {
     if (this.month > 12 || this.month < 1)
       throw new Error('Invalid month: ' + month);
     else {
-      this.group.getEmployees().forEach((emp, i) => {
+      this.group.getEmployees().forEach((emp) => {
         this.fillRowfromPreference(emp.getId());
       });
     }
@@ -34,9 +34,7 @@ export class Schedule extends AbstractSchedule {
   get length() {
     return CalendarService.getNumOfDays(this.year, this.month);
   }
-  get startingDay() {
-    return CalendarService.getStartingDay(this.year, this.month);
-  }
+
   fillFromShiftType(
     id: Employee['id'],
     day: number,
@@ -91,13 +89,10 @@ export class Schedule extends AbstractSchedule {
   enableDay(day: number): void {
     this.disabledDays.delete(day);
   }
-  getDisabledDays() {
-    return [...this.disabledDays];
-  }
   exportJSON(): ScheduleJSON {
     return {
       archived: false,
-      groupId: this.group.id,
+      groupId: this.group.getId(),
       employees: this.group.getEmployees().map((emp) => {
         return {
           id: emp.getId(),
@@ -112,7 +107,16 @@ export class Schedule extends AbstractSchedule {
       data: this.cells,
     };
   }
+  disableFreeDaysInPoland() {
+    for (let i = 1; i <= this.length; i++) {
+      if (CalendarService.isFreeDayInPoland(i, this.year, this.month))
+        this.disableDay(i);
+    }
+  }
   exportCSV(): string {
+    throw new Error('Method not implemented.');
+  }
+  static importJSON(scheduleJSON: ScheduleJSON): Schedule {
     throw new Error('Method not implemented.');
   }
 }

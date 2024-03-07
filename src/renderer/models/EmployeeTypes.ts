@@ -1,4 +1,6 @@
 import { CONFIG } from '../config.js';
+import { generateId } from '../helpers/generateId.js';
+import Entity from './Entity.js';
 import { ShiftTypes } from './types.js';
 
 export class EmployeeFormError extends Error {
@@ -19,15 +21,15 @@ export type EmployeeFields = {
   shiftPreferencesGrouped?: MonthlyShiftTypes[];
 };
 
-export class AbstractEmployee {
-  protected id: number;
+export class AbstractEmployee extends Entity {
   protected name: string | undefined;
   protected position!: string;
   protected disabled!: boolean;
   protected shiftPreference!: keyof ShiftTypes;
   protected employmentType!: EmploymentType;
   constructor(name?: string) {
-    this.id = Math.floor(Math.random() * 100000000);
+    super();
+
     this.name = name;
     Object.entries(this.defaultOptions).forEach(([key, val]) => {
       (this as any)[key] = val;

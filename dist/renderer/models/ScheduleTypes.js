@@ -1,8 +1,10 @@
+import Entity from './Entity.js';
 /**
  * Zero-indexed! Schedule is independent of column and row headers.
  */
-export class AbstractSchedule {
+export class AbstractSchedule extends Entity {
     constructor(group, year, month) {
+        super();
         this.group = group;
         this.year = year;
         this.month = month;
@@ -15,5 +17,14 @@ export class AbstractSchedule {
         for (let i = 0; i < numEmployees; i++) {
             this.cells[i] = new Array(this.length);
         }
+    }
+    getGroup() {
+        return this.group;
+    }
+    getCells() {
+        return this.cells;
+    }
+    getDisabledDays() {
+        return [...this.disabledDays];
     }
 }

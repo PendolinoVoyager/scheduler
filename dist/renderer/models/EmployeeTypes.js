@@ -1,4 +1,5 @@
 import { CONFIG } from '../config.js';
+import Entity from './Entity.js';
 export class EmployeeFormError extends Error {
     constructor(property, value) {
         super();
@@ -6,15 +7,15 @@ export class EmployeeFormError extends Error {
         this.value = value;
     }
 }
-export class AbstractEmployee {
+export class AbstractEmployee extends Entity {
     constructor(name) {
+        super();
         this.defaultOptions = {
             shiftPreference: CONFIG.DEFAULT_SHIFT,
             position: '',
             disabled: false,
             employmentType: CONFIG.DEFAULT_EMPLOYMENT_TYPE,
         };
-        this.id = Math.floor(Math.random() * 100000000);
         this.name = name;
         Object.entries(this.defaultOptions).forEach(([key, val]) => {
             this[key] = val;

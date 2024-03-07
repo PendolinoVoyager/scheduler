@@ -1,8 +1,8 @@
-export default class Group {
+import Entity from './Entity.js';
+export default class Group extends Entity {
     constructor() {
+        super();
         this.employees = [];
-        //TODO: Change ID generation
-        this.id = Math.floor(Math.random() * 1000000);
     }
     addEmployee(employee) {
         this.employees.push(employee);

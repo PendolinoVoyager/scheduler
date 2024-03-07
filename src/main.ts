@@ -2,6 +2,7 @@ const ThemeController = require('./IPCControllers/ThemeController');
 const FileSystemController = require('./IPCControllers/FileSystemController');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
+
 const createWindow = () => {
   const win = new BrowserWindow({
     skipTaskbar: true,
@@ -25,7 +26,6 @@ app.whenReady().then(() => {
   const fileSystemController = new FileSystemController(ipcMain);
 
   const win = createWindow();
-
   //For MacOS
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

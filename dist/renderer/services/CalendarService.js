@@ -45,9 +45,7 @@ class CalendarService {
     }
     isFreeDayInPoland(day, year = this.year, month = this.month) {
         const date = new Date(year, month - 1, day);
-        if (date.getDay() === 6)
-            return true;
-        return false;
+        return date.getDay() === 0;
     }
     nextMonth() {
         if (this.month === 12) {

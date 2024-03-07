@@ -1,4 +1,5 @@
 import Employee from './Employee.js';
+import Entity from './Entity.js';
 import Group from './Group.js';
 import { ShiftTypes } from './types.js';
 
@@ -16,13 +17,14 @@ export type ExcludeId<T> = {
 /**
  * Zero-indexed! Schedule is independent of column and row headers.
  */
-export abstract class AbstractSchedule {
-  public group: Group;
-  public year: number;
-  public month: number;
-  public cells!: CellData[][];
-  public disabledDays: Set<number>;
+export abstract class AbstractSchedule extends Entity {
+  protected group: Group;
+  public readonly year: number;
+  public readonly month: number;
+  protected cells!: CellData[][];
+  protected disabledDays: Set<number>;
   constructor(group: Group, year: number, month: number) {
+    super();
     this.group = group;
     this.year = year;
     this.month = month;
@@ -38,7 +40,6 @@ export abstract class AbstractSchedule {
     }
   }
   abstract get length(): number;
-  abstract get startingDay(): number;
   abstract fillRowfromPreference(id: Employee['id']): void;
   abstract fillCellFromPreference(id: Employee['id'], day: number): void;
   abstract fillFromShiftType(
@@ -55,8 +56,19 @@ export abstract class AbstractSchedule {
   abstract validateColRow(id: Employee['id'], day: number): void | never;
   abstract disableDay(day: number): void;
   abstract enableDay(day: number): void;
+
   abstract exportJSON(): ScheduleJSON;
   abstract exportCSV(): string;
+
+  getGroup() {
+    return this.group;
+  }
+  getCells() {
+    return this.cells;
+  }
+  getDisabledDays(): Array<number> {
+    return [...this.disabledDays];
+  }
 }
 
 export type ScheduleJSON = {

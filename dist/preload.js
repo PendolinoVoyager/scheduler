@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('versions', {
 });
 contextBridge.exposeInMainWorld('fs', {
     read: (name) => ipcRenderer.invoke('fs:read', name),
+    write: (text) => ipcRenderer.invoke('fs:write', text),
 });
 contextBridge.exposeInMainWorld('darkMode', {
     toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
