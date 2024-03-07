@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
 
-
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
@@ -21,18 +20,20 @@
   <body>
     <div id="overlay" class="hidden"></div>
     <div id="modal-box" class="hidden">
-        <i class="fas fa-circle-xmark fa-2xl" id="btn-close-modal"></i>
-        <div id="modal">
-
-        </div>
+      <i class="fas fa-circle-xmark fa-2xl" id="btn-close-modal"></i>
+      <div id="modal"></div>
     </div>
 
     <nav id="navbar-top">
-      <div class="nav-item"><i class="fas fa-people-group"></i> Wybierz grupę</div>
+      <div class="nav-item">
+        <i class="fas fa-people-group"></i> Wybierz grupę
+      </div>
       <div class="nav-item"><i class="fas fa-file"></i> Zapisz</div>
       <div class="nav-item"><i class="fas fa-file"></i> Zapisz jako...</div>
       <div class="nav-item"><i class="fas fa-folder-open"></i> Załaduj</div>
-      <div class="nav-item"><i class="fas fa-calendar"></i> Wybierz miesiąc</div>
+      <div class="nav-item">
+        <i class="fas fa-calendar"></i> Wybierz miesiąc
+      </div>
 
       <div class="nav-item"><i class="fas fa-gear"></i> Ustawienia</div>
 
@@ -42,7 +43,6 @@
       </div>
     </nav>
     <main>
-
       <div class="calendar-header">
         <h1 class="text-gradient" id="main-info">
           Grafik: {miesiac, grupa, dodatkowe}
@@ -51,25 +51,22 @@
           <i class="fas fa-plus"></i>&nbsp;Zarządzaj&nbsp;grupą
         </div>
         <div id="btns-month">
-            <div id="btn-month-prev">
-                <i class="fas fa-chevron-left"></i>
-            </div>
-            <div id="btn-month-next">
-                <i class="fas fa-chevron-right"></i>
-            </div>
+          <div id="btn-month-prev">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <div id="btn-month-next">
+            <i class="fas fa-chevron-right"></i>
+          </div>
         </div>
       </div>
 
       <div id="calendar">
-          <div class="simple-shift-select flex-row">
-              <div class="flex-row">
-                <button class="box-sharp morning"></button>
-                <button class="box-sharp afternoon">Popołudnie</button>
-                <button class="box-sharp custom">Inne</button>
-                <button class="box-sharp none">Wolne</button>
-              </div>
-          </div>
-        <div>
+        <div id="calendar-header" class="flex-row">
+          <div class="box-sharp">TEST</div>
+          <div class="box-sharp">TEST</div>
+        </div>
+        <div id="calendar-body"></div>
+      </div>
     </main>
   </body>
 </html>

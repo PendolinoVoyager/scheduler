@@ -9,6 +9,7 @@ import DarkModeController from './controllers/DarkModeController.js';
 import ModalService from './services/ModalService.js';
 import HoverBoxService from './services/HoverBox.js';
 import GroupSettingsController from './controllers/GroupSettingsController.js';
+import ScheduleController from './controllers/scheduleControllers/ScheduleController.js';
 import { Schedule } from './models/Schedule.js';
 import state from './state.js';
 class App {
@@ -20,8 +21,10 @@ class App {
         //Controllers
         this.darkModeController = new DarkModeController();
         this.groupSettingsController = new GroupSettingsController();
+        this.scheduleController = new ScheduleController();
         __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
         const schedule = new Schedule(state.group, state.year, state.month);
+        this.scheduleController.createLiveSchedule(schedule);
     }
 }
 _App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefaultListeners() {

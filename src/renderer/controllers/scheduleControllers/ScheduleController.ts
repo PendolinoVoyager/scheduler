@@ -1,12 +1,12 @@
 import { Schedule } from '../../models/Schedule.js';
 import { AbstractController } from '../AbstractController.js';
 import type { ScheduleJSON } from '../../models/ScheduleTypes.js';
-import View from '../../views/View.js';
 import CellsView from '../../views/scheduleViews/CellsView.js';
+import View from '../../views/View.js';
 
 export default class ScheduleController extends AbstractController {
   public schedule: Schedule | null = null;
-  cellsView: CellsView;
+  cellsView: View;
   //GOALS
   //1. render the raw CellData
   //2. render Employee headers
@@ -18,9 +18,10 @@ export default class ScheduleController extends AbstractController {
   // The recovery should proceed when a group is found and date is before cutoff.
   constructor() {
     super();
-    this.cellsView = new CellsView(document.querySelector('body')!);
+    this.cellsView = new CellsView(document.getElementById('calendar-body')!);
   }
   createLiveSchedule(Schedule: Schedule) {
+    document.getElementById('main-info')!.innerText = 'TESTE';
     this.renderRawCellData(Schedule.exportJSON());
   }
   renderRawCellData(scheduleJSON: ScheduleJSON) {

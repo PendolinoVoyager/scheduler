@@ -21,11 +21,12 @@ export function arrangeTestSchedule(year: number = 2024, month: number = 2) {
   return new Schedule(group, year, month);
 }
 
-export class MockView {
+export class MockView extends View {
   data: any;
 
-  constructor() {}
-
+  constructor(parentElement: HTMLElement) {
+    super(parentElement);
+  }
   render = jest.fn((data: any) => {
     this.data = data;
   });

@@ -48,7 +48,7 @@ export class Schedule extends AbstractSchedule {
             throw new Error("Can't change to id " + id);
         this.cells[employeeIndex][day - 1] = { ...currentCell, ...data };
     }
-    getCellData(id, day) {
+    getCell(id, day) {
         this.validateColRow(id, day);
         return this.cells[this.group.findEmployeeIndex(id)][day - 1];
     }
@@ -68,7 +68,7 @@ export class Schedule extends AbstractSchedule {
     exportJSON() {
         return {
             archived: false,
-            groupId: this.group.id,
+            groupId: this.group.getId(),
             employees: this.group.getEmployees().map((emp) => {
                 return {
                     id: emp.getId(),

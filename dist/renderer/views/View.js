@@ -3,6 +3,8 @@ export default class View {
         this.parentElement = parentElement;
     }
     render(data) {
+        if (data == null)
+            throw new Error('Invalid data');
         this.data = data;
         this.clear();
         const markup = this.generateMarkup();
@@ -10,6 +12,8 @@ export default class View {
     }
     update(data) {
         this.data = data;
+        if (data == null)
+            throw new Error('Invalid data');
         const newMarkup = this.generateMarkup();
         const newDOM = document.createRange().createContextualFragment(newMarkup);
         const newElements = Array.from(newDOM.querySelectorAll('*'));

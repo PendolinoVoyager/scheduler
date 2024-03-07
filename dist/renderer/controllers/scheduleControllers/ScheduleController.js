@@ -1,4 +1,5 @@
 import { AbstractController } from '../AbstractController.js';
+import CellsView from '../../views/scheduleViews/CellsView.js';
 export default class ScheduleController extends AbstractController {
     //GOALS
     //1. render the raw CellData
@@ -11,5 +12,17 @@ export default class ScheduleController extends AbstractController {
     // The recovery should proceed when a group is found and date is before cutoff.
     constructor() {
         super();
+        this.schedule = null;
+        this.cellsView = new CellsView(document.getElementById('calendar-body'));
     }
+    createLiveSchedule(Schedule) {
+        document.getElementById('main-info').innerText = 'TESTE';
+        this.renderRawCellData(Schedule.exportJSON());
+    }
+    renderRawCellData(scheduleJSON) {
+        if (scheduleJSON == null)
+            throw new Error('Invalid data, got: ' + scheduleJSON);
+        this.cellsView.render(scheduleJSON);
+    }
+    createArchivedSchedule(ScheduleJSON) { }
 }
