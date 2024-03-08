@@ -1,8 +1,11 @@
 import { CONFIG } from '../../src/renderer/config';
+import { getShiftHours } from '../../src/renderer/helpers/getShiftHours';
 import Employee from '../../src/renderer/models/Employee';
 import Group from '../../src/renderer/models/Group';
 import { Schedule } from '../../src/renderer/models/Schedule';
 import { ScheduleJSON } from '../../src/renderer/models/ScheduleTypes';
+import { CellData } from '../../src/renderer/models/types';
+import CalendarService from '../../src/renderer/services/CalendarService';
 import {
   createGroup,
   createSchedule,
@@ -111,6 +114,22 @@ describe('Schedule', () => {
       const sut = arrangeTestSchedule();
       const actual = sut.updateCell.bind(sut, -1, 2, {});
       expect(actual).toThrow();
+    });
+    test('calculates hours on non-custom shiftType', () => {
+      const sut = arrangeTestSchedule();
+      const employee = sut.getGroup().getEmployees()[0];
+      const shift = Object.keys(CONFIG.SHIFT_TYPES)[1];
+      const newCell: Partial<CellData> = {
+        shiftType: shift,
+      };
+      const dow = CalendarService.getDOW(sut.year, sut.month, 1);
+      sut.updateCell(employee.getId(), 1, newCell);
+      const cell = sut.getCell(employee.getId(), 1);
+      const { startTime: expectedStartTime, endTime: expectedEndTime } =
+        getShiftHours(shift, dow);
+      expect(cell.startTime).toBe(expectedStartTime);
+      expect(cell.endTime).toBe(expectedEndTime);
+      expect(cell.shiftType).toBe(shift);
     });
   });
   describe('disabling/enabling', () => {

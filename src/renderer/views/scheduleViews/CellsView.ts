@@ -1,4 +1,5 @@
-import { CellData, ScheduleJSON } from '../../models/ScheduleTypes.js';
+import { ScheduleJSON } from '../../models/ScheduleTypes.js';
+import { CellData } from '../../models/types.js';
 import CalendarService from '../../services/CalendarService.js';
 import View from '../View.js';
 

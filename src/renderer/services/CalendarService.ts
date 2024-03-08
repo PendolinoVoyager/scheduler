@@ -68,6 +68,9 @@ class CalendarService {
       weekday: 'short',
     }).format(new Date(year, month - 1, day));
   }
+  getDOW(year: number = this.year, month: number = this.month, day: number) {
+    return new Date(year, month - 1, day).getDay();
+  }
   nextMonth() {
     if (this.month === 12) {
       this.setDate(1, this.year + 1);

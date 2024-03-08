@@ -1,18 +1,7 @@
 import Employee from './Employee.js';
 import Entity from './Entity.js';
 import Group from './Group.js';
-import { ShiftTypes } from './types.js';
-
-export type CellData = {
-  shiftType: keyof ShiftTypes;
-  id: Employee['id'];
-  day: number;
-  startTime?: number;
-  endTime?: number;
-};
-export type ExcludeId<T> = {
-  [K in keyof T as Exclude<K, 'id'>]: T[K];
-};
+import { CellData, ExcludeId, ShiftTypes } from './types.js';
 
 /**
  * Zero-indexed! Schedule is independent of column and row headers.
