@@ -518,6 +518,7 @@ select {
 .warning {
   background-color: var(--color-warning);
 }
+
 #calendar-header {
   margin-bottom: 1rem;
   padding: 1rem;
@@ -526,6 +527,7 @@ select {
   display: grid;
   overflow-x: scroll;
   overflow-y: hidden;
+  scroll-margin-block: 2rem;
   position: relative;
 }
 .cell-header {
@@ -560,7 +562,7 @@ select {
 }
 
 .cell {
-  border-radius: 0px;
+  border-radius: 1px;
   border: 1px solid var(--text-inverted);
   user-select: none;
   cursor: pointer;
@@ -569,8 +571,9 @@ select {
   text-align: center;
   color: white;
   text-shadow: 0 0 2px black;
-  transition: transform 0.2s linear;
+  transition: transform 0.1s linear, box-shadow 0.1s linear;
 }
 .cell:hover {
   transform: scale(1.15, 1.15);
+  box-shadow: var(--shadow);
 }

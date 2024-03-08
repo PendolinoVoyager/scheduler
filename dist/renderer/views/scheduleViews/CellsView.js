@@ -4,6 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _CellsView_instances, _CellsView_generateRow, _CellsView_generateCell, _CellsView_generateEmployee, _CellsView_generateHeader;
+import { CONFIG } from '../../config.js';
 import CalendarService from '../../services/CalendarService.js';
 import View from '../View.js';
 class CellsView extends View {
@@ -23,7 +24,12 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
             .map((cell) => __classPrivateFieldGet(this, _CellsView_instances, "m", _CellsView_generateCell).call(this, cell, row + 1))
             .join(''));
 }, _CellsView_generateCell = function _CellsView_generateCell(cellData, row) {
-    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${cellData.day}" data-row="${row}">${cellData.startTime}<br>${cellData.endTime}</div>`;
+    const altText = cellData.shiftType === 'None'
+        ? 'W'
+        : CONFIG.SHIFT_TYPES[cellData.shiftType].translation;
+    error;
+    here; // Make in helpers to change 14.5 to 14:30
+    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${cellData.day}" data-row="${row}">${cellData.startTime ?? altText}<br>${cellData.endTime ?? ''}</div>`;
 }, _CellsView_generateEmployee = function _CellsView_generateEmployee(row) {
     return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${this.data.employees[row].name}</p>
     <p class="schedule-employee-position">${this.data.employees[row].position || 'Brak'}</p>

@@ -1,5 +1,5 @@
-import { CONFIG } from '../config';
-import { ShiftTypes } from '../models/types';
+import { CONFIG } from '../config.js';
+import { ShiftTypes } from '../models/types.js';
 
 export function getShiftHours(shift: keyof ShiftTypes, dayOfWeek?: number) {
   const startTime =

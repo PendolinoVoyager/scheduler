@@ -1,6 +1,7 @@
 import { CONFIG } from '../config.js';
+import { getShiftHours } from '../helpers/getShiftHours.js';
 import CalendarService from '../services/CalendarService.js';
-import { AbstractSchedule, } from './ScheduleTypes.js';
+import { AbstractSchedule } from './ScheduleTypes.js';
 export class Schedule extends AbstractSchedule {
     constructor(group, year, month) {
         super(group, year, month);
@@ -43,10 +44,16 @@ export class Schedule extends AbstractSchedule {
     updateCell(id, day, data) {
         this.validateColRow(id, day);
         const employeeIndex = this.group.findEmployeeIndex(id);
-        const currentCell = this.cells[employeeIndex][day - 1];
         if (Object.keys(data).includes('id'))
             throw new Error("Can't change to id " + id);
-        this.cells[employeeIndex][day - 1] = { ...currentCell, ...data };
+        if (data.startTime || data.endTime)
+            this.cells[employeeIndex][day - 1].shiftType = 'Custom';
+        Object.assign(this.cells[employeeIndex][day - 1], data);
+        if (data.shiftType && data.shiftType !== 'Custom') {
+            const { startTime, endTime } = getShiftHours(data.shiftType, CalendarService.getDOW(this.year, this.month, day));
+            this.cells[employeeIndex][day - 1].startTime = startTime;
+            this.cells[employeeIndex][day - 1].endTime = endTime;
+        }
     }
     getCell(id, day) {
         this.validateColRow(id, day);
@@ -65,6 +72,10 @@ export class Schedule extends AbstractSchedule {
     enableDay(day) {
         this.disabledDays.delete(day);
     }
+    /**
+     * Note: returned ScheduleJSON.data is a reference to Schedule.cells.
+     *
+     */
     exportJSON() {
         return {
             archived: false,

@@ -18,7 +18,9 @@ testGroup.addEmployee(
     disabled: true,
   })
 );
-testGroup.getEmployees()[0].addCustomPreference(2024, 2, 1, 'Morning');
+testGroup.getEmployees()[0].addCustomPreference(2024, 3, 1, 'Afternoon');
+testGroup.getEmployees()[0].addCustomPreference(2024, 3, 2, 'None');
+testGroup.getEmployees()[0].addCustomPreference(2024, 3, 3, 'Vacation');
 
 testGroup.addEmployee(new Employee('Jan Dupa'));
 testGroup.addEmployee(new Employee('Tadeusz Kościuszko'));

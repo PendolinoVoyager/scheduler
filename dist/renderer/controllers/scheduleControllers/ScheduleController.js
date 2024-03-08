@@ -1,28 +1,63 @@
 import { AbstractController } from '../AbstractController.js';
 import CellsView from '../../views/scheduleViews/CellsView.js';
 import CalendarService from '../../services/CalendarService.js';
+import MouseScheduleController from './MouseHandler.js';
+import KeyboardScheduleController from './KeyboardHandler.js';
 export default class ScheduleController extends AbstractController {
-    //GOALS
-    //3. add visual handlers
-    //4. seperate key handlers
-    //5. make sure to DRY
-    //6. figure our recovering form data and employee data from storage
-    //7. seperate the raw render of archived data from complete recovery;
-    // The recovery should proceed when a group is found and date is before cutoff.
     constructor() {
         super();
-        this.schedule = null;
+        this.archived = false;
+        this.scheduleData = null;
+        this.selected = null;
+        this.workingSchedule = null;
         this.cellsView = new CellsView(document.getElementById('calendar-body'));
+        this.mouseController = new MouseScheduleController(this);
+        this.keyboardController = new KeyboardScheduleController(this);
     }
-    createLiveSchedule(Schedule) {
+    /**
+     * Entrypoint to init schedule
+     * @param Schedule
+     */
+    createLiveSchedule(schedule) {
+        this.workingSchedule = schedule;
         document.getElementById('main-info').innerText =
-            'Grafik: ' + CalendarService.getDateString(Schedule.year, Schedule.month);
-        this.renderRawCellData(Schedule.exportJSON());
+            'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
+        this.renderRawCellData(schedule.exportJSON());
     }
+    /**
+     * Should only be used alone to render archived schedules.
+     * Otherwise, use 'createLiveSchedule'
+     * @param scheduleJSON
+     */
     renderRawCellData(scheduleJSON) {
+        this.scheduleData = scheduleJSON;
+        this.archived = scheduleJSON.archived;
         this.cellsView.renderSpinner();
         if (scheduleJSON == null)
             throw new Error('Invalid data, got: ' + scheduleJSON);
         this.cellsView.render(scheduleJSON);
+    }
+    select(row, day) {
+        if (!this.scheduleData)
+            throw new Error('No schedule to work with.');
+        this.selected = this.scheduleData.data[row][day - 1];
+        return this.selected;
+    }
+    updateSelected(newData) {
+        if (this.archived)
+            throw new Error('Cannot update archived schedule.');
+        if (!this.workingSchedule)
+            throw new Error('No schedule to work with.');
+        if (!this.selected)
+            throw new Error('No cell selected.');
+        this.workingSchedule.updateCell(this.selected.id, this.selected.day, newData);
+        this.cellsView.update(this.scheduleData);
+    }
+    teardown() {
+        //@ts-ignore
+        this.cellsView = null;
+        this.scheduleData = null;
+        this.selected = null;
+        this.workingSchedule = null;
     }
 }

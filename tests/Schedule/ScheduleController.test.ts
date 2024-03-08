@@ -104,7 +104,29 @@ describe('scheduleController', () => {
       expect(sut.selected?.shiftType).toBe('None');
       expect(sut.selected?.startTime).toBeUndefined();
     });
-    test('updates view after successful change', () => {});
+    test('updates view after updateSelected', () => {
+      const schedule = arrangeTestSchedule(2024, 2);
+      const sut = new ScheduleController();
+      sut.workingSchedule = schedule;
+      const row = 2;
+      const day = 10;
+      const newCell: Partial<ExcludeId<CellData>> = {
+        shiftType: 'None',
+      };
+      substituteViews(sut);
+      sut.renderRawCellData(schedule.exportJSON());
+      sut.select(row, day);
+      sut.updateSelected(newCell);
+
+      const element = [...sut.cellsView.parentElement.children].find(
+        (child) =>
+          //@ts-ignore
+          +(child as HTMLElement).dataset.row === row &&
+          //@ts-ignore
+          +(child as HTMLElement).dataset.day === day
+      );
+      expect(element?.classList?.contains('none'));
+    });
   });
 });
 

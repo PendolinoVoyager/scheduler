@@ -5,6 +5,8 @@ import CellsView from '../../views/scheduleViews/CellsView.js';
 import View from '../../views/View.js';
 import CalendarService from '../../services/CalendarService.js';
 import { CellData, ExcludeId } from '../../models/types.js';
+import MouseScheduleController from './MouseHandler.js';
+import KeyboardScheduleController from './KeyboardHandler.js';
 
 export default class ScheduleController extends AbstractController {
   archived: boolean = false;
@@ -12,9 +14,13 @@ export default class ScheduleController extends AbstractController {
   scheduleData: ScheduleJSON | null = null;
   selected: CellData | null = null;
   workingSchedule: Schedule | null = null;
+  private mouseController: MouseScheduleController;
+  private keyboardController: KeyboardScheduleController;
   constructor() {
     super();
     this.cellsView = new CellsView(document.getElementById('calendar-body')!);
+    this.mouseController = new MouseScheduleController(this);
+    this.keyboardController = new KeyboardScheduleController(this);
   }
   /**
    * Entrypoint to init schedule
@@ -57,5 +63,12 @@ export default class ScheduleController extends AbstractController {
     );
 
     this.cellsView.update(this.scheduleData);
+  }
+  teardown() {
+    //@ts-ignore
+    this.cellsView = null;
+    this.scheduleData = null;
+    this.selected = null;
+    this.workingSchedule = null;
   }
 }
