@@ -27,7 +27,7 @@ class CalendarService {
       numberOfDays: this.getNumOfDays(),
     };
   }
-  getDateString(): string {
+  getDateString(year: number = this.year, month: number = this.month): string {
     const timestamp = new Date(`${this.year}-${this.month}-01`).getTime();
     return Intl.DateTimeFormat('pl-PL', {
       month: 'long',
@@ -58,6 +58,15 @@ class CalendarService {
   ): boolean {
     const date = new Date(year, month - 1, day);
     return date.getDay() === 0;
+  }
+  getDOFName(
+    year: number = this.year,
+    month: number = this.month,
+    day: number
+  ) {
+    return Intl.DateTimeFormat(navigator.language, {
+      weekday: 'short',
+    }).format(new Date(year, month - 1, day));
   }
   nextMonth() {
     if (this.month === 12) {

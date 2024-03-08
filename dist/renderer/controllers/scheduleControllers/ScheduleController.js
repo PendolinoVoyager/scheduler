@@ -1,9 +1,8 @@
 import { AbstractController } from '../AbstractController.js';
 import CellsView from '../../views/scheduleViews/CellsView.js';
+import CalendarService from '../../services/CalendarService.js';
 export default class ScheduleController extends AbstractController {
     //GOALS
-    //1. render the raw CellData
-    //2. render Employee headers
     //3. add visual handlers
     //4. seperate key handlers
     //5. make sure to DRY
@@ -16,13 +15,14 @@ export default class ScheduleController extends AbstractController {
         this.cellsView = new CellsView(document.getElementById('calendar-body'));
     }
     createLiveSchedule(Schedule) {
-        document.getElementById('main-info').innerText = 'TESTE';
+        document.getElementById('main-info').innerText =
+            'Grafik: ' + CalendarService.getDateString(Schedule.year, Schedule.month);
         this.renderRawCellData(Schedule.exportJSON());
     }
     renderRawCellData(scheduleJSON) {
+        this.cellsView.renderSpinner();
         if (scheduleJSON == null)
             throw new Error('Invalid data, got: ' + scheduleJSON);
         this.cellsView.render(scheduleJSON);
     }
-    createArchivedSchedule(ScheduleJSON) { }
 }

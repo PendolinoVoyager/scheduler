@@ -3,21 +3,22 @@
  */
 
 import ScheduleController from '../../src/renderer/controllers/scheduleControllers/ScheduleController';
-import { MockView, arrangeTestSchedule } from '../testHelpers';
+import CellsView from '../../src/renderer/views/scheduleViews/CellsView';
+import { createMockView, arrangeTestSchedule } from '../testHelpers';
 
 describe('scheduleController', () => {
   describe('renderRawCellData', () => {
-    it('renders rawcelldata ', () => {
+    test('renders rawcelldata ', () => {
       const schedule = arrangeTestSchedule(2024, 2);
       const sut = new ScheduleController();
       const expected = schedule.exportJSON();
 
-      sut.cellsView = new MockView(document.createElement('div'));
+      substituteViews(sut);
       sut.renderRawCellData(expected);
 
       expect(sut.cellsView.data).toEqual(expected);
     });
-    it('throws on undefined', () => {
+    test('throws on undefined', () => {
       const sut = new ScheduleController();
 
       //@ts-ignore
@@ -25,4 +26,24 @@ describe('scheduleController', () => {
       expect(actual).toThrow();
     });
   });
+  describe('selection', () => {
+    test('day-row dataset points to correct CellData', () => {
+      const schedule = arrangeTestSchedule(2024, 2);
+      const sut = new ScheduleController();
+      const row = 1;
+      const day = 2;
+      substituteViews(sut);
+      sut.renderRawCellData(schedule.exportJSON());
+      sut.select(row, day);
+
+      expect(sut.selected?.id).toBe(
+        schedule.getGroup().getEmployees()[row].getId()
+      );
+      expect(sut.selected?.day).toBe(day);
+    });
+  });
 });
+
+function substituteViews(controller: ScheduleController) {
+  controller.cellsView = createMockView(CellsView);
+}

@@ -4,6 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _CellsView_instances, _CellsView_generateRow, _CellsView_generateCell, _CellsView_generateEmployee, _CellsView_generateHeader;
+import CalendarService from '../../services/CalendarService.js';
 import View from '../View.js';
 class CellsView extends View {
     constructor(parentElement) {
@@ -22,16 +23,16 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
             .map((cell) => __classPrivateFieldGet(this, _CellsView_instances, "m", _CellsView_generateCell).call(this, cell, row + 1))
             .join(''));
 }, _CellsView_generateCell = function _CellsView_generateCell(cellData, row) {
-    return `<div class="cell ${cellData.shiftType.toLowerCase()}" data-day="${cellData.day}" data-row="${row}">${cellData.startTime}<br>${cellData.endTime}</div>`;
+    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${cellData.day}" data-row="${row}">${cellData.startTime}<br>${cellData.endTime}</div>`;
 }, _CellsView_generateEmployee = function _CellsView_generateEmployee(row) {
-    return `<div class="cell-employee"><p class="schedule-employee-name">${this.data.employees[row].name}</p>
+    return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${this.data.employees[row].name}</p>
     <p class="schedule-employee-position">${this.data.employees[row].position || 'Brak'}</p>
     </div>`;
 }, _CellsView_generateHeader = function _CellsView_generateHeader() {
     const divs = [];
-    for (let i = 0; i < 1 + this.data.length; i++) {
-        divs.push(`<div class="cell-header">${i || ''}</div>`);
+    for (let i = 1; i < 1 + this.data.length; i++) {
+        divs.push(`<div class="cell-header">${i}<br>${CalendarService.getDOFName(this.data.year, this.data.month, i)}</div>`);
     }
-    return divs.join('');
+    return '<div></div>' + divs.join('');
 };
 export default CellsView;

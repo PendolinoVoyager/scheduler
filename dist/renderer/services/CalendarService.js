@@ -30,7 +30,7 @@ class CalendarService {
             numberOfDays: this.getNumOfDays(),
         };
     }
-    getDateString() {
+    getDateString(year = this.year, month = this.month) {
         const timestamp = new Date(`${this.year}-${this.month}-01`).getTime();
         return Intl.DateTimeFormat('pl-PL', {
             month: 'long',
@@ -46,6 +46,11 @@ class CalendarService {
     isFreeDayInPoland(day, year = this.year, month = this.month) {
         const date = new Date(year, month - 1, day);
         return date.getDay() === 0;
+    }
+    getDOFName(year = this.year, month = this.month, day) {
+        return Intl.DateTimeFormat(navigator.language, {
+            weekday: 'short',
+        }).format(new Date(year, month - 1, day));
     }
     nextMonth() {
         if (this.month === 12) {

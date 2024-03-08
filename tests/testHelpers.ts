@@ -21,17 +21,7 @@ export function arrangeTestSchedule(year: number = 2024, month: number = 2) {
   return new Schedule(group, year, month);
 }
 
-export class MockView extends View {
-  data: any;
-
-  constructor(parentElement: HTMLElement) {
-    super(parentElement);
-  }
-  render = jest.fn((data: any) => {
-    this.data = data;
-  });
-
-  generateMarkup(): string {
-    return '';
-  }
+export function createMockView(view: any = View): View {
+  const mockView = new view(document.createElement('div'));
+  return mockView;
 }

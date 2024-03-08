@@ -1,5 +1,5 @@
-import { CONFIG } from '../../config.js';
 import { CellData, ScheduleJSON } from '../../models/ScheduleTypes.js';
+import CalendarService from '../../services/CalendarService.js';
 import View from '../View.js';
 
 export default class CellsView extends View {
@@ -23,12 +23,12 @@ export default class CellsView extends View {
     );
   }
   #generateCell(cellData: CellData, row: number): string {
-    return `<div class="cell ${cellData.shiftType.toLowerCase()}" data-day="${
+    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${
       cellData.day
     }" data-row="${row}">${cellData.startTime}<br>${cellData.endTime}</div>`;
   }
   #generateEmployee(row: number): string {
-    return `<div class="cell-employee"><p class="schedule-employee-name">${
+    return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${
       this.data.employees[row].name
     }</p>
     <p class="schedule-employee-position">${
@@ -38,9 +38,15 @@ export default class CellsView extends View {
   }
   #generateHeader(): string {
     const divs: string[] = [];
-    for (let i = 0; i < 1 + this.data.length; i++) {
-      divs.push(`<div class="cell-header">${i || ''}</div>`);
+    for (let i = 1; i < 1 + this.data.length; i++) {
+      divs.push(
+        `<div class="cell-header">${i}<br>${CalendarService.getDOFName(
+          this.data.year,
+          this.data.month,
+          i
+        )}</div>`
+      );
     }
-    return divs.join('');
+    return '<div></div>' + divs.join('');
   }
 }

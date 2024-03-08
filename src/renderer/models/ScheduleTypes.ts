@@ -74,7 +74,7 @@ export abstract class AbstractSchedule extends Entity {
 export type ScheduleJSON = {
   archived: boolean;
   groupId: number;
-  employees: { id?: Employee['id']; name: string; position: string }[];
+  employees: { id: Employee['id']; name: string; position: string }[];
   year: number;
   month: number;
   length: number;
