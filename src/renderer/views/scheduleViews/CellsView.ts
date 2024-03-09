@@ -53,7 +53,7 @@ export default class CellsView extends View {
     const divs: string[] = [];
     for (let i = 1; i < 1 + this.data.length; i++) {
       divs.push(
-        `<div class="cell-header">${i}<br>${CalendarService.getDOFName(
+        `<div class="cell-header" data-day="${i}">${i}<br>${CalendarService.getDOFName(
           this.data.year,
           this.data.month,
           i

@@ -78,6 +78,13 @@ export default class ScheduleController extends AbstractController {
 
     this.cellsView.render(this.scheduleData);
   }
+  toggleDisabledColumn(day: number) {
+    if (!this.workingSchedule) throw new Error('No schedule to work with.');
+    if (this.scheduleData!.disabledDays.includes(day))
+      this.workingSchedule.enableDay(day);
+    else this.workingSchedule.disableDay(day);
+    this.renderRawCellData(this.workingSchedule.exportJSON());
+  }
   teardown() {
     this.scheduleData = null;
     this.selected = null;

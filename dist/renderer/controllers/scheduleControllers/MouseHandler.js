@@ -15,6 +15,7 @@ class MouseScheduleController extends AbstractController {
             handleClick: this.handleClick.bind(this),
             onSelectChange: this.onSelectChange.bind(this),
             hasClickedAway: __classPrivateFieldGet(this, _MouseScheduleController_instances, "m", _MouseScheduleController_hasClickedAway).bind(this),
+            toggleDisabled: this.toggleDisabled.bind(this),
         };
         this.mouseBoxController = new MouseBoxController(this);
     }
@@ -22,6 +23,7 @@ class MouseScheduleController extends AbstractController {
         this.mainController.cellsView.parentElement.addEventListener('click', this.boundHandlers.handleClick);
         this.addEventListener('select-change', this.boundHandlers.onSelectChange);
         document.addEventListener('click', this.boundHandlers.hasClickedAway);
+        this.mainController.cellsView.parentElement.addEventListener('click', this.boundHandlers.toggleDisabled);
     }
     handleClick(e) {
         const targetCell = e.target.closest('.cell');
@@ -38,12 +40,22 @@ class MouseScheduleController extends AbstractController {
         this.mainController.dispatchEvent(event);
         this.mouseBoxController.show(targetCell);
     }
+    toggleDisabled(e) {
+        const target = e.target.closest('.cell-header');
+        if (!target)
+            return;
+        const day = target.dataset.day;
+        if (!day)
+            return;
+        this.mainController.toggleDisabledColumn(+day);
+    }
     /**
      * Handles select change from source other than itself
      */
     unbind() {
         this.removeEventListener('select-change', this.boundHandlers.onSelectChange);
         this.mainController.cellsView.parentElement.removeEventListener('click', this.boundHandlers.handleClick);
+        document.removeEventListener('click', this.boundHandlers.hasClickedAway);
     }
     onSelectChange(e) {
         this.mouseBoxController.hide();

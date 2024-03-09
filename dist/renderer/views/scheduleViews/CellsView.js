@@ -39,7 +39,7 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
 }, _CellsView_generateHeader = function _CellsView_generateHeader() {
     const divs = [];
     for (let i = 1; i < 1 + this.data.length; i++) {
-        divs.push(`<div class="cell-header">${i}<br>${CalendarService.getDOFName(this.data.year, this.data.month, i)}</div>`);
+        divs.push(`<div class="cell-header" data-day="${i}">${i}<br>${CalendarService.getDOFName(this.data.year, this.data.month, i)}</div>`);
     }
     return '<div></div>' + divs.join('');
 };

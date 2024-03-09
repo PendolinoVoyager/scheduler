@@ -539,6 +539,7 @@ select {
   border-top: none;
   border-left: none;
   font-weight: bold;
+  user-select: none;
 }
 .cell-employee {
   min-height: 4rem;
