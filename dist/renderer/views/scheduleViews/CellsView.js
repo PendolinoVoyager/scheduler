@@ -6,6 +6,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _CellsView_instances, _CellsView_generateRow, _CellsView_generateCell, _CellsView_generateEmployee, _CellsView_generateHeader;
 import { CONFIG } from '../../config.js';
 import CalendarService from '../../services/CalendarService.js';
+import { numberToHour } from '../../helpers/numberToHour.js';
 import View from '../View.js';
 class CellsView extends View {
     constructor(parentElement) {
@@ -27,9 +28,7 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
     const altText = cellData.shiftType === 'None'
         ? 'W'
         : CONFIG.SHIFT_TYPES[cellData.shiftType].translation;
-    error;
-    here; // Make in helpers to change 14.5 to 14:30
-    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${cellData.day}" data-row="${row}">${cellData.startTime ?? altText}<br>${cellData.endTime ?? ''}</div>`;
+    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${cellData.day}" data-row="${row - 1}">${numberToHour(cellData.startTime) || altText}<br>${numberToHour(cellData.endTime)}</div>`;
 }, _CellsView_generateEmployee = function _CellsView_generateEmployee(row) {
     return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${this.data.employees[row].name}</p>
     <p class="schedule-employee-position">${this.data.employees[row].position || 'Brak'}</p>

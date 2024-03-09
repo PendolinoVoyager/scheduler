@@ -525,9 +525,10 @@ select {
 }
 #calendar-body {
   display: grid;
+  grid-template-columns: 1fr;
+  place-content: center;
+  min-height: 50vh;
   overflow-x: scroll;
-  overflow-y: hidden;
-  scroll-margin-block: 2rem;
   position: relative;
 }
 .cell-header {

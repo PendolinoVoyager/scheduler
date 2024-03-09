@@ -1,2 +1,2 @@
-export class AbstractController {
+export class AbstractController extends EventTarget {
 }

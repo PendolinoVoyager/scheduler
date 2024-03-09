@@ -13,16 +13,15 @@ describe('scheduleController', () => {
   describe('renderRawCellData', () => {
     test('renders rawcelldata ', () => {
       const schedule = arrangeTestSchedule(2024, 2);
-      const sut = new ScheduleController();
+      const sut = createScheduleController();
       const expected = schedule.exportJSON();
 
-      substituteViews(sut);
       sut.renderRawCellData(expected);
 
       expect(sut.cellsView.data).toEqual(expected);
     });
     test('throws on undefined', () => {
-      const sut = new ScheduleController();
+      const sut = createScheduleController();
 
       //@ts-ignore
       const actual = sut.renderRawCellData.bind(sut, undefined);
@@ -32,10 +31,9 @@ describe('scheduleController', () => {
   describe('selection', () => {
     test('day-row dataset points to correct CellData', () => {
       const schedule = arrangeTestSchedule(2024, 2);
-      const sut = new ScheduleController();
+      const sut = createScheduleController();
       const row = 1;
       const day = 2;
-      substituteViews(sut);
       sut.renderRawCellData(schedule.exportJSON());
       sut.select(row, day);
 
@@ -48,7 +46,7 @@ describe('scheduleController', () => {
   describe('updateSelected', () => {
     test('given other shiftType assigns proper hours', () => {
       const schedule = arrangeTestSchedule(2024, 2);
-      const sut = new ScheduleController();
+      const sut = createScheduleController();
       sut.workingSchedule = schedule;
       const row = 2;
       const day = 10;
@@ -60,7 +58,6 @@ describe('scheduleController', () => {
         shiftType: newShiftType,
       };
 
-      substituteViews(sut);
       sut.renderRawCellData(schedule.exportJSON());
       sut.select(row, day);
       sut.updateSelected(newCell);
@@ -71,7 +68,7 @@ describe('scheduleController', () => {
     });
     test('given customHours changes to custom shiftType', () => {
       const schedule = arrangeTestSchedule(2024, 2);
-      const sut = new ScheduleController();
+      const sut = createScheduleController();
       sut.workingSchedule = schedule;
       const row = 2;
       const day = 10;
@@ -80,7 +77,6 @@ describe('scheduleController', () => {
         endTime: 2,
       };
 
-      substituteViews(sut);
       sut.renderRawCellData(schedule.exportJSON());
       sut.select(row, day);
       sut.updateSelected(newCell);
@@ -89,7 +85,7 @@ describe('scheduleController', () => {
 
     test('given "None" shift type changes to no hours', () => {
       const schedule = arrangeTestSchedule(2024, 2);
-      const sut = new ScheduleController();
+      const sut = createScheduleController();
       sut.workingSchedule = schedule;
       const row = 2;
       const day = 10;
@@ -97,7 +93,6 @@ describe('scheduleController', () => {
         shiftType: 'None',
       };
 
-      substituteViews(sut);
       sut.renderRawCellData(schedule.exportJSON());
       sut.select(row, day);
       sut.updateSelected(newCell);
@@ -106,15 +101,13 @@ describe('scheduleController', () => {
     });
     test('updates view after updateSelected', () => {
       const schedule = arrangeTestSchedule(2024, 2);
-      const sut = new ScheduleController();
-      sut.workingSchedule = schedule;
+      const sut = createScheduleController();
       const row = 2;
       const day = 10;
       const newCell: Partial<ExcludeId<CellData>> = {
         shiftType: 'None',
       };
-      substituteViews(sut);
-      sut.renderRawCellData(schedule.exportJSON());
+      sut.createLiveSchedule(schedule);
       sut.select(row, day);
       sut.updateSelected(newCell);
 
@@ -130,6 +123,9 @@ describe('scheduleController', () => {
   });
 });
 
-function substituteViews(controller: ScheduleController) {
+export function createScheduleController() {
+  const controller = new ScheduleController();
   controller.cellsView = createMockView(CellsView);
+  controller.titleElement = document.createElement('h1');
+  return controller;
 }

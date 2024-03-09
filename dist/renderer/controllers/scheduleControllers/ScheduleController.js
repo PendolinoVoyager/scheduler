@@ -10,6 +10,7 @@ export default class ScheduleController extends AbstractController {
         this.scheduleData = null;
         this.selected = null;
         this.workingSchedule = null;
+        this.titleElement = document.getElementById('main-info');
         this.cellsView = new CellsView(document.getElementById('calendar-body'));
         this.mouseController = new MouseScheduleController(this);
         this.keyboardController = new KeyboardScheduleController(this);
@@ -20,9 +21,17 @@ export default class ScheduleController extends AbstractController {
      */
     createLiveSchedule(schedule) {
         this.workingSchedule = schedule;
-        document.getElementById('main-info').innerText =
+        this.titleElement.innerText =
             'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
+        this.mouseController.bind();
         this.renderRawCellData(schedule.exportJSON());
+        this.addEventListener('select-change', (e) => {
+            const newEvent = new CustomEvent('select-change');
+            if (e.detail.src === this.mouseController)
+                this.keyboardController.dispatchEvent(newEvent);
+            if (e.detail.src === this.keyboardController)
+                this.mouseController.dispatchEvent(newEvent);
+        });
     }
     /**
      * Should only be used alone to render archived schedules.
@@ -32,6 +41,8 @@ export default class ScheduleController extends AbstractController {
     renderRawCellData(scheduleJSON) {
         this.scheduleData = scheduleJSON;
         this.archived = scheduleJSON.archived;
+        if (this.archived)
+            this.titleElement.innerText += ' (archiwizowane}';
         this.cellsView.renderSpinner();
         if (scheduleJSON == null)
             throw new Error('Invalid data, got: ' + scheduleJSON);
@@ -54,10 +65,10 @@ export default class ScheduleController extends AbstractController {
         this.cellsView.update(this.scheduleData);
     }
     teardown() {
-        //@ts-ignore
-        this.cellsView = null;
         this.scheduleData = null;
         this.selected = null;
         this.workingSchedule = null;
+        this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
+        this.cellsView.renderSpinner();
     }
 }

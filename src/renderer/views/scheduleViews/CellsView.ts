@@ -2,6 +2,7 @@ import { CONFIG } from '../../config.js';
 import { ScheduleJSON } from '../../models/ScheduleTypes.js';
 import { CellData } from '../../models/types.js';
 import CalendarService from '../../services/CalendarService.js';
+import { numberToHour } from '../../helpers/numberToHour.js';
 import View from '../View.js';
 
 export default class CellsView extends View {
@@ -29,12 +30,12 @@ export default class CellsView extends View {
       cellData.shiftType === 'None'
         ? 'W'
         : CONFIG.SHIFT_TYPES[cellData.shiftType].translation;
-    error here // Make in helpers to change 14.5 to 14:30
+
     return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${
       cellData.day
-    }" data-row="${row}">${cellData.startTime ?? altText}<br>${
-      cellData.endTime ?? ''
-    }</div>`;
+    }" data-row="${row - 1}">${
+      numberToHour(cellData.startTime) || altText
+    }<br>${numberToHour(cellData.endTime)}</div>`;
   }
   #generateEmployee(row: number): string {
     return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${
