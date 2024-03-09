@@ -18,6 +18,7 @@ class App {
   constructor() {
     this.#addDefaultListeners();
     const schedule = new Schedule(state.group, state.year, state.month);
+    schedule.disableFreeDaysInPoland();
     this.scheduleController.createLiveSchedule(schedule);
   }
   #addDefaultListeners() {

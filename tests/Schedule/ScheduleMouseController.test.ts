@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import ScheduleController from '../../src/renderer/controllers/scheduleControllers/ScheduleController';
 import CellsView from '../../src/renderer/views/scheduleViews/CellsView';
 import { arrangeTestSchedule, createMockView } from '../testHelpers';
 import { createScheduleController } from './ScheduleController.test';

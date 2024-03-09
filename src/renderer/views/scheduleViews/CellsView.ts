@@ -26,6 +26,9 @@ export default class CellsView extends View {
     );
   }
   #generateCell(cellData: CellData, row: number): string {
+    if (this.data.disabledDays.includes(cellData.day)) {
+      return `<div class="cell disabled" data-day="${cellData.day}"></div>`;
+    }
     const altText =
       cellData.shiftType === 'None'
         ? 'W'

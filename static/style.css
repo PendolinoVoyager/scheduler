@@ -529,6 +529,7 @@ select {
   place-content: center;
   min-height: 50vh;
   overflow-x: scroll;
+  overflow-y: hidden;
   position: relative;
 }
 .cell-header {
@@ -545,8 +546,6 @@ select {
   box-shadow: var(--shadow);
   user-select: none;
   border-radius: 0;
-  position: sticky;
-  left: 0;
   line-height: 1rem;
 }
 .cell-employee-name {
@@ -568,7 +567,7 @@ select {
   user-select: none;
   cursor: pointer;
   font-weight: bold;
-
+  position: relative;
   text-align: center;
   color: white;
   text-shadow: 0 0 2px black;
@@ -577,4 +576,34 @@ select {
 .cell:hover {
   transform: scale(1.15, 1.15);
   box-shadow: var(--shadow);
+  z-index: 2;
+}
+.disabled {
+  border: none;
+}
+.cell.disabled:hover {
+  transform: none;
+  box-shadow: none;
+  cursor: auto;
+}
+#schedule-mouse-controller-box {
+  position: fixed;
+  z-index: 10;
+  transform: translate(-50%, -100%);
+  max-width: 500px;
+}
+#schedule-mouse-controller-box::after {
+  content: '';
+  position: absolute;
+  flex-shrink: 1;
+  top: 100%;
+  left: 50%;
+  transform: translateX(50%) rotate(180deg);
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent var(--box-secondary) transparent; /* Adjust color as needed */
+}
+
+#schedule-mouse-controller-box .box-sharp {
+  font-size: small;
 }

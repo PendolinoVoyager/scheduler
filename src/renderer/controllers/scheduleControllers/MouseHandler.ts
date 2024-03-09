@@ -1,13 +1,18 @@
+import { CONFIG } from '../../config.js';
 import { AbstractController } from '../AbstractController.js';
+import MouseBoxController from './MouseBoxController.js';
 import ScheduleController from './ScheduleController.js';
 
 export default class MouseScheduleController extends AbstractController {
+  mouseBoxController: MouseBoxController;
   constructor(readonly mainController: ScheduleController) {
     super();
+    this.mouseBoxController = new MouseBoxController(this);
   }
   boundHandlers = {
     handleClick: this.handleClick.bind(this),
     onSelectChange: this.onSelectChange.bind(this),
+    hasClickedAway: this.#hasClickedAway.bind(this),
   };
   bind() {
     this.mainController.cellsView.parentElement.addEventListener(
@@ -15,10 +20,12 @@ export default class MouseScheduleController extends AbstractController {
       this.boundHandlers.handleClick
     );
     this.addEventListener('select-change', this.boundHandlers.onSelectChange);
+    document.addEventListener('click', this.boundHandlers.hasClickedAway);
   }
   handleClick(e: MouseEvent) {
-    //@ts-ignore
-    const targetCell = e.target.closest('.cell') as HTMLElement;
+    const targetCell = (e.target as HTMLElement).closest(
+      '.cell'
+    ) as HTMLElement;
     if (!targetCell) return;
     if (!targetCell.dataset.day || !targetCell.dataset.row) return;
     this.mainController.select(
@@ -31,12 +38,34 @@ export default class MouseScheduleController extends AbstractController {
       cancelable: false,
     });
     this.mainController.dispatchEvent(event);
+    this.mouseBoxController.show(targetCell);
   }
+  /**
+   * Checks if click is outside cells and box
+   */
+  #hasClickedAway(e: MouseEvent) {
+    const eTarget = e.target as HTMLElement;
+    let target =
+      eTarget.closest('#schedule-mouse-controller-box') ??
+      eTarget.closest('.cell');
+    if (!target || target?.classList.contains('disabled'))
+      this.mouseBoxController.hide();
+  }
+
   /**
    * Handles select change from source other than itself
    */
+  unbind() {
+    this.removeEventListener(
+      'select-change',
+      this.boundHandlers.onSelectChange
+    );
+    this.mainController.cellsView.parentElement.removeEventListener(
+      'click',
+      this.boundHandlers.handleClick
+    );
+  }
   onSelectChange(e: any) {
-    console.log('e');
-    if (e.detail.src === this) console.log('yipee');
+    this.mouseBoxController.hide();
   }
 }

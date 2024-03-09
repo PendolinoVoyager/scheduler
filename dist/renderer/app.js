@@ -24,6 +24,7 @@ class App {
         this.scheduleController = new ScheduleController();
         __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
         const schedule = new Schedule(state.group, state.year, state.month);
+        schedule.disableFreeDaysInPoland();
         this.scheduleController.createLiveSchedule(schedule);
     }
 }

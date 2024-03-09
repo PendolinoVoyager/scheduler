@@ -121,6 +121,29 @@ describe('scheduleController', () => {
       expect(element?.classList?.contains('none'));
     });
   });
+  describe('disabled days', () => {
+    test('select with disabled day throws', () => {
+      const sut = createScheduleController();
+      const schedule = arrangeTestSchedule(2024, 4);
+
+      schedule.disableFreeDaysInPoland();
+      sut.createLiveSchedule(schedule);
+      const actual = sut.select.bind(sut, 0, schedule.getDisabledDays()[0]);
+
+      expect(actual).toThrow();
+    });
+    test('disabled cells have disabled class', () => {
+      const sut = createScheduleController();
+      const schedule = arrangeTestSchedule(2024, 4);
+      schedule.disableFreeDaysInPoland();
+      sut.createLiveSchedule(schedule);
+      const element = [...sut.cellsView.parentElement.children].find(
+        //@ts-ignore
+        (el) => +el.dataset.day === sut.scheduleData?.disabledDays[1]
+      );
+      expect(element?.classList.contains('disabled')).toBeTruthy();
+    });
+  });
 });
 
 export function createScheduleController() {

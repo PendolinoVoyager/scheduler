@@ -51,6 +51,8 @@ export default class ScheduleController extends AbstractController {
     select(row, day) {
         if (!this.scheduleData)
             throw new Error('No schedule to work with.');
+        if (this.scheduleData.disabledDays.includes(day))
+            throw new Error('Cannot select disabled day: ' + day);
         this.selected = this.scheduleData.data[row][day - 1];
         return this.selected;
     }
@@ -62,7 +64,7 @@ export default class ScheduleController extends AbstractController {
         if (!this.selected)
             throw new Error('No cell selected.');
         this.workingSchedule.updateCell(this.selected.id, this.selected.day, newData);
-        this.cellsView.update(this.scheduleData);
+        this.cellsView.render(this.scheduleData);
     }
     teardown() {
         this.scheduleData = null;

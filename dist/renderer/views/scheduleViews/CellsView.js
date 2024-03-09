@@ -25,6 +25,9 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
             .map((cell) => __classPrivateFieldGet(this, _CellsView_instances, "m", _CellsView_generateCell).call(this, cell, row + 1))
             .join(''));
 }, _CellsView_generateCell = function _CellsView_generateCell(cellData, row) {
+    if (this.data.disabledDays.includes(cellData.day)) {
+        return `<div class="cell disabled" data-day="${cellData.day}"></div>`;
+    }
     const altText = cellData.shiftType === 'None'
         ? 'W'
         : CONFIG.SHIFT_TYPES[cellData.shiftType].translation;
