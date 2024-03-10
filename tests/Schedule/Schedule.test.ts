@@ -153,6 +153,55 @@ describe('Schedule', () => {
       expect(sut.getDisabledDays()).toStrictEqual([4, 11, 18, 25]);
     });
   });
+  describe('add/delete employee', () => {
+    test('adding an employee adds cells row', () => {
+      const sut = arrangeTestSchedule();
+      sut.getGroup().addEmployee(new Employee('TEST'));
+      sut.fillRowfromPreference(sut.getGroup().getEmployees().at(-1)!.getId());
+      expect(sut.getCells().length).toBe(sut.getGroup().getEmployees().length);
+    });
+    test('deleting an employee deletes celldata from schedule', () => {
+      const group = createGroup(10);
+      const sut = new Schedule(group, 2024, 3);
+      const row = 1;
+      group.removeEmployee(group.getEmployees()[row].getId());
+      sut.deleteRow(row);
+
+      expect(sut.getCells().length).toBe(sut.getGroup().getEmployees().length);
+      expect(sut.exportJSON().data.length).toBe(
+        sut.getGroup().getEmployees().length
+      );
+    });
+
+    test('updating an employee updates celldata', () => {
+      const sut = arrangeTestSchedule();
+      sut.getGroup().getEmployees()[0].setName('TEST TEST');
+      expect(sut.exportJSON().employees[0].name).toBe('TEST TEST');
+    });
+    describe('assignCellData', () => {
+      test('mismatch cells length gets trimmed', () => {
+        const group = createGroup(10);
+        let sut = new Schedule(group, 2024, 3);
+        const oldCellData = sut.exportJSON().data;
+
+        sut = new Schedule(group, 2024, 2);
+        Schedule.assignCellData(sut, oldCellData);
+
+        expect(sut.getCells()[0].length).toBe(29);
+      });
+      test('mismatch cells length gets filled from preference', () => {
+        const group = createGroup(10);
+        let sut = new Schedule(group, 2024, 2);
+        const oldCellData = sut.exportJSON().data;
+
+        sut = new Schedule(group, 2024, 3);
+        Schedule.assignCellData(sut, oldCellData);
+
+        expect(sut.getCells()[0].length).toBe(31);
+        expect(sut.getCells()[0].at(-1)).toBeDefined();
+      });
+    });
+  });
   describe('exporting', () => {
     test('exportJSON', () => {
       const group = createGroup(2);

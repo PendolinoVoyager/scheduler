@@ -1,7 +1,9 @@
+import ScheduleController from '../src/renderer/controllers/scheduleControllers/ScheduleController';
 import Employee from '../src/renderer/models/Employee';
 import Group from '../src/renderer/models/Group';
 import { Schedule } from '../src/renderer/models/Schedule';
 import View from '../src/renderer/views/View';
+import CellsView from '../src/renderer/views/scheduleViews/CellsView';
 
 export function createGroup(numEmployees: number) {
   const group = new Group();
@@ -24,4 +26,10 @@ export function arrangeTestSchedule(year: number = 2024, month: number = 2) {
 export function createMockView(view: any = View): View {
   const mockView = new view(document.createElement('div'));
   return mockView;
+}
+export function createScheduleController() {
+  const controller = new ScheduleController();
+  controller.cellsView = createMockView(CellsView);
+  controller.titleElement = document.createElement('h1');
+  return controller;
 }

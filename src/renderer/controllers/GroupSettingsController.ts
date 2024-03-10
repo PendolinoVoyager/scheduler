@@ -5,7 +5,6 @@ import GroupSettingsView from '../views/groupSettingsViews/GroupSettingsView.js'
 import EmployeeView from '../views/groupSettingsViews/EmployeeView.js';
 import Employee from '../models/Employee.js';
 import Group from '../models/Group.js';
-import state from '../state.js';
 import {
   renderEmployeeForm,
   addPositionDropdownHandlers,
@@ -16,6 +15,7 @@ import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
 import FormError from '../errors/FormError.js';
 import HoverBoxService from '../services/HoverBox.js';
 import { CONFIG } from '../config.js';
+import { App } from '../app.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: typeof ModalService;
@@ -25,7 +25,7 @@ export default class GroupSettingsController extends AbstractController {
   public employeeView: EmployeeView | undefined;
   public CalendarPreviewView: CalendarPreviewView | undefined;
   public employeeForm: HTMLFormElement | undefined;
-  public group: Group = state.group;
+  public group: Group = this.app.state.group;
   public selectedEmployee: Employee | null = this.group.getEmployees()[0];
   public employeeList: HTMLElement | undefined;
   public selectedItem: HTMLElement | undefined;
@@ -33,7 +33,7 @@ export default class GroupSettingsController extends AbstractController {
   waitingfForDialog: boolean = false;
   hoverBoxService: typeof HoverBoxService;
 
-  constructor() {
+  constructor(private app: App) {
     super();
     this.modalService = ModalService;
     this.hoverBoxService = HoverBoxService;
@@ -103,6 +103,7 @@ export default class GroupSettingsController extends AbstractController {
     );
     if (!res) return;
     this.group.removeEmployee(+(target.dataset as any).id);
+    this.app.dispatchEvent(new CustomEvent('remove-employee'));
     this.modalService.clear();
 
     this.groupSettingsView.render(this.group.getEmployees());
@@ -178,6 +179,7 @@ export default class GroupSettingsController extends AbstractController {
     // Redundand? Maybe
     this.groupSettingsView.clear();
     this.modalService.clear();
+    this.app.dispatchEvent(new CustomEvent('settings-update'));
   }
   #renderEmptyForm() {
     // Should've made it into a view but whatever
@@ -201,8 +203,8 @@ export default class GroupSettingsController extends AbstractController {
     this.CalendarPreviewView.renderSpinner();
 
     const calendarData = this.selectedEmployee!.getPreferencesForMonth(
-      state.year,
-      state.month
+      this.app.state.year,
+      this.app.state.month
     );
 
     this.CalendarPreviewView.render(calendarData);
@@ -235,9 +237,10 @@ export default class GroupSettingsController extends AbstractController {
       if (!idElement) return;
       idElement.value = employee.getId().toString();
       employee.updateFromFormData(this.employeeForm);
-      state.group.addEmployee(employee);
+      this.app.state.group.addEmployee(employee);
 
       this.selectedEmployee = employee;
+      this.app.dispatchEvent(new CustomEvent('add-employee'));
     } catch (err) {
       throw err;
     }

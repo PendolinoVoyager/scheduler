@@ -28,11 +28,11 @@ export default class ScheduleController extends AbstractController {
    * @param Schedule
    */
   createLiveSchedule(schedule: Schedule) {
+    this.teardown();
     this.workingSchedule = schedule;
     this.titleElement.innerText =
       'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
     this.mouseController.bind();
-
     this.renderRawCellData(schedule.exportJSON());
 
     this.addEventListener('select-change', (e: any) => {
@@ -91,5 +91,6 @@ export default class ScheduleController extends AbstractController {
     this.workingSchedule = null;
     this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
     this.cellsView.renderSpinner();
+    this.mouseController.unbind();
   }
 }

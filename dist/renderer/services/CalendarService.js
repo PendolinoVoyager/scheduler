@@ -4,7 +4,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _CalendarService_instances, _CalendarService_generateWeekDays;
-import state from '../state.js';
 class CalendarService {
     constructor(month, year) {
         _CalendarService_instances.add(this);
@@ -18,8 +17,6 @@ class CalendarService {
             this.month = month;
         }
         this.year = year ?? this.year;
-        state.month = this.month;
-        state.year = this.year;
     }
     getCalendarData() {
         return {

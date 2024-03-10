@@ -39,6 +39,9 @@ export class Schedule extends AbstractSchedule {
             endTime: customHours?.endTime ?? CONFIG.SHIFT_TYPES[shiftType].endTime,
             id,
         };
+        if (employeeIndex >= this.cells.length) {
+            this.cells.push(new Array(this.length));
+        }
         this.cells[employeeIndex][day - 1] = cellData;
     }
     updateCell(id, day, data) {
@@ -72,6 +75,9 @@ export class Schedule extends AbstractSchedule {
     enableDay(day) {
         this.disabledDays.delete(day);
     }
+    deleteRow(row) {
+        this.cells.splice(row, 1);
+    }
     /**
      * Note: returned ScheduleJSON.data is a reference to Schedule.cells.
      *
@@ -103,7 +109,19 @@ export class Schedule extends AbstractSchedule {
     exportCSV() {
         throw new Error('Method not implemented.');
     }
-    static importJSON(scheduleJSON) {
-        throw new Error('Method not implemented.');
+    static assignCellData(schedule, cellData) {
+        cellData.forEach((cellRow) => {
+            const employee = schedule.getGroup().findEmployee(cellRow[0].id);
+            if (!employee)
+                return;
+            let tip = [];
+            if (schedule.length > cellRow.length) {
+                tip = schedule.cells[schedule.group.findEmployeeIndex(employee.getId())].slice(cellRow.length);
+            }
+            schedule.cells[schedule.group.findEmployeeIndex(employee.getId())] = [
+                ...cellRow.slice(0, schedule.length),
+                ...tip,
+            ];
+        });
     }
 }

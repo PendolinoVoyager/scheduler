@@ -3,10 +3,8 @@
  */
 
 import { CONFIG } from '../../src/renderer/config';
-import ScheduleController from '../../src/renderer/controllers/scheduleControllers/ScheduleController';
 import { CellData, ExcludeId } from '../../src/renderer/models/types';
-import CellsView from '../../src/renderer/views/scheduleViews/CellsView';
-import { createMockView, arrangeTestSchedule } from '../testHelpers';
+import { arrangeTestSchedule, createScheduleController } from '../testHelpers';
 import { getShiftHours } from '../../src/renderer/helpers/getShiftHours';
 
 describe('scheduleController', () => {
@@ -137,18 +135,13 @@ describe('scheduleController', () => {
       const schedule = arrangeTestSchedule(2024, 4);
       schedule.disableFreeDaysInPoland();
       sut.createLiveSchedule(schedule);
-      const element = [...sut.cellsView.parentElement.children].find(
-        //@ts-ignore
-        (el) => +el.dataset.day === sut.scheduleData?.disabledDays[1]
-      );
+      const element = [...sut.cellsView.parentElement.children]
+        .slice(schedule.length + 1)
+        .find(
+          //@ts-ignore
+          (el) => +el.dataset.day === sut.scheduleData?.disabledDays[1]
+        );
       expect(element?.classList.contains('disabled')).toBeTruthy();
     });
   });
 });
-
-export function createScheduleController() {
-  const controller = new ScheduleController();
-  controller.cellsView = createMockView(CellsView);
-  controller.titleElement = document.createElement('h1');
-  return controller;
-}

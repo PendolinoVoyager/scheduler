@@ -10,7 +10,6 @@ import { renderDialog } from '../helpers/yesNoDialog.js';
 import GroupSettingsView from '../views/groupSettingsViews/GroupSettingsView.js';
 import EmployeeView from '../views/groupSettingsViews/EmployeeView.js';
 import Employee from '../models/Employee.js';
-import state from '../state.js';
 import { renderEmployeeForm, addPositionDropdownHandlers, } from '../helpers/renderEmployeeForm.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 import CalendarService from '../services/CalendarService.js';
@@ -19,11 +18,12 @@ import FormError from '../errors/FormError.js';
 import HoverBoxService from '../services/HoverBox.js';
 import { CONFIG } from '../config.js';
 class GroupSettingsController extends AbstractController {
-    constructor() {
+    constructor(app) {
         super();
         _GroupSettingsController_instances.add(this);
+        this.app = app;
         this.btnManageGroup = document.getElementById('btn-manage-group');
-        this.group = state.group;
+        this.group = this.app.state.group;
         this.selectedEmployee = this.group.getEmployees()[0];
         this.isModifying = false;
         this.waitingfForDialog = false;
@@ -92,6 +92,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     if (!res)
         return;
     this.group.removeEmployee(+target.dataset.id);
+    this.app.dispatchEvent(new CustomEvent('remove-employee'));
     this.modalService.clear();
     this.groupSettingsView.render(this.group.getEmployees());
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
@@ -151,6 +152,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     // Redundand? Maybe
     this.groupSettingsView.clear();
     this.modalService.clear();
+    this.app.dispatchEvent(new CustomEvent('settings-update'));
 }, _GroupSettingsController_renderEmptyForm = function _GroupSettingsController_renderEmptyForm() {
     // Should've made it into a view but whatever
     this.employeeView?.clear();
@@ -169,7 +171,7 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         throw new Error('Something went wrong!');
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
-    const calendarData = this.selectedEmployee.getPreferencesForMonth(state.year, state.month);
+    const calendarData = this.selectedEmployee.getPreferencesForMonth(this.app.state.year, this.app.state.month);
     this.CalendarPreviewView.render(calendarData);
     const btnPrev = this.modalService
         .getWriteableElement()
@@ -197,8 +199,9 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
             return;
         idElement.value = employee.getId().toString();
         employee.updateFromFormData(this.employeeForm);
-        state.group.addEmployee(employee);
+        this.app.state.group.addEmployee(employee);
         this.selectedEmployee = employee;
+        this.app.dispatchEvent(new CustomEvent('add-employee'));
     }
     catch (err) {
         throw err;

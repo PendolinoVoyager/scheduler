@@ -1,5 +1,3 @@
-import state from '../state.js';
-
 class CalendarService {
   public month: number = new Date().getMonth() + 1;
   public year: number = new Date().getFullYear();
@@ -15,8 +13,6 @@ class CalendarService {
       this.month = month;
     }
     this.year = year ?? this.year;
-    state.month = this.month;
-    state.year = this.year;
   }
   getCalendarData() {
     return {

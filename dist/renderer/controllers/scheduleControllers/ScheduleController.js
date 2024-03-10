@@ -20,6 +20,7 @@ export default class ScheduleController extends AbstractController {
      * @param Schedule
      */
     createLiveSchedule(schedule) {
+        this.teardown();
         this.workingSchedule = schedule;
         this.titleElement.innerText =
             'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
@@ -81,5 +82,6 @@ export default class ScheduleController extends AbstractController {
         this.workingSchedule = null;
         this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
         this.cellsView.renderSpinner();
+        this.mouseController.unbind();
     }
 }

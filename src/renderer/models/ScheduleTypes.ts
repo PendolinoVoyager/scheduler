@@ -48,7 +48,6 @@ export abstract class AbstractSchedule extends Entity {
 
   abstract exportJSON(): ScheduleJSON;
   abstract exportCSV(): string;
-
   getGroup() {
     return this.group;
   }

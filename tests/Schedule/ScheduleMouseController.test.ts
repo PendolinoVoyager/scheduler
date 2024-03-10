@@ -3,7 +3,7 @@
  */
 import CellsView from '../../src/renderer/views/scheduleViews/CellsView';
 import { arrangeTestSchedule, createMockView } from '../testHelpers';
-import { createScheduleController } from './ScheduleController.test';
+import { createScheduleController } from '../testHelpers';
 
 describe('scheduleMouseController', () => {
   test('click on cell selects cell in main controller', () => {
