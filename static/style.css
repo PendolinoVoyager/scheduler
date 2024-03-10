@@ -588,6 +588,12 @@ select {
   box-shadow: none;
   cursor: auto;
 }
+.selected {
+  transform: scale(1.15, 1.15);
+  box-shadow: var(--shadow);
+  z-index: 3;
+}
+
 #schedule-mouse-controller-box {
   position: fixed;
   z-index: 10;
@@ -608,4 +614,7 @@ select {
 
 #schedule-mouse-controller-box .box-sharp {
   font-size: small;
+}
+#calendar-header .box-sharp {
+  font-size: smaller;
 }

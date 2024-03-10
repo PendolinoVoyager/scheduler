@@ -32,7 +32,7 @@ describe('scheduleController', () => {
       const sut = createScheduleController();
       const row = 1;
       const day = 2;
-      sut.renderRawCellData(schedule.exportJSON());
+      sut.createLiveSchedule(schedule);
       sut.select(row, day);
 
       expect(sut.selected?.id).toBe(

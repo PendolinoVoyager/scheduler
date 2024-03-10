@@ -4,6 +4,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _MouseScheduleController_instances, _MouseScheduleController_hasClickedAway;
+import { CONFIG } from '../../config.js';
 import { AbstractController } from '../AbstractController.js';
 import MouseBoxController from './MouseBoxController.js';
 class MouseScheduleController extends AbstractController {
@@ -17,7 +18,9 @@ class MouseScheduleController extends AbstractController {
             hasClickedAway: __classPrivateFieldGet(this, _MouseScheduleController_instances, "m", _MouseScheduleController_hasClickedAway).bind(this),
             toggleDisabled: this.toggleDisabled.bind(this),
         };
-        this.mouseBoxController = new MouseBoxController(this);
+        this.mouseBoxController = CONFIG.MOUSE_BOX
+            ? new MouseBoxController(this)
+            : null;
     }
     bind() {
         this.mainController.cellsView.parentElement.addEventListener('click', this.boundHandlers.handleClick);
@@ -38,7 +41,7 @@ class MouseScheduleController extends AbstractController {
             cancelable: false,
         });
         this.mainController.dispatchEvent(event);
-        this.mouseBoxController.show(targetCell);
+        this.mouseBoxController && this.mouseBoxController.show(targetCell);
     }
     toggleDisabled(e) {
         const target = e.target.closest('.cell-header');
@@ -58,14 +61,17 @@ class MouseScheduleController extends AbstractController {
         document.removeEventListener('click', this.boundHandlers.hasClickedAway);
     }
     onSelectChange(e) {
-        this.mouseBoxController.hide();
+        this.mouseBoxController && this.mouseBoxController.hide();
     }
 }
 _MouseScheduleController_instances = new WeakSet(), _MouseScheduleController_hasClickedAway = function _MouseScheduleController_hasClickedAway(e) {
     const eTarget = e.target;
     let target = eTarget.closest('#schedule-mouse-controller-box') ??
-        eTarget.closest('.cell');
-    if (!target || target?.classList.contains('disabled'))
-        this.mouseBoxController.hide();
+        eTarget.closest('.cell') ??
+        eTarget.closest('.shift-form');
+    if (target && !target?.classList.contains('disabled'))
+        return;
+    this.mainController.unselect();
+    this.mouseBoxController && this.mouseBoxController.hide();
 };
 export default MouseScheduleController;

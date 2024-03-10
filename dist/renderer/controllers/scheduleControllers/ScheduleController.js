@@ -1,19 +1,30 @@
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _ScheduleController_instances, _ScheduleController_updateSelectedClass;
 import { AbstractController } from '../AbstractController.js';
 import CellsView from '../../views/scheduleViews/CellsView.js';
 import CalendarService from '../../services/CalendarService.js';
 import MouseScheduleController from './MouseHandler.js';
 import KeyboardScheduleController from './KeyboardHandler.js';
-export default class ScheduleController extends AbstractController {
+import HeaderUtilsController from './HeaderUtilsController.js';
+class ScheduleController extends AbstractController {
     constructor() {
         super();
+        _ScheduleController_instances.add(this);
         this.archived = false;
         this.scheduleData = null;
         this.selected = null;
+        this.selectedElement = null;
+        this.previousSelectedElement = null;
         this.workingSchedule = null;
         this.titleElement = document.getElementById('main-info');
         this.cellsView = new CellsView(document.getElementById('calendar-body'));
         this.mouseController = new MouseScheduleController(this);
         this.keyboardController = new KeyboardScheduleController(this);
+        this.headerUtilsController = new HeaderUtilsController(this);
     }
     /**
      * Entrypoint to init schedule
@@ -25,6 +36,7 @@ export default class ScheduleController extends AbstractController {
         this.titleElement.innerText =
             'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
         this.mouseController.bind();
+        this.headerUtilsController.shiftButtonsView.render(undefined);
         this.renderRawCellData(schedule.exportJSON());
         this.addEventListener('select-change', (e) => {
             const newEvent = new CustomEvent('select-change');
@@ -55,7 +67,12 @@ export default class ScheduleController extends AbstractController {
         if (this.scheduleData.disabledDays.includes(day))
             throw new Error('Cannot select disabled day: ' + day);
         this.selected = this.scheduleData.data[row][day - 1];
+        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
         return this.selected;
+    }
+    unselect() {
+        this.selected = null;
+        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
     }
     updateSelected(newData) {
         if (this.archived)
@@ -85,3 +102,14 @@ export default class ScheduleController extends AbstractController {
         this.mouseController.unbind();
     }
 }
+_ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass() {
+    this.selectedElement?.classList.remove('selected');
+    this.previousSelectedElement?.classList.remove('selected');
+    this.previousSelectedElement = this.selectedElement;
+    //@ts-ignore
+    this.selectedElement = [...this.cellsView.parentElement.children].find((child) => child?.dataset?.day === `${this.selected?.day}` &&
+        child?.dataset?.row ===
+            `${this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id)}`);
+    this.selectedElement?.classList.add('selected');
+};
+export default ScheduleController;

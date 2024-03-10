@@ -4,17 +4,15 @@ export default abstract class View {
   constructor(parentElement: HTMLElement) {
     this.parentElement = parentElement;
   }
-  render<T>(data: T) {
-    if (data == null) throw new Error('Invalid data');
+  render(data: typeof this.data) {
     this.data = data;
 
     this.clear();
     const markup = this.generateMarkup();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   }
-  update<T>(data: T) {
+  update(data: typeof this.data) {
     this.data = data;
-    if (data == null) throw new Error('Invalid data');
     const newMarkup = this.generateMarkup();
 
     const newDOM = document.createRange().createContextualFragment(newMarkup);

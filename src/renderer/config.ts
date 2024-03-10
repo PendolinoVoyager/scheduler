@@ -12,6 +12,9 @@ type Config = {
   FREE_DAYS: number[];
   SHIFT_TYPES: ShiftTypes;
   CUTOFF_DATE: { year: number; month: number };
+
+  //Schedule
+  MOUSE_BOX: Boolean;
 };
 export const DEFAULT_CONFIG: Config = {
   DEFAULT_SHIFT: 'Morning',
@@ -30,7 +33,7 @@ export const DEFAULT_CONFIG: Config = {
   ],
   EMPLOYEE_NAME_VALIDATOR: /^([\p{L}\d\s]{3,}\s[\p{L}\d\s]{3,})$/u,
   EMPLOYEE_NAME_ERROR_DESCRIPTION: 'Minimum 2 wyrazy po 3 znaki wymagane.',
-  FREE_DAYS: [0],
+  FREE_DAYS: [0, 1],
   SHIFT_TYPES: {
     Morning: {
       translation: 'Poranek',
@@ -57,5 +60,6 @@ export const DEFAULT_CONFIG: Config = {
     },
   },
   CUTOFF_DATE: { year: 2024, month: 1 },
+  MOUSE_BOX: false,
 };
-export const CONFIG = Object.assign(DEFAULT_CONFIG, {});
+export const CONFIG = Object.assign({}, DEFAULT_CONFIG);

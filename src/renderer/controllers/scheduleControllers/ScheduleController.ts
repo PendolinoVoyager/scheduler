@@ -7,21 +7,26 @@ import CalendarService from '../../services/CalendarService.js';
 import { CellData, ExcludeId } from '../../models/types.js';
 import MouseScheduleController from './MouseHandler.js';
 import KeyboardScheduleController from './KeyboardHandler.js';
+import HeaderUtilsController from './HeaderUtilsController.js';
 
 export default class ScheduleController extends AbstractController {
   archived: boolean = false;
   cellsView: View;
   scheduleData: ScheduleJSON | null = null;
   selected: CellData | null = null;
+  selectedElement: HTMLElement | null = null;
+  previousSelectedElement: HTMLElement | null = null;
   workingSchedule: Schedule | null = null;
   titleElement: HTMLElement = document.getElementById('main-info')!;
   mouseController: MouseScheduleController;
   keyboardController: KeyboardScheduleController;
+  headerUtilsController: HeaderUtilsController;
   constructor() {
     super();
     this.cellsView = new CellsView(document.getElementById('calendar-body')!);
     this.mouseController = new MouseScheduleController(this);
     this.keyboardController = new KeyboardScheduleController(this);
+    this.headerUtilsController = new HeaderUtilsController(this);
   }
   /**
    * Entrypoint to init schedule
@@ -34,6 +39,7 @@ export default class ScheduleController extends AbstractController {
       'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
     this.mouseController.bind();
     this.renderRawCellData(schedule.exportJSON());
+    this.headerUtilsController.shiftButtonsView.render(undefined);
 
     this.addEventListener('select-change', (e: any) => {
       const newEvent = new CustomEvent('select-change');
@@ -63,9 +69,13 @@ export default class ScheduleController extends AbstractController {
     if (this.scheduleData.disabledDays.includes(day))
       throw new Error('Cannot select disabled day: ' + day);
     this.selected = this.scheduleData.data[row][day - 1];
+    this.#updateSelectedClass();
     return this.selected;
   }
-
+  unselect() {
+    this.selected = null;
+    this.#updateSelectedClass();
+  }
   updateSelected(newData: Partial<ExcludeId<CellData>>): void {
     if (this.archived) throw new Error('Cannot update archived schedule.');
     if (!this.workingSchedule) throw new Error('No schedule to work with.');
@@ -92,5 +102,20 @@ export default class ScheduleController extends AbstractController {
     this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
     this.cellsView.renderSpinner();
     this.mouseController.unbind();
+  }
+  #updateSelectedClass() {
+    this.selectedElement?.classList.remove('selected');
+    this.previousSelectedElement?.classList.remove('selected');
+    this.previousSelectedElement = this.selectedElement;
+    //@ts-ignore
+    this.selectedElement = [...this.cellsView.parentElement.children].find(
+      (child) =>
+        (child as HTMLElement)?.dataset?.day === `${this.selected?.day}` &&
+        (child as HTMLElement)?.dataset?.row ===
+          `${this.workingSchedule!.getGroup().findEmployeeIndex(
+            this.selected!.id
+          )}`
+    );
+    this.selectedElement?.classList.add('selected');
   }
 }

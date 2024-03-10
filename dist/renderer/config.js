@@ -16,7 +16,7 @@ export const DEFAULT_CONFIG = {
     ],
     EMPLOYEE_NAME_VALIDATOR: /^([\p{L}\d\s]{3,}\s[\p{L}\d\s]{3,})$/u,
     EMPLOYEE_NAME_ERROR_DESCRIPTION: 'Minimum 2 wyrazy po 3 znaki wymagane.',
-    FREE_DAYS: [0],
+    FREE_DAYS: [0, 1],
     SHIFT_TYPES: {
         Morning: {
             translation: 'Poranek',
@@ -43,5 +43,6 @@ export const DEFAULT_CONFIG = {
         },
     },
     CUTOFF_DATE: { year: 2024, month: 1 },
+    MOUSE_BOX: false,
 };
-export const CONFIG = Object.assign(DEFAULT_CONFIG, {});
+export const CONFIG = Object.assign({}, DEFAULT_CONFIG);

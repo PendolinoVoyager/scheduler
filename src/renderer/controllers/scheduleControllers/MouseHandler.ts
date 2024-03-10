@@ -4,10 +4,12 @@ import MouseBoxController from './MouseBoxController.js';
 import ScheduleController from './ScheduleController.js';
 
 export default class MouseScheduleController extends AbstractController {
-  mouseBoxController: MouseBoxController;
+  mouseBoxController: MouseBoxController | null;
   constructor(readonly mainController: ScheduleController) {
     super();
-    this.mouseBoxController = new MouseBoxController(this);
+    this.mouseBoxController = CONFIG.MOUSE_BOX
+      ? new MouseBoxController(this)
+      : null;
   }
   boundHandlers = {
     handleClick: this.handleClick.bind(this),
@@ -43,7 +45,7 @@ export default class MouseScheduleController extends AbstractController {
       cancelable: false,
     });
     this.mainController.dispatchEvent(event);
-    this.mouseBoxController.show(targetCell);
+    this.mouseBoxController && this.mouseBoxController.show(targetCell);
   }
   /**
    * Checks if click is outside cells and box
@@ -52,9 +54,11 @@ export default class MouseScheduleController extends AbstractController {
     const eTarget = e.target as HTMLElement;
     let target =
       eTarget.closest('#schedule-mouse-controller-box') ??
-      eTarget.closest('.cell');
-    if (!target || target?.classList.contains('disabled'))
-      this.mouseBoxController.hide();
+      eTarget.closest('.cell') ??
+      eTarget.closest('.shift-form');
+    if (target && !target?.classList.contains('disabled')) return;
+    this.mainController.unselect();
+    this.mouseBoxController && this.mouseBoxController.hide();
   }
   toggleDisabled(e: MouseEvent) {
     const target = (e.target as HTMLElement).closest('.cell-header');
@@ -79,6 +83,6 @@ export default class MouseScheduleController extends AbstractController {
     document.removeEventListener('click', this.boundHandlers.hasClickedAway);
   }
   onSelectChange(e: any) {
-    this.mouseBoxController.hide();
+    this.mouseBoxController && this.mouseBoxController.hide();
   }
 }

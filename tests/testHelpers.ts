@@ -4,6 +4,7 @@ import Group from '../src/renderer/models/Group';
 import { Schedule } from '../src/renderer/models/Schedule';
 import View from '../src/renderer/views/View';
 import CellsView from '../src/renderer/views/scheduleViews/CellsView';
+import ShiftButtonsView from '../src/renderer/views/scheduleViews/ShiftButtonsView';
 
 export function createGroup(numEmployees: number) {
   const group = new Group();
@@ -31,5 +32,8 @@ export function createScheduleController() {
   const controller = new ScheduleController();
   controller.cellsView = createMockView(CellsView);
   controller.titleElement = document.createElement('h1');
+  controller.headerUtilsController.shiftButtonsView =
+    createMockView(ShiftButtonsView);
+
   return controller;
 }

@@ -30,7 +30,7 @@ class MouseBoxController extends AbstractController {
     }
 }
 _MouseBoxController_instances = new WeakSet(), _MouseBoxController_initBox = function _MouseBoxController_initBox() {
-    this.boxElement.classList.add('container-card', 'flex-row', 'space-evenly', 'hidden');
+    this.boxElement.classList.add('container-card', 'flex-row', 'space-evenly', 'hidden', 'shift-form');
     this.boxElement.id = 'schedule-mouse-controller-box';
     document.body.appendChild(this.boxElement);
     Object.entries(CONFIG.SHIFT_TYPES).forEach(([shift, info]) => {
@@ -41,7 +41,7 @@ _MouseBoxController_instances = new WeakSet(), _MouseBoxController_initBox = fun
       `);
     });
     this.customInput = document.createElement('form');
-    this.customInput.classList.add('flex-column', 'container-card2');
+    this.customInput.classList.add('flex-column', 'container-card2', 'shift-form');
     this.boxElement.appendChild(this.customInput);
     this.customInput.insertAdjacentHTML('beforeend', `
         <input type="time" name="start"></input>

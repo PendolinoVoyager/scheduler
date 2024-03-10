@@ -14,7 +14,8 @@ export default class MouseBoxController extends AbstractController {
       'container-card',
       'flex-row',
       'space-evenly',
-      'hidden'
+      'hidden',
+      'shift-form'
     );
     this.boxElement.id = 'schedule-mouse-controller-box';
     document.body.appendChild(this.boxElement);
@@ -30,7 +31,11 @@ export default class MouseBoxController extends AbstractController {
       );
     });
     this.customInput = document.createElement('form');
-    this.customInput.classList.add('flex-column', 'container-card2');
+    this.customInput.classList.add(
+      'flex-column',
+      'container-card2',
+      'shift-form'
+    );
     this.boxElement.appendChild(this.customInput);
     this.customInput.insertAdjacentHTML(
       'beforeend',

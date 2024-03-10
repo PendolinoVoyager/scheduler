@@ -17,7 +17,7 @@ interface State {
 export class App extends EventTarget {
   public state: State = {
     year: new Date().getFullYear(),
-    month: new Date().getMonth(),
+    month: new Date().getMonth() + 1,
     group: this.#assignTestGroup(),
     workingSchedule: null,
   };
@@ -79,7 +79,7 @@ export class App extends EventTarget {
     const testGroup = new Group();
     testGroup.addEmployee(
       new Employee('Anna Nowa', {
-        shiftPreference: Object.keys(CONFIG.SHIFT_TYPES)[0],
+        shiftPreference: Object.keys(CONFIG.SHIFT_TYPES)[1],
         position: 'Kierownik',
         disabled: true,
       })

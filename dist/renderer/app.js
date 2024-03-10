@@ -20,7 +20,7 @@ export class App extends EventTarget {
         _App_instances.add(this);
         this.state = {
             year: new Date().getFullYear(),
-            month: new Date().getMonth(),
+            month: new Date().getMonth() + 1,
             group: __classPrivateFieldGet(this, _App_instances, "m", _App_assignTestGroup).call(this),
             workingSchedule: null,
         };
@@ -68,7 +68,7 @@ _App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefa
 }, _App_assignTestGroup = function _App_assignTestGroup() {
     const testGroup = new Group();
     testGroup.addEmployee(new Employee('Anna Nowa', {
-        shiftPreference: Object.keys(CONFIG.SHIFT_TYPES)[0],
+        shiftPreference: Object.keys(CONFIG.SHIFT_TYPES)[1],
         position: 'Kierownik',
         disabled: true,
     }));
