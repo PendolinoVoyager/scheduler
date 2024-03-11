@@ -1,4 +1,5 @@
 import { CONFIG } from '../../config.js';
+import { hourToNumber } from '../../helpers/numberToHour.js';
 import { AbstractController } from '../AbstractController.js';
 import MouseScheduleController from './MouseHandler.js';
 
@@ -65,10 +66,9 @@ export default class MouseBoxController extends AbstractController {
       startTime = formData.get('start')?.toString();
       endTime = formData.get('end')?.toString();
       if (!startTime || !endTime) return;
-      startTime = startTime.split(':').map(Number);
-      endTime = endTime.split(':').map(Number);
-      startTime = startTime[0] + startTime[1] / 60;
-      endTime = endTime[0] + endTime[1] / 60;
+      startTime = hourToNumber(startTime);
+      endTime = hourToNumber(endTime);
+
       this.mouseController.mainController.updateSelected({
         shiftType: 'Custom',
         startTime,

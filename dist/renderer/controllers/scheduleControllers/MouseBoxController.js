@@ -5,6 +5,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _MouseBoxController_instances, _MouseBoxController_initBox;
 import { CONFIG } from '../../config.js';
+import { hourToNumber } from '../../helpers/numberToHour.js';
 import { AbstractController } from '../AbstractController.js';
 class MouseBoxController extends AbstractController {
     constructor(mouseController) {
@@ -69,10 +70,8 @@ _MouseBoxController_instances = new WeakSet(), _MouseBoxController_initBox = fun
         endTime = formData.get('end')?.toString();
         if (!startTime || !endTime)
             return;
-        startTime = startTime.split(':').map(Number);
-        endTime = endTime.split(':').map(Number);
-        startTime = startTime[0] + startTime[1] / 60;
-        endTime = endTime[0] + endTime[1] / 60;
+        startTime = hourToNumber(startTime);
+        endTime = hourToNumber(endTime);
         this.mouseController.mainController.updateSelected({
             shiftType: 'Custom',
             startTime,

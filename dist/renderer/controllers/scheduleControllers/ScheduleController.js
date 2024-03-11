@@ -36,14 +36,16 @@ class ScheduleController extends AbstractController {
         this.titleElement.innerText =
             'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
         this.mouseController.bind();
-        this.headerUtilsController.shiftButtonsView.render(undefined);
         this.renderRawCellData(schedule.exportJSON());
+        this.headerUtilsController.bind();
         this.addEventListener('select-change', (e) => {
             const newEvent = new CustomEvent('select-change');
-            if (e.detail.src === this.mouseController)
+            if (e.detail.src !== this.keyboardController)
                 this.keyboardController.dispatchEvent(newEvent);
-            if (e.detail.src === this.keyboardController)
+            if (e.detail.src !== this.mouseController)
                 this.mouseController.dispatchEvent(newEvent);
+            if (e.detail.src !== this.headerUtilsController)
+                this.headerUtilsController.dispatchEvent(newEvent);
         });
     }
     /**
@@ -82,7 +84,9 @@ class ScheduleController extends AbstractController {
         if (!this.selected)
             throw new Error('No cell selected.');
         this.workingSchedule.updateCell(this.selected.id, this.selected.day, newData);
-        this.cellsView.render(this.scheduleData);
+        const markdown = this.cellsView.generateCell(this.selected, this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id) + 1);
+        this.selectedElement.outerHTML = markdown;
+        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
     }
     toggleDisabledColumn(day) {
         if (!this.workingSchedule)

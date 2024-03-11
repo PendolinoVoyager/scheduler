@@ -2,12 +2,12 @@ import { Schedule } from '../../models/Schedule.js';
 import { AbstractController } from '../AbstractController.js';
 import type { ScheduleJSON } from '../../models/ScheduleTypes.js';
 import CellsView from '../../views/scheduleViews/CellsView.js';
-import View from '../../views/View.js';
 import CalendarService from '../../services/CalendarService.js';
 import { CellData, ExcludeId } from '../../models/types.js';
 import MouseScheduleController from './MouseHandler.js';
 import KeyboardScheduleController from './KeyboardHandler.js';
 import HeaderUtilsController from './HeaderUtilsController.js';
+import View from '../../views/View.js';
 
 export default class ScheduleController extends AbstractController {
   archived: boolean = false;
@@ -39,14 +39,16 @@ export default class ScheduleController extends AbstractController {
       'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
     this.mouseController.bind();
     this.renderRawCellData(schedule.exportJSON());
-    this.headerUtilsController.shiftButtonsView.render(undefined);
+    this.headerUtilsController.bind();
 
     this.addEventListener('select-change', (e: any) => {
       const newEvent = new CustomEvent('select-change');
-      if (e.detail.src === this.mouseController)
+      if (e.detail.src !== this.keyboardController)
         this.keyboardController.dispatchEvent(newEvent);
-      if (e.detail.src === this.keyboardController)
+      if (e.detail.src !== this.mouseController)
         this.mouseController.dispatchEvent(newEvent);
+      if (e.detail.src !== this.headerUtilsController)
+        this.headerUtilsController.dispatchEvent(newEvent);
     });
   }
   /**
@@ -86,7 +88,12 @@ export default class ScheduleController extends AbstractController {
       newData
     );
 
-    this.cellsView.render(this.scheduleData);
+    const markdown = (this.cellsView as CellsView).generateCell(
+      this.selected,
+      this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id) + 1
+    );
+    this.selectedElement!.outerHTML = markdown;
+    this.#updateSelectedClass();
   }
   toggleDisabledColumn(day: number) {
     if (!this.workingSchedule) throw new Error('No schedule to work with.');

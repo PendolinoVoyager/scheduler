@@ -7,3 +7,7 @@ export function numberToHour(time) {
         minute: '2-digit',
     }).format(new Date(1, 0, 1, time, decimal));
 }
+export function hourToNumber(time) {
+    const res = time.split(':').map(Number);
+    return res[0] + res[1] / 60;
+}

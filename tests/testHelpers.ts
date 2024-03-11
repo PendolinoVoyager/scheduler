@@ -32,6 +32,8 @@ export function createScheduleController() {
   const controller = new ScheduleController();
   controller.cellsView = createMockView(CellsView);
   controller.titleElement = document.createElement('h1');
+  controller.headerUtilsController.shiftSelectElement =
+    document.createElement('div');
   controller.headerUtilsController.shiftButtonsView =
     createMockView(ShiftButtonsView);
 
