@@ -48,6 +48,12 @@ export default class Group extends Entity {
         if (index < 0)
             return;
     }
+    exportJSON() {
+        return {
+            id: this.id,
+            employees: this.employees.map((e) => e.getId()),
+        };
+    }
     getEmployees() {
         return this.employees;
     }

@@ -15,7 +15,7 @@ const createWindow = () => {
         },
     });
     win.maximize();
-    win.loadFile('../static/index.html');
+    win.loadFile(`${__dirname}/static/index.html`);
     return win;
 };
 // App initialization
