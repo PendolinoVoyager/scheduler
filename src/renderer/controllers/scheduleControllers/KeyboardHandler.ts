@@ -8,12 +8,17 @@ export default class KeyboardScheduleController extends AbstractController {
   }
   private boundHandlers = {
     handleKeyDown: this.#handleKeyDown.bind(this),
+    handleSelectChange: this.#handleSelectChange.bind(this),
   };
   bind() {
-    this.addEventListener('select-change', (e: any) => {
-      return;
-    });
+    this.addEventListener(
+      'select-change',
+      this.boundHandlers.handleSelectChange
+    );
     document.addEventListener('keydown', this.boundHandlers.handleKeyDown);
+  }
+  #handleSelectChange() {
+    return;
   }
   #handleKeyDown(e: KeyboardEvent) {
     if (
@@ -59,9 +64,17 @@ export default class KeyboardScheduleController extends AbstractController {
     if (targetDay > this.mainController.scheduleData!.length) targetDay = 1;
     if (targetDay < 1) targetDay = this.mainController.scheduleData!.length;
     //Leap disabled
-    while (this.mainController.scheduleData!.disabledDays.includes(+targetDay))
+    while (
+      this.mainController.scheduleData!.disabledDays.includes(+targetDay)
+    ) {
       targetDay = +targetDay + direction.x;
+      if (targetDay > this.mainController.scheduleData!.length || targetDay < 0)
+        break;
+    }
 
+    //Wrap
+    if (targetDay > this.mainController.scheduleData!.length) targetDay = 1;
+    if (targetDay < 1) targetDay = this.mainController.scheduleData!.length;
     try {
       this.mainController.select(+targetRow, +targetDay);
     } catch (err) {
@@ -84,5 +97,12 @@ export default class KeyboardScheduleController extends AbstractController {
         return;
       }
     });
+  }
+  unbind() {
+    this.removeEventListener(
+      'select-change',
+      this.boundHandlers.handleSelectChange
+    );
+    document.removeEventListener('keydown', this.boundHandlers.handleKeyDown);
   }
 }

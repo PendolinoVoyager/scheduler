@@ -8,6 +8,9 @@ import { Schedule } from './models/Schedule.js';
 import { CONFIG } from './config.js';
 import Employee from './models/Employee.js';
 import Group from './models/Group.js';
+import navbarHandlers from './controllers/modalController/NavbarData.js';
+import { ModalController } from './controllers/modalController/ModalController.js';
+
 interface State {
   group: Group;
   year: number;
@@ -15,6 +18,7 @@ interface State {
   workingSchedule: Schedule | null;
 }
 export class App extends EventTarget {
+  private navbarControllers: ModalController<any>[] = [];
   public state: State = {
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
@@ -31,6 +35,18 @@ export class App extends EventTarget {
 
   constructor() {
     super();
+
+    navbarHandlers.forEach(({ itemId, ctorData }) => {
+      const controller = new ModalController(
+        ctorData.viewClass,
+        ctorData.handlers,
+        ctorData.onClose
+      );
+      this.navbarControllers.push(controller);
+      const navItem = document.getElementById(itemId);
+      if (!navItem) return;
+      navItem.addEventListener('click', controller.show.bind(controller));
+    });
     this.#addDefaultListeners();
     this.#assignTestGroup();
     this.state.year = new Date().getFullYear();
@@ -43,6 +59,7 @@ export class App extends EventTarget {
     this.state.workingSchedule.disableFreeDaysInPoland();
     this.scheduleController.createLiveSchedule(this.state.workingSchedule);
   }
+
   #addDefaultListeners() {
     //Settings controller
     this.addEventListener('settings-update', () => {
@@ -63,6 +80,7 @@ export class App extends EventTarget {
       this.state.workingSchedule.disableFreeDaysInPoland();
       this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+
     this.addEventListener('add-employee', () => {
       console.log('ee');
       if (!this.state.workingSchedule) return;
@@ -71,10 +89,14 @@ export class App extends EventTarget {
       );
       this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+
+    //Change month
+
     window.addEventListener('beforeunload', (e) => {
       // Handle exiting using electron api
     });
   }
+
   #assignTestGroup() {
     const testGroup = new Group();
     testGroup.addEmployee(

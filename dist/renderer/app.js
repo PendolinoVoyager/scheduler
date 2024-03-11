@@ -14,10 +14,13 @@ import { Schedule } from './models/Schedule.js';
 import { CONFIG } from './config.js';
 import Employee from './models/Employee.js';
 import Group from './models/Group.js';
+import navbarHandlers from './controllers/modalController/NavbarData.js';
+import { ModalController } from './controllers/modalController/ModalController.js';
 export class App extends EventTarget {
     constructor() {
         super();
         _App_instances.add(this);
+        this.navbarControllers = [];
         this.state = {
             year: new Date().getFullYear(),
             month: new Date().getMonth() + 1,
@@ -31,6 +34,14 @@ export class App extends EventTarget {
         this.darkModeController = new DarkModeController();
         this.groupSettingsController = new GroupSettingsController(this);
         this.scheduleController = new ScheduleController();
+        navbarHandlers.forEach(({ itemId, ctorData }) => {
+            const controller = new ModalController(ctorData.viewClass, ctorData.handlers, ctorData.onClose);
+            this.navbarControllers.push(controller);
+            const navItem = document.getElementById(itemId);
+            if (!navItem)
+                return;
+            navItem.addEventListener('click', controller.show.bind(controller));
+        });
         __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
         __classPrivateFieldGet(this, _App_instances, "m", _App_assignTestGroup).call(this);
         this.state.year = new Date().getFullYear();
@@ -62,6 +73,7 @@ _App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefa
         this.state.workingSchedule.fillRowfromPreference(this.state.group.getEmployees().at(-1).getId());
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+    //Change month
     window.addEventListener('beforeunload', (e) => {
         // Handle exiting using electron api
     });

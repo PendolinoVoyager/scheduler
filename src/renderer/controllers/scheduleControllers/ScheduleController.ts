@@ -111,6 +111,7 @@ export default class ScheduleController extends AbstractController {
     this.cellsView.renderSpinner();
     this.mouseController.unbind();
     this.headerUtilsController.unbind();
+    this.keyboardController.unbind();
   }
   #updateSelectedClass() {
     this.selectedElement?.classList.remove('selected');

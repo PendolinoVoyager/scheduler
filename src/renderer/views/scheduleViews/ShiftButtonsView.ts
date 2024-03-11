@@ -14,7 +14,7 @@ export default class ShiftButtonsView extends View {
         .map(([shift, info]) => {
           if (shift === 'Custom') return;
           return `<button type="submit" class="box-sharp ${shift.toLowerCase()}" data-shift="${shift}">${
-            info.translation
+            `(${info.shortcut}) ` + info.translation
           }</button>`;
         })
         .join('')}
@@ -23,6 +23,7 @@ export default class ShiftButtonsView extends View {
        <input type="time" name="start"></input>-
             <input type="time" name="end"></input>
             <button type="submit" class="box-sharp custom" data-shift="Custom">${
+              `(${CONFIG.SHIFT_TYPES['Custom'].shortcut}) ` +
               CONFIG.SHIFT_TYPES['Custom'].translation
             }</button>
        </div>

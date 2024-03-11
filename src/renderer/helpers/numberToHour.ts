@@ -7,8 +7,8 @@ export function numberToHour(time: number | undefined) {
   }).format(new Date(1, 0, 1, time, decimal));
 }
 
-export function hourToNumber(time: string) {
+export function hourToNumber(time: string): number {
   const res = time.split(':').map(Number);
 
-  return res[0] + res[1] / 60;
+  return +res[0] + res[1] / 60;
 }

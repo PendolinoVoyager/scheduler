@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _KeyboardScheduleController_instances, _KeyboardScheduleController_handleKeyDown, _KeyboardScheduleController_handleArrowMovement, _KeyboardScheduleController_handleShiftChange;
+var _KeyboardScheduleController_instances, _KeyboardScheduleController_handleSelectChange, _KeyboardScheduleController_handleKeyDown, _KeyboardScheduleController_handleArrowMovement, _KeyboardScheduleController_handleShiftChange;
 import { CONFIG } from '../../config.js';
 import { AbstractController } from '../AbstractController.js';
 class KeyboardScheduleController extends AbstractController {
@@ -13,16 +13,21 @@ class KeyboardScheduleController extends AbstractController {
         this.mainController = mainController;
         this.boundHandlers = {
             handleKeyDown: __classPrivateFieldGet(this, _KeyboardScheduleController_instances, "m", _KeyboardScheduleController_handleKeyDown).bind(this),
+            handleSelectChange: __classPrivateFieldGet(this, _KeyboardScheduleController_instances, "m", _KeyboardScheduleController_handleSelectChange).bind(this),
         };
     }
     bind() {
-        this.addEventListener('select-change', (e) => {
-            return;
-        });
+        this.addEventListener('select-change', this.boundHandlers.handleSelectChange);
         document.addEventListener('keydown', this.boundHandlers.handleKeyDown);
     }
+    unbind() {
+        this.removeEventListener('select-change', this.boundHandlers.handleSelectChange);
+        document.removeEventListener('keydown', this.boundHandlers.handleKeyDown);
+    }
 }
-_KeyboardScheduleController_instances = new WeakSet(), _KeyboardScheduleController_handleKeyDown = function _KeyboardScheduleController_handleKeyDown(e) {
+_KeyboardScheduleController_instances = new WeakSet(), _KeyboardScheduleController_handleSelectChange = function _KeyboardScheduleController_handleSelectChange() {
+    return;
+}, _KeyboardScheduleController_handleKeyDown = function _KeyboardScheduleController_handleKeyDown(e) {
     if (document.activeElement !== document.body &&
         document.activeElement !== this.mainController.cellsView.parentElement)
         return;
@@ -63,8 +68,16 @@ _KeyboardScheduleController_instances = new WeakSet(), _KeyboardScheduleControll
     if (targetDay < 1)
         targetDay = this.mainController.scheduleData.length;
     //Leap disabled
-    while (this.mainController.scheduleData.disabledDays.includes(+targetDay))
+    while (this.mainController.scheduleData.disabledDays.includes(+targetDay)) {
         targetDay = +targetDay + direction.x;
+        if (targetDay > this.mainController.scheduleData.length || targetDay < 0)
+            break;
+    }
+    //Wrap
+    if (targetDay > this.mainController.scheduleData.length)
+        targetDay = 1;
+    if (targetDay < 1)
+        targetDay = this.mainController.scheduleData.length;
     try {
         this.mainController.select(+targetRow, +targetDay);
     }

@@ -106,6 +106,7 @@ class ScheduleController extends AbstractController {
         this.cellsView.renderSpinner();
         this.mouseController.unbind();
         this.headerUtilsController.unbind();
+        this.keyboardController.unbind();
     }
 }
 _ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass() {

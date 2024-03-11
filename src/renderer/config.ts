@@ -62,7 +62,7 @@ export const DEFAULT_CONFIG: Config = {
     },
     Custom: {
       translation: 'Inne',
-      shortcut: '4',
+      shortcut: '3',
     },
   },
   CUTOFF_DATE: { year: 2024, month: 1 },
