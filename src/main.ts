@@ -2,7 +2,7 @@ const ThemeController = require('./IPCControllers/ThemeController');
 const FileSystemController = require('./IPCControllers/FileSystemController');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
-
+if (require('electron-squirrel-startup')) app.quit();
 const createWindow = () => {
   const win = new BrowserWindow({
     skipTaskbar: true,
@@ -14,7 +14,7 @@ const createWindow = () => {
   });
 
   win.maximize();
-  win.loadFile('../static/index.html');
+  win.loadFile(`${__dirname}../static/index.html`);
 
   return win;
 };
@@ -32,7 +32,7 @@ app.whenReady().then(() => {
   });
 });
 // App closing
-app.on('window-all-closed', (e: Event) => {
+app.on('window-all-closed', () => {
   console.log('goodbye!');
   if (process.platform !== 'darwin') app.quit();
 });
