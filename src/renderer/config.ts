@@ -39,24 +39,30 @@ export const DEFAULT_CONFIG: Config = {
       translation: 'Poranek',
       startTime: 5.5,
       endTime: 14.5,
+      shortcut: '1',
       customHours: [{ day: 1, startTime: 5, endTime: 14.5 }],
     },
     Afternoon: {
       translation: 'Popołudnie',
       startTime: 14,
       endTime: 23,
+      shortcut: '2',
     },
     None: {
       translation: 'Wolne',
+      shortcut: 'w',
     },
     Vacation: {
       translation: 'Urlop',
+      shortcut: 'u',
     },
     Training: {
       translation: 'Szkolenie',
+      shortcut: 's',
     },
     Custom: {
       translation: 'Inne',
+      shortcut: '4',
     },
   },
   CUTOFF_DATE: { year: 2024, month: 1 },

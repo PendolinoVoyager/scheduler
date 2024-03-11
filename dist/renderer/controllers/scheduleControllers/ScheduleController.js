@@ -38,6 +38,7 @@ class ScheduleController extends AbstractController {
         this.mouseController.bind();
         this.renderRawCellData(schedule.exportJSON());
         this.headerUtilsController.bind();
+        this.keyboardController.bind();
         this.addEventListener('select-change', (e) => {
             const newEvent = new CustomEvent('select-change');
             if (e.detail.src !== this.keyboardController)
@@ -104,6 +105,7 @@ class ScheduleController extends AbstractController {
         this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
         this.cellsView.renderSpinner();
         this.mouseController.unbind();
+        this.headerUtilsController.unbind();
     }
 }
 _ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass() {

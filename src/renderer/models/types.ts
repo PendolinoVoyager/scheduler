@@ -11,6 +11,7 @@ export interface ShiftInfo {
   startTime?: number;
   endTime?: number;
   customHours?: CustomHours[];
+  shortcut?: string;
 }
 export type CellData = {
   shiftType: keyof ShiftTypes;

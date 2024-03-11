@@ -80,13 +80,11 @@ export default class HeaderUtilsController extends AbstractController {
     );
     this.customTime.endTime = hourToNumber(this.endTimeInput?.value ?? '00:00');
   }
-  cleanup() {
+  unbind() {
     this.shiftButtonsView.clear();
     this.removeEventListener(
       'select-change',
       this.boundHandlers.updateSelected
     );
-
-    return;
   }
 }

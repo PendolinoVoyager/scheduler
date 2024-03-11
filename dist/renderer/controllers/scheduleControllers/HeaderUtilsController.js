@@ -46,10 +46,9 @@ class HeaderUtilsController extends AbstractController {
         [this.startTimeInput, this.endTimeInput].forEach((el) => el?.addEventListener('change', this.boundHandlers.calculateTimeInput));
         __classPrivateFieldGet(this, _HeaderUtilsController_instances, "m", _HeaderUtilsController_addShiftButtonsHandlers).call(this);
     }
-    cleanup() {
+    unbind() {
         this.shiftButtonsView.clear();
         this.removeEventListener('select-change', this.boundHandlers.updateSelected);
-        return;
     }
 }
 _HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addShiftButtonsHandlers = function _HeaderUtilsController_addShiftButtonsHandlers() {

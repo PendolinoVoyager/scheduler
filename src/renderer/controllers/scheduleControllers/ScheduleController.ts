@@ -40,6 +40,7 @@ export default class ScheduleController extends AbstractController {
     this.mouseController.bind();
     this.renderRawCellData(schedule.exportJSON());
     this.headerUtilsController.bind();
+    this.keyboardController.bind();
 
     this.addEventListener('select-change', (e: any) => {
       const newEvent = new CustomEvent('select-change');
@@ -109,6 +110,7 @@ export default class ScheduleController extends AbstractController {
     this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
     this.cellsView.renderSpinner();
     this.mouseController.unbind();
+    this.headerUtilsController.unbind();
   }
   #updateSelectedClass() {
     this.selectedElement?.classList.remove('selected');
