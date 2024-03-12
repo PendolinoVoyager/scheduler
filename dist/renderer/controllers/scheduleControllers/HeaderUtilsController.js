@@ -39,6 +39,7 @@ class HeaderUtilsController extends AbstractController {
         };
     }
     bind() {
+        this.shiftButtonsView.parentElement.classList.remove('hidden');
         this.shiftButtonsView.render(undefined);
         this.startTimeInput = this.shiftSelectElement.querySelector('input[name="start"]');
         this.endTimeInput =
@@ -48,6 +49,7 @@ class HeaderUtilsController extends AbstractController {
     }
     unbind() {
         this.shiftButtonsView.clear();
+        this.shiftButtonsView.parentElement.classList.add('hidden');
         this.removeEventListener('select-change', this.boundHandlers.updateSelected);
     }
 }
@@ -73,7 +75,7 @@ _HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addShif
     if (this.selectedShift === 'Custom')
         this.boundHandlers.calculateTimeInput();
 }, _HeaderUtilsController_calculateTimeInput = function _HeaderUtilsController_calculateTimeInput() {
-    this.customTime.startTime = hourToNumber(this.startTimeInput?.value ?? '00:00');
-    this.customTime.endTime = hourToNumber(this.endTimeInput?.value ?? '00:00');
+    this.customTime.startTime = hourToNumber(this.startTimeInput?.value || '00:00');
+    this.customTime.endTime = hourToNumber(this.endTimeInput?.value || '00:00');
 };
 export default HeaderUtilsController;

@@ -28,7 +28,7 @@ class CalendarService {
         };
     }
     getDateString(year = this.year, month = this.month) {
-        const timestamp = new Date(`${this.year}-${this.month}-01`).getTime();
+        const timestamp = new Date(`${year}-${month}-01`).getTime();
         return Intl.DateTimeFormat('pl-PL', {
             month: 'long',
             year: 'numeric',

@@ -8,12 +8,15 @@ import { CONFIG } from '../../config.js';
 import CalendarService from '../../services/CalendarService.js';
 import { numberToHour } from '../../helpers/numberToHour.js';
 import View from '../View.js';
+import Employee from '../../models/Employee.js';
 class CellsView extends View {
     constructor(parentElement) {
         super(parentElement);
         _CellsView_instances.add(this);
     }
     generateMarkup() {
+        if (this.data.employees.length === 0)
+            return `<h1 class="flex-row space-evenly">Dodaj pracowników aby zacząć pracować!</h1>`;
         this.parentElement.style.gridTemplateColumns = `2fr repeat(${this.data.length}, 1fr)`;
         return (__classPrivateFieldGet(this, _CellsView_instances, "m", _CellsView_generateHeader).call(this) +
             this.data.employees.map((_, i) => __classPrivateFieldGet(this, _CellsView_instances, "m", _CellsView_generateRow).call(this, i)).join(''));
@@ -34,8 +37,8 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
             .map((cell) => this.generateCell(cell, row + 1))
             .join(''));
 }, _CellsView_generateEmployee = function _CellsView_generateEmployee(row) {
-    return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${this.data.employees[row].name}</p>
-    <p class="schedule-employee-position">${this.data.employees[row].position || 'Brak'}</p>
+    return `<div class="cell-employee flex-column"><span class="schedule-employee-name">${Employee.getInitials(this.data.employees[row].name)}</span>
+    <span class="schedule-employee-position">${this.data.employees[row].position || 'Brak'}</span>
     </div>`;
 }, _CellsView_generateHeader = function _CellsView_generateHeader() {
     const divs = [];

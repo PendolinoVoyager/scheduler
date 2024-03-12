@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _App_instances, _App_addDefaultListeners, _App_assignTestGroup;
+var _App_instances, _App_init, _App_addNavbarControllers, _App_assignTestGroup;
 import './config.js';
 import DarkModeController from './controllers/DarkModeController.js';
 import ModalService from './services/ModalService.js';
@@ -24,8 +24,9 @@ export class App extends EventTarget {
         this.state = {
             year: new Date().getFullYear(),
             month: new Date().getMonth() + 1,
-            group: __classPrivateFieldGet(this, _App_instances, "m", _App_assignTestGroup).call(this),
+            group: new Group(),
             workingSchedule: null,
+            unsavedChanges: false,
         };
         //Services
         this.ModalService = ModalService;
@@ -34,23 +35,27 @@ export class App extends EventTarget {
         this.darkModeController = new DarkModeController();
         this.groupSettingsController = new GroupSettingsController(this);
         this.scheduleController = new ScheduleController();
-        navbarHandlers.forEach(({ itemId, ctorData }) => {
-            const controller = new ModalController(ctorData.viewClass, ctorData.handlers, ctorData.onClose);
-            this.navbarControllers.push(controller);
-            const navItem = document.getElementById(itemId);
-            if (!navItem)
-                return;
-            navItem.addEventListener('click', controller.show.bind(controller));
-        });
-        __classPrivateFieldGet(this, _App_instances, "m", _App_addDefaultListeners).call(this);
+        __classPrivateFieldGet(this, _App_instances, "m", _App_init).call(this);
         __classPrivateFieldGet(this, _App_instances, "m", _App_assignTestGroup).call(this);
         this.state.year = new Date().getFullYear();
         this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
         this.state.workingSchedule.disableFreeDaysInPoland();
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     }
+    selectDate(year, month) {
+        this.state.year = year;
+        this.state.month = month;
+        this.saveAndCreateSchedule();
+    }
+    saveAndCreateSchedule() {
+        //Save
+        this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+        this.state.workingSchedule.disableFreeDaysInPoland();
+        this.scheduleController.createLiveSchedule(this.state.workingSchedule);
+    }
 }
-_App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefaultListeners() {
+_App_instances = new WeakSet(), _App_init = function _App_init() {
+    __classPrivateFieldGet(this, _App_instances, "m", _App_addNavbarControllers).call(this);
     //Settings controller
     this.addEventListener('settings-update', () => {
         if (!this.state.workingSchedule)
@@ -67,7 +72,6 @@ _App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefa
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
     this.addEventListener('add-employee', () => {
-        console.log('ee');
         if (!this.state.workingSchedule)
             return;
         this.state.workingSchedule.fillRowfromPreference(this.state.group.getEmployees().at(-1).getId());
@@ -76,6 +80,15 @@ _App_instances = new WeakSet(), _App_addDefaultListeners = function _App_addDefa
     //Change month
     window.addEventListener('beforeunload', (e) => {
         // Handle exiting using electron api
+    });
+}, _App_addNavbarControllers = function _App_addNavbarControllers() {
+    navbarHandlers.forEach(({ itemId, ctorData }) => {
+        const controller = new ModalController(ctorData.viewClass, ctorData.handlers, ctorData.onClose);
+        this.navbarControllers.push(controller);
+        const navItem = document.getElementById(itemId);
+        if (!navItem)
+            return;
+        navItem.addEventListener('click', controller.show.bind(controller, this));
     });
 }, _App_assignTestGroup = function _App_assignTestGroup() {
     const testGroup = new Group();

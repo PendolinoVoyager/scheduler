@@ -4,6 +4,7 @@ import { CellData } from '../../models/types.js';
 import CalendarService from '../../services/CalendarService.js';
 import { numberToHour } from '../../helpers/numberToHour.js';
 import View from '../View.js';
+import Employee from '../../models/Employee.js';
 
 export default class CellsView extends View {
   public data!: ScheduleJSON;
@@ -11,6 +12,8 @@ export default class CellsView extends View {
     super(parentElement);
   }
   generateMarkup(): string {
+    if (this.data.employees.length === 0)
+      return `<h1 class="flex-row space-evenly">Dodaj pracowników aby zacząć pracować!</h1>`;
     this.parentElement.style.gridTemplateColumns = `2fr repeat(${this.data.length}, 1fr)`;
     return (
       this.#generateHeader() +
@@ -41,12 +44,12 @@ export default class CellsView extends View {
     }<br>${numberToHour(cellData.endTime)}</div>`;
   }
   #generateEmployee(row: number): string {
-    return `<div class="cell-employee flex-column"><p class="schedule-employee-name">${
+    return `<div class="cell-employee flex-column"><span class="schedule-employee-name">${Employee.getInitials(
       this.data.employees[row].name
-    }</p>
-    <p class="schedule-employee-position">${
+    )}</span>
+    <span class="schedule-employee-position">${
       this.data.employees[row].position || 'Brak'
-    }</p>
+    }</span>
     </div>`;
   }
   #generateHeader(): string {

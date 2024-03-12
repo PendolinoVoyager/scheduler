@@ -174,9 +174,9 @@ export default class Employee extends AbstractEmployee {
     this.position = parsedData.position;
     this.employmentType = (EmploymentType as any)[parsedData.employmentType];
   }
-  getInitials() {
-    const split = this.name.split(' ');
-    return split[0] + split[1][0];
+  static getInitials(name: string) {
+    const split = name.split(' ');
+    return split[0] + ' ' + split[1][0] + '.';
   }
 
   getName() {

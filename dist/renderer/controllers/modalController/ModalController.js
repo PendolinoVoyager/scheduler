@@ -8,12 +8,14 @@ export class ModalController extends AbstractController {
         this.onclose = onclose;
         this.view = new viewClass(ModalService.getWriteableElement());
     }
-    show() {
+    show(callBackThis, data) {
         ModalService.open(this, false);
         this.onclose && ModalService.setOnClose(this, this.onclose);
-        this.view.render(undefined);
+        this.view.render(data);
         this.handlers.forEach((handler) => {
-            handler.target.addEventListener(handler.eventType, handler.cb);
+            document
+                .querySelector(handler.target)
+                ?.addEventListener(handler.eventType, handler.cb.bind(callBackThis));
         });
     }
     hide() {

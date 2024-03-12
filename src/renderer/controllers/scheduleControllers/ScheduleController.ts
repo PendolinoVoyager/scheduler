@@ -37,10 +37,13 @@ export default class ScheduleController extends AbstractController {
     this.workingSchedule = schedule;
     this.titleElement.innerText =
       'Grafik: ' + CalendarService.getDateString(schedule.year, schedule.month);
-    this.mouseController.bind();
+
+    if (schedule.getGroup().getEmployees().length !== 0) {
+      this.mouseController.bind();
+      this.headerUtilsController.bind();
+      this.keyboardController.bind();
+    }
     this.renderRawCellData(schedule.exportJSON());
-    this.headerUtilsController.bind();
-    this.keyboardController.bind();
 
     this.addEventListener('select-change', (e: any) => {
       const newEvent = new CustomEvent('select-change');
@@ -104,14 +107,14 @@ export default class ScheduleController extends AbstractController {
     this.renderRawCellData(this.workingSchedule.exportJSON());
   }
   teardown() {
+    this.mouseController.unbind();
+    this.headerUtilsController.unbind();
+    this.keyboardController.unbind();
     this.scheduleData = null;
     this.selected = null;
     this.workingSchedule = null;
     this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
     this.cellsView.renderSpinner();
-    this.mouseController.unbind();
-    this.headerUtilsController.unbind();
-    this.keyboardController.unbind();
   }
   #updateSelectedClass() {
     this.selectedElement?.classList.remove('selected');

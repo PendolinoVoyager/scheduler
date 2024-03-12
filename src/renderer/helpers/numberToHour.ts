@@ -9,6 +9,5 @@ export function numberToHour(time: number | undefined) {
 
 export function hourToNumber(time: string): number {
   const res = time.split(':').map(Number);
-
   return +res[0] + res[1] / 60;
 }

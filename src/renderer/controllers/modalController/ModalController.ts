@@ -3,9 +3,9 @@ import View from '../../views/View.js';
 import { AbstractController } from '../AbstractController.js';
 
 export interface Handler {
-  target: HTMLElement;
+  target: string;
   eventType: string;
-  cb: (e: Event) => void;
+  cb: (e?: any) => void;
 }
 export interface ModalControllerConstructorData<T extends View> {
   viewClass: new (parentElement: HTMLElement) => T;
@@ -25,12 +25,14 @@ export class ModalController<T extends View> extends AbstractController {
     this.view = new viewClass(ModalService.getWriteableElement());
   }
 
-  show() {
+  show(callBackThis?: any, data?: any) {
     ModalService.open(this, false);
     this.onclose && ModalService.setOnClose(this, this.onclose);
-    this.view.render(undefined);
+    this.view.render(data);
     this.handlers.forEach((handler) => {
-      handler.target.addEventListener(handler.eventType, handler.cb);
+      document
+        .querySelector(handler.target)
+        ?.addEventListener(handler.eventType, handler.cb.bind(callBackThis));
     });
   }
   hide() {

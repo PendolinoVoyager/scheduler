@@ -37,6 +37,7 @@ export default class HeaderUtilsController extends AbstractController {
     super();
   }
   bind() {
+    this.shiftButtonsView.parentElement.classList.remove('hidden');
     this.shiftButtonsView.render(undefined);
     this.startTimeInput = this.shiftSelectElement.querySelector(
       'input[name="start"]'
@@ -76,12 +77,13 @@ export default class HeaderUtilsController extends AbstractController {
   }
   #calculateTimeInput() {
     this.customTime.startTime = hourToNumber(
-      this.startTimeInput?.value ?? '00:00'
+      this.startTimeInput?.value || '00:00'
     );
-    this.customTime.endTime = hourToNumber(this.endTimeInput?.value ?? '00:00');
+    this.customTime.endTime = hourToNumber(this.endTimeInput?.value || '00:00');
   }
   unbind() {
     this.shiftButtonsView.clear();
+    this.shiftButtonsView.parentElement.classList.add('hidden');
     this.removeEventListener(
       'select-change',
       this.boundHandlers.updateSelected

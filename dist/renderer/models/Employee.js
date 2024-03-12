@@ -101,9 +101,9 @@ class Employee extends AbstractEmployee {
         this.position = parsedData.position;
         this.employmentType = EmploymentType[parsedData.employmentType];
     }
-    getInitials() {
-        const split = this.name.split(' ');
-        return split[0] + split[1][0];
+    static getInitials(name) {
+        const split = name.split(' ');
+        return split[0] + ' ' + split[1][0] + '.';
     }
     getName() {
         return this.name;
