@@ -1,5 +1,6 @@
 "use strict";
 const loki = require('lokijs');
+//@ts-ignore
 const db = new loki(`${__dirname}/scheduler.db`, {
     autoload: true,
     autoloadCallback: dbInit,
