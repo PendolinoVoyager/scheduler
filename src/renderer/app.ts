@@ -95,12 +95,6 @@ export class App extends EventTarget {
       );
       this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
-
-    //Change month
-
-    window.addEventListener('beforeunload', (e) => {
-      // Handle exiting using electron api
-    });
   }
   #addNavbarControllers() {
     navbarHandlers.forEach(({ itemId, ctorData }) => {

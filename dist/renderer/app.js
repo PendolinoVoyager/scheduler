@@ -77,10 +77,6 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
         this.state.workingSchedule.fillRowfromPreference(this.state.group.getEmployees().at(-1).getId());
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
-    //Change month
-    window.addEventListener('beforeunload', (e) => {
-        // Handle exiting using electron api
-    });
 }, _App_addNavbarControllers = function _App_addNavbarControllers() {
     navbarHandlers.forEach(({ itemId, ctorData }) => {
         const controller = new ModalController(ctorData.viewClass, ctorData.handlers, ctorData.onClose);

@@ -1,3 +1,6 @@
+//@ts-ignore
+const { db, dbInit } = require('./db');
+dbInit();
 const ThemeController = require('./IPCControllers/ThemeController');
 const FileSystemController = require('./IPCControllers/FileSystemController');
 const { app, BrowserWindow, ipcMain } = require('electron');
@@ -32,7 +35,8 @@ app.whenReady().then(() => {
   });
 });
 // App closing
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+  await db.close();
   console.log('goodbye!');
   if (process.platform !== 'darwin') app.quit();
 });
