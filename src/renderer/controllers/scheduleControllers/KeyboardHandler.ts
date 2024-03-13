@@ -35,7 +35,9 @@ export default class KeyboardScheduleController extends AbstractController {
     else this.#handleArrowMovement(e);
   }
   #handleArrowMovement(e: KeyboardEvent) {
+    e.preventDefault();
     const direction = { x: 0, y: 0 };
+
     switch (e.key) {
       case 'ArrowUp':
         direction.y -= 1;
@@ -50,7 +52,6 @@ export default class KeyboardScheduleController extends AbstractController {
         direction.x -= 1;
         break;
       case 'Tab':
-        e.preventDefault();
         direction.x += 1;
         break;
     }

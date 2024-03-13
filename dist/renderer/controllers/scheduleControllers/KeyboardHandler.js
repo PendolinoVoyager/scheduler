@@ -38,6 +38,7 @@ _KeyboardScheduleController_instances = new WeakSet(), _KeyboardScheduleControll
     else
         __classPrivateFieldGet(this, _KeyboardScheduleController_instances, "m", _KeyboardScheduleController_handleArrowMovement).call(this, e);
 }, _KeyboardScheduleController_handleArrowMovement = function _KeyboardScheduleController_handleArrowMovement(e) {
+    e.preventDefault();
     const direction = { x: 0, y: 0 };
     switch (e.key) {
         case 'ArrowUp':
@@ -53,7 +54,6 @@ _KeyboardScheduleController_instances = new WeakSet(), _KeyboardScheduleControll
             direction.x -= 1;
             break;
         case 'Tab':
-            e.preventDefault();
             direction.x += 1;
             break;
     }

@@ -4,7 +4,11 @@ interface DarkMode extends Window {
   system: () => void;
 }
 interface FS extends Window {
-  read: (name: string) => unknown;
+  getAll: (collection: string) => unknown;
+  getOne: (collection: string, id: number) => unknown;
+  insert: (collection: string, data: Object) => void;
+  update: (collection: string, id: number, data: Object) => void;
+  delete: (collection: string, id: number) => void;
 }
 interface Versions extends Window {
   node: () => string;

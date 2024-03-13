@@ -59,4 +59,11 @@ module.exports = {
       console.error(err);
     }
   },
+  insert: async function (collection: CollectionName, data: Object) {
+    try {
+      db.getCollection(collection).insert(data);
+    } catch (err) {
+      console.error(err);
+    }
+  },
 };

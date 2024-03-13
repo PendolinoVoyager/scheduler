@@ -58,6 +58,7 @@ export class App extends EventTarget {
   }
   saveAndCreateSchedule() {
     //Save
+
     this.state.workingSchedule = new Schedule(
       this.state.group,
       this.state.year,

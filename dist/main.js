@@ -3,7 +3,7 @@
 const { db, dbInit } = require('./db');
 dbInit();
 const ThemeController = require('./IPCControllers/ThemeController');
-const FileSystemController = require('./IPCControllers/FileSystemController');
+const DatabaseController = require('./IPCControllers/DatabaseController');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 if (require('electron-squirrel-startup'))
@@ -26,7 +26,7 @@ app.whenReady().then(() => {
     //TODO: Refactor to App class.
     //Make a single file with all ipc handlers, namespaces etc.
     const themeController = new ThemeController(ipcMain);
-    const fileSystemController = new FileSystemController(ipcMain);
+    const databaseController = new DatabaseController(ipcMain);
     const win = createWindow();
     //For MacOS
     app.on('activate', () => {

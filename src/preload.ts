@@ -6,9 +6,16 @@ contextBridge.exposeInMainWorld('versions', {
   electron: () => process.versions.electron,
 });
 
-contextBridge.exposeInMainWorld('fs', {
-  read: (name: string) => ipcRenderer.invoke('fs:read', name),
-  write: (text: string) => ipcRenderer.invoke('fs:write', text),
+contextBridge.exposeInMainWorld('db', {
+  getOne: (collection: string, id: number) =>
+    ipcRenderer.invoke('db:getOne', collection, id),
+  getAll: (collection: string) => ipcRenderer.invoke('db:getAll', collection),
+  insert: (collection: string, data: Object) =>
+    ipcRenderer.invoke('db:insert', collection, data),
+  delete: (collection: string, id: number) =>
+    ipcRenderer.invoke('db:delete', collection, id),
+  update: (collection: string, id: number, data: Object) =>
+    ipcRenderer.invoke('db:update', collection, id),
 });
 
 contextBridge.exposeInMainWorld('darkMode', {
