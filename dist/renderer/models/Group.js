@@ -2,6 +2,7 @@ import Entity from './Entity.js';
 export default class Group extends Entity {
     constructor() {
         super();
+        this.collection = 'groups';
         this.employees = [];
     }
     addEmployee(employee) {

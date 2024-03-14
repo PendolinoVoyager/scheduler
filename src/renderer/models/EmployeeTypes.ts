@@ -22,6 +22,7 @@ export type EmployeeFields = {
 };
 
 export class AbstractEmployee extends Entity {
+  collection = 'employees';
   protected name: string | undefined;
   protected position!: string;
   protected disabled!: boolean;
@@ -42,7 +43,14 @@ export class AbstractEmployee extends Entity {
     employmentType: CONFIG.DEFAULT_EMPLOYMENT_TYPE,
   };
 }
-
+export type EmployeeJSON = {
+  id: Entity['id'];
+  name: string;
+  position: string;
+  disabled: boolean;
+  shiftPreference: keyof ShiftTypes;
+  employmentType: EmploymentType;
+};
 export type MonthlyShiftTypes = {
   year: number;
   month: number;

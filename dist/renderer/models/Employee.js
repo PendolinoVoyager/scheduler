@@ -12,6 +12,7 @@ class Employee extends AbstractEmployee {
         super(name);
         _Employee_instances.add(this);
         this.shiftPreferencesGrouped = [];
+        this.repository = 'employees';
         Object.entries(options).forEach(([key, value]) => {
             this[key] = value;
         });
@@ -136,6 +137,16 @@ class Employee extends AbstractEmployee {
     }
     setEmploymentType(newType) {
         this.employmentType = newType;
+    }
+    exportJSON() {
+        return {
+            id: this.id,
+            name: this.name,
+            position: this.position,
+            disabled: this.disabled,
+            shiftPreference: this.shiftPreference,
+            employmentType: this.employmentType,
+        };
     }
 }
 _Employee_instances = new WeakSet(), _Employee_createGroupedPreference = function _Employee_createGroupedPreference(year, month) {

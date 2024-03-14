@@ -1,6 +1,5 @@
 //@ts-ignore
 const { db, dbInit } = require('./db');
-dbInit();
 const ThemeController = require('./IPCControllers/ThemeController');
 const DatabaseController = require('./IPCControllers/DatabaseController');
 const { app, BrowserWindow, ipcMain } = require('electron');

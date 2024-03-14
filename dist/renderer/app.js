@@ -16,6 +16,7 @@ import Employee from './models/Employee.js';
 import Group from './models/Group.js';
 import navbarHandlers from './controllers/modalController/NavbarData.js';
 import { ModalController } from './controllers/modalController/ModalController.js';
+import { EntityManager } from './services/EntityManager.js';
 export class App extends EventTarget {
     constructor() {
         super();
@@ -38,20 +39,33 @@ export class App extends EventTarget {
         __classPrivateFieldGet(this, _App_instances, "m", _App_init).call(this);
         __classPrivateFieldGet(this, _App_instances, "m", _App_assignTestGroup).call(this);
         this.state.year = new Date().getFullYear();
-        this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
-        this.state.workingSchedule.disableFreeDaysInPoland();
-        this.scheduleController.createLiveSchedule(this.state.workingSchedule);
+        this.createNewSchedule();
     }
-    selectDate(year, month) {
+    async selectDate(year, month) {
         this.state.year = year;
         this.state.month = month;
         this.saveAndCreateSchedule();
     }
-    saveAndCreateSchedule() {
-        //Save
+    async saveAndCreateSchedule() {
+        await EntityManager.persist('schedules', this.state.workingSchedule);
+        this.createNewSchedule();
+    }
+    async createNewSchedule() {
+        console.log(await this.recoverSchedule());
         this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
         this.state.workingSchedule.disableFreeDaysInPoland();
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
+    }
+    async recoverSchedule() {
+        const schedule = await EntityManager.find('schedules', {
+            year: { $eq: this.state.year },
+            month: { $eq: this.state.month },
+        });
+        return schedule;
+    }
+    async recoverGroup(id) {
+        const group = await EntityManager.getOne('groups', id);
+        return group;
     }
 }
 _App_instances = new WeakSet(), _App_init = function _App_init() {

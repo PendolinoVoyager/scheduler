@@ -10,7 +10,6 @@ import HeaderUtilsController from './HeaderUtilsController.js';
 import View from '../../views/View.js';
 
 export default class ScheduleController extends AbstractController {
-  archived: boolean = false;
   cellsView: View;
   scheduleData: ScheduleJSON | null = null;
   selected: CellData | null = null;
@@ -62,8 +61,6 @@ export default class ScheduleController extends AbstractController {
    */
   renderRawCellData(scheduleJSON: ScheduleJSON) {
     this.scheduleData = scheduleJSON;
-    this.archived = scheduleJSON.archived;
-    if (this.archived) this.titleElement.innerText += ' (archiwizowane}';
     this.cellsView.renderSpinner();
     if (scheduleJSON == null)
       throw new Error('Invalid data, got: ' + scheduleJSON);
@@ -83,7 +80,6 @@ export default class ScheduleController extends AbstractController {
     this.#updateSelectedClass();
   }
   updateSelected(newData: Partial<ExcludeId<CellData>>): void {
-    if (this.archived) throw new Error('Cannot update archived schedule.');
     if (!this.workingSchedule) throw new Error('No schedule to work with.');
     if (!this.selected) throw new Error('No cell selected.');
     this.workingSchedule.updateCell(

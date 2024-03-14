@@ -48,7 +48,6 @@ export const DEFAULT_CONFIG = {
             shortcut: '3',
         },
     },
-    CUTOFF_DATE: { year: 2024, month: 1 },
     MOUSE_BOX: false,
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);

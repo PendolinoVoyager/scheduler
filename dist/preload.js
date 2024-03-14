@@ -10,7 +10,8 @@ contextBridge.exposeInMainWorld('db', {
     getAll: (collection) => ipcRenderer.invoke('db:getAll', collection),
     insert: (collection, data) => ipcRenderer.invoke('db:insert', collection, data),
     delete: (collection, id) => ipcRenderer.invoke('db:delete', collection, id),
-    update: (collection, id, data) => ipcRenderer.invoke('db:update', collection, id),
+    update: (collection, id, data) => ipcRenderer.invoke('db:update', collection, id, data),
+    find: (collection, query) => ipcRenderer.invoke('db:find', collection, query),
 });
 contextBridge.exposeInMainWorld('darkMode', {
     toggle: () => ipcRenderer.invoke('dark-mode:toggle'),

@@ -7,7 +7,7 @@ const db = new loki(`${__dirname}/scheduler.db`, {
     autosave: true,
     autosaveInterval: 4000,
 });
-const collections = ['groups', 'employees', 'schedules'];
+const collections = ['groups', 'employees', 'schedules', 'previous'];
 // implement the autoloadback referenced in loki constructor
 //@ts-ignore
 function dbInit() {
@@ -35,8 +35,15 @@ module.exports = {
     getOne: async function (collection, id) {
         try {
             const doc = await db.getCollection(collection).findOne({ id });
-            if (doc == null)
-                throw new Error('404');
+            return doc;
+        }
+        catch (err) {
+            return null;
+        }
+    },
+    find: async function (collection, query) {
+        try {
+            const doc = (await db.getCollection(collection)?.find(query)) ?? [];
             return doc;
         }
         catch (err) {
@@ -44,7 +51,7 @@ module.exports = {
             return null;
         }
     },
-    remove: async function (collection, id) {
+    delete: async function (collection, id) {
         try {
             await db.getCollection(collection).findAndRemove({ id });
         }

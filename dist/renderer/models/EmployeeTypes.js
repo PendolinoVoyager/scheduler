@@ -10,6 +10,7 @@ export class EmployeeFormError extends Error {
 export class AbstractEmployee extends Entity {
     constructor(name) {
         super();
+        this.collection = 'employees';
         this.defaultOptions = {
             shiftPreference: CONFIG.DEFAULT_SHIFT,
             position: '',

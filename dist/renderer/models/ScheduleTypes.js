@@ -5,6 +5,7 @@ import Entity from './Entity.js';
 export class AbstractSchedule extends Entity {
     constructor(group, year, month) {
         super();
+        this.collection = 'schedules';
         this.group = group;
         this.year = year;
         this.month = month;

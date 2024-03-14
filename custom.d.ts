@@ -3,11 +3,12 @@ interface DarkMode extends Window {
   toggle: () => boolean;
   system: () => void;
 }
-interface FS extends Window {
+interface DB extends Window {
   getAll: (collection: string) => unknown;
   getOne: (collection: string, id: number) => unknown;
-  insert: (collection: string, data: Object) => void;
-  update: (collection: string, id: number, data: Object) => void;
+  find: (collection: string, query: any) => unknown[];
+  insert: (collection: string, data: any) => void;
+  update: (collection: string, id: number, data: any) => void;
   delete: (collection: string, id: number) => void;
 }
 interface Versions extends Window {
@@ -19,6 +20,6 @@ interface Versions extends Window {
 interface Window {
   // Use the custom interface
   darkMode: DarkMode;
-  fs: FS;
+  db: DB;
   versions: Versions;
 }

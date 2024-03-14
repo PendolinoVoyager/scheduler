@@ -14,7 +14,6 @@ class ScheduleController extends AbstractController {
     constructor() {
         super();
         _ScheduleController_instances.add(this);
-        this.archived = false;
         this.scheduleData = null;
         this.selected = null;
         this.selectedElement = null;
@@ -58,9 +57,6 @@ class ScheduleController extends AbstractController {
      */
     renderRawCellData(scheduleJSON) {
         this.scheduleData = scheduleJSON;
-        this.archived = scheduleJSON.archived;
-        if (this.archived)
-            this.titleElement.innerText += ' (archiwizowane}';
         this.cellsView.renderSpinner();
         if (scheduleJSON == null)
             throw new Error('Invalid data, got: ' + scheduleJSON);
@@ -80,8 +76,6 @@ class ScheduleController extends AbstractController {
         __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
     }
     updateSelected(newData) {
-        if (this.archived)
-            throw new Error('Cannot update archived schedule.');
         if (!this.workingSchedule)
             throw new Error('No schedule to work with.');
         if (!this.selected)

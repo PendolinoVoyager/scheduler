@@ -2,6 +2,8 @@ import Employee from './Employee.js';
 import Entity from './Entity.js';
 
 export default class Group extends Entity {
+  public collection: string = 'groups';
+
   private employees: Employee[] = [];
   constructor() {
     super();

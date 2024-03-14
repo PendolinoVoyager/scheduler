@@ -107,7 +107,6 @@ export class Schedule extends AbstractSchedule {
    */
   exportJSON(): ScheduleJSON {
     return {
-      archived: false,
       groupId: this.group.getId(),
       employees: this.group.getEmployees().map((emp) => {
         return {

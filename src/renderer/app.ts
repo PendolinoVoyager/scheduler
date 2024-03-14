@@ -10,6 +10,8 @@ import Employee from './models/Employee.js';
 import Group from './models/Group.js';
 import navbarHandlers from './controllers/modalController/NavbarData.js';
 import { ModalController } from './controllers/modalController/ModalController.js';
+import { EntityManager } from './services/EntityManager.js';
+import Entity from './models/Entity.js';
 
 interface State {
   group: Group;
@@ -42,23 +44,24 @@ export class App extends EventTarget {
     this.#assignTestGroup();
     this.state.year = new Date().getFullYear();
 
-    this.state.workingSchedule = new Schedule(
-      this.state.group,
-      this.state.year,
-      this.state.month
-    );
-    this.state.workingSchedule.disableFreeDaysInPoland();
-    this.scheduleController.createLiveSchedule(this.state.workingSchedule);
+    this.createNewSchedule();
   }
 
-  selectDate(year: number, month: number) {
+  async selectDate(year: number, month: number) {
     this.state.year = year;
     this.state.month = month;
+
     this.saveAndCreateSchedule();
   }
-  saveAndCreateSchedule() {
-    //Save
-
+  async saveAndCreateSchedule() {
+    await EntityManager.persist<Schedule>(
+      'schedules',
+      this.state.workingSchedule!
+    );
+    this.createNewSchedule();
+  }
+  async createNewSchedule() {
+    console.log(await this.recoverSchedule());
     this.state.workingSchedule = new Schedule(
       this.state.group,
       this.state.year,
@@ -66,6 +69,17 @@ export class App extends EventTarget {
     );
     this.state.workingSchedule.disableFreeDaysInPoland();
     this.scheduleController.createLiveSchedule(this.state.workingSchedule!);
+  }
+  async recoverSchedule() {
+    const schedule = await EntityManager.find('schedules', {
+      year: { $eq: this.state.year },
+      month: { $eq: this.state.month },
+    });
+    return schedule;
+  }
+  async recoverGroup(id: Entity['id']) {
+    const group = await EntityManager.getOne('groups', id);
+    return group;
   }
   #init() {
     this.#addNavbarControllers();

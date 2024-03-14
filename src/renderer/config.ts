@@ -11,8 +11,6 @@ type Config = {
   EMPLOYEE_NAME_ERROR_DESCRIPTION: string;
   FREE_DAYS: number[];
   SHIFT_TYPES: ShiftTypes;
-  CUTOFF_DATE: { year: number; month: number };
-
   //Schedule
   MOUSE_BOX: Boolean;
 };
@@ -65,7 +63,6 @@ export const DEFAULT_CONFIG: Config = {
       shortcut: '3',
     },
   },
-  CUTOFF_DATE: { year: 2024, month: 1 },
   MOUSE_BOX: false,
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);

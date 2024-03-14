@@ -12,6 +12,8 @@ export abstract class AbstractSchedule extends Entity {
   public readonly month: number;
   protected cells!: CellData[][];
   protected disabledDays: Set<number>;
+  collection = 'schedules';
+
   constructor(group: Group, year: number, month: number) {
     super();
     this.group = group;
@@ -60,7 +62,6 @@ export abstract class AbstractSchedule extends Entity {
 }
 
 export type ScheduleJSON = {
-  archived: boolean;
   groupId: number;
   employees: { id: Employee['id']; name: string; position: string }[];
   year: number;

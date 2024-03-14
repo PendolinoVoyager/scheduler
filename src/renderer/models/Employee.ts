@@ -5,6 +5,7 @@ import {
   AbstractEmployee,
   EmployeeFields,
   MonthlyShiftTypes,
+  EmployeeJSON,
 } from './EmployeeTypes.js';
 import { ShiftTypes } from './types.js';
 
@@ -16,6 +17,7 @@ export default class Employee extends AbstractEmployee {
   protected shiftPreference!: keyof ShiftTypes;
   protected employmentType!: EmploymentType;
   protected shiftPreferencesGrouped: MonthlyShiftTypes[] = [];
+  public repository: string = 'employees';
   constructor(name?: string, options: EmployeeFields = {}) {
     super(name);
     Object.entries(options).forEach(([key, value]) => {
@@ -210,5 +212,15 @@ export default class Employee extends AbstractEmployee {
   }
   setEmploymentType(newType: EmploymentType) {
     this.employmentType = newType;
+  }
+  exportJSON(): EmployeeJSON {
+    return {
+      id: this.id,
+      name: this.name,
+      position: this.position,
+      disabled: this.disabled,
+      shiftPreference: this.shiftPreference,
+      employmentType: this.employmentType,
+    };
   }
 }
