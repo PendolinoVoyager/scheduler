@@ -66,12 +66,16 @@ export default class HeaderUtilsController extends AbstractController {
       target.classList.remove('selected');
       return;
     }
+
     this.selectedShiftElement &&
       this.selectedShiftElement.classList.remove('selected');
     target.classList.add('selected');
 
     this.selectedShiftElement = target;
     this.selectedShift = target.dataset.shift;
+    if (this.mainController.selected) {
+      this.boundHandlers.updateSelected();
+    }
     if (this.selectedShift === 'Custom')
       this.boundHandlers.calculateTimeInput();
   }

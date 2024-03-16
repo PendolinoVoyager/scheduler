@@ -6,9 +6,10 @@ export default class CalendarPreviewView extends View {
         this.calendarService = CalendarService;
     }
     generateMarkup() {
+        console.log(this.data);
         return `
     <div class="container-card flex-column">
-    <div class="flex-row"">
+    <div class="flex-column"">
      <div id="btns-month-preview">
          <div id="btn-month-prev">
              <i class="fas fa-chevron-left"></i>
@@ -27,7 +28,7 @@ export default class CalendarPreviewView extends View {
       ${new Array(this.calendarService.getStartingDay())
             .fill('<div></div>')
             .join('')}
-       ${this.data.preferences
+       ${this.data
             .map((key, i) => `<div class="calendar-preview-day ${this.selectShiftClass(key)}">${i + 1}</div>`)
             .join('')}
     </div>

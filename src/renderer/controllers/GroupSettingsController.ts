@@ -16,6 +16,8 @@ import FormError from '../errors/FormError.js';
 import HoverBoxService from '../services/HoverBox.js';
 import { CONFIG } from '../config.js';
 import { App } from '../app.js';
+import { EntityManager } from '../services/EntityManager.js';
+import { ScheduleJSON } from '../models/ScheduleTypes.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: typeof ModalService;
@@ -134,9 +136,7 @@ export default class GroupSettingsController extends AbstractController {
       'submit',
       this.boundHandlers.handleFormSubmit
     );
-    document
-      .getElementById('plan-shifts')
-      ?.addEventListener('submit', this.boundHandlers.handlePlanSubmit);
+
     // Add Planning input
 
     addPositionDropdownHandlers();
@@ -196,18 +196,28 @@ export default class GroupSettingsController extends AbstractController {
     this.#updateListItems();
     this.#addEmployeeViewHandlers();
   }
-  #renderCalendarPreview() {
+  async #renderCalendarPreview() {
     const parent = document.getElementById('calendar-preview');
     if (!parent) throw new Error('Something went wrong!');
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
+    const shifts = (await EntityManager.find('schedules', {
+      year: CalendarService.year,
+      month: CalendarService.month,
+    })) as ScheduleJSON[];
 
-    const calendarData = this.selectedEmployee!.getPreferencesForMonth(
-      this.app.state.year,
-      this.app.state.month
-    );
+    const shiftData =
+      shifts[0]?.data[
+        shifts[0].employees.findIndex(
+          (emp) => emp.id === this.selectedEmployee?.getId()
+        )
+      ].map((d) => d.shiftType) ??
+      this.selectedEmployee!.getPreferencesForMonth(
+        this.app.state.year,
+        this.app.state.month
+      ).preferences;
 
-    this.CalendarPreviewView.render(calendarData);
+    this.CalendarPreviewView.render(shiftData);
     const btnPrev = this.modalService
       .getWriteableElement()
       .querySelector('#btn-month-prev');
@@ -251,7 +261,6 @@ export default class GroupSettingsController extends AbstractController {
     handleFormInput: this.#handleFormInput.bind(this),
     handleFormSubmit: this.#handleFormSubmit.bind(this),
     renderEmptyForm: this.#renderEmptyForm.bind(this),
-    handlePlanSubmit: this.#handlePlanSubmit.bind(this),
     renderWindow: this.#renderWindow.bind(this),
     cleanup: this.#cleanup.bind(this),
   };
@@ -279,38 +288,5 @@ export default class GroupSettingsController extends AbstractController {
     if (!targetedElement) return;
     (targetedElement as HTMLElement).classList.add('employee-selected');
     this.selectedItem = targetedElement as any;
-  }
-  async #handlePlanSubmit(e: SubmitEvent) {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    if (!form) return;
-    try {
-      const data = new FormData(form);
-      const parsedData = {
-        shiftType: data.get('plannedShift')?.toString()!,
-        start: data.get('begin')!.toString(),
-        end: data.get('end')!.toString(),
-      };
-      const dayspan = daySpanFromForm(parsedData.start, parsedData.end);
-      const res = await renderDialog(
-        `Zatwierdzić ${
-          CONFIG.SHIFT_TYPES[parsedData.shiftType].translation
-        } w okresie ${parsedData.start} - ${
-          parsedData.end
-        } dla ${this.selectedEmployee?.getName()}?`
-      );
-      if (!res) return;
-      dayspan.forEach((d) => {
-        this.selectedEmployee?.addCustomPreference(
-          d.year,
-          d.month,
-          d.day,
-          parsedData.shiftType
-        );
-      });
-      this.#renderCalendarPreview();
-    } catch (err) {
-      return;
-    }
   }
 }

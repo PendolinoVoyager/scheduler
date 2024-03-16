@@ -474,7 +474,9 @@ select {
   gap: 5px;
   margin: auto;
 }
-
+#calendar-preview {
+  min-height: 100%;
+}
 .calendar-preview-day {
   min-width: 1fr;
   min-height: 1fr;
@@ -509,9 +511,6 @@ select {
   flex-wrap: nowrap;
 }
 
-#employee-manage div {
-  max-width: 330px;
-}
 .error {
   background-color: var(--color-danger);
 }
@@ -531,6 +530,9 @@ select {
   overflow-x: scroll;
   overflow-y: hidden;
   position: relative;
+}
+#calendar-body:focus-visible {
+  outline: none;
 }
 .cell-header {
   text-align: center;

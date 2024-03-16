@@ -21,10 +21,9 @@ export class App extends EventTarget {
         this.navbarControllers = [];
         this.state = {
             year: new Date().getFullYear(),
-            month: new Date().getMonth() + 1,
+            month: new Date().getMonth() + 1 + (new Date().getDate() > 15 ? 1 : 0),
             group: new Group(),
             workingSchedule: null,
-            unsavedChanges: false,
         };
         //Controllers
         this.darkModeController = new DarkModeController();
@@ -36,7 +35,12 @@ export class App extends EventTarget {
     async selectDate(year, month) {
         this.state.year = year;
         this.state.month = month;
-        await this.saveAll();
+        let res = await renderDialog('Wyjść z obecnego grafiku?');
+        if (!res)
+            return;
+        res = await renderDialog('Zapisać obecny grafik?');
+        if (res)
+            await this.saveAll();
         await this.createNewSchedule();
     }
     async saveAll() {
@@ -50,22 +54,19 @@ export class App extends EventTarget {
     }
     async createNewSchedule() {
         const data = await EntityManager.recoverWhole(this.state.year, this.state.month);
-        console.log(data);
         if (data.status === 'fail') {
-            this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
-            this.state.workingSchedule.disableFreeDaysInPoland();
+            this.resetSchedule();
         }
         if (data.status === 'partial') {
-            this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+            this.resetSchedule();
             this.state.workingSchedule.setId(data.scheduleJSON.id);
             try {
                 Schedule.assignCellData(this.state.workingSchedule, data.scheduleJSON.data);
             }
             catch (err) {
-                this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+                this.resetSchedule();
                 this.state.workingSchedule.setId(data.scheduleJSON.id);
             }
-            this.state.workingSchedule.disableFreeDaysInPoland();
         }
         if (data.status === 'success') {
             this.state.group = data.recovered.group;
@@ -73,6 +74,12 @@ export class App extends EventTarget {
         }
         this.groupSettingsController.group = this.state.group;
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
+    }
+    resetSchedule() {
+        const id = this.state.workingSchedule?.getId();
+        this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+        id && this.state.workingSchedule.setId(id);
+        this.state.workingSchedule.disableFreeDaysInPoland();
     }
 }
 _App_instances = new WeakSet(), _App_init = function _App_init() {
@@ -98,14 +105,6 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
         this.state.workingSchedule.fillRowfromPreference(this.state.group.getEmployees().at(-1).getId());
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
-    document.getElementById('save').addEventListener('click', () => {
-        console.log('?E');
-        renderDialog('Zapisać zmiany?').then((res) => {
-            if (!res)
-                return;
-            this.saveAll();
-        });
-    });
     window.addEventListener('beforeunload', async (e) => {
         await this.saveAll();
         e.returnValue = false;
@@ -117,7 +116,26 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
         const navItem = document.getElementById(itemId);
         if (!navItem)
             return;
-        navItem.addEventListener('click', controller.show.bind(controller, this));
+        navItem.addEventListener('click', controller.show.bind(controller, this, {
+            year: this.state.year,
+            month: this.state.month,
+        }));
+    });
+    document.getElementById('save').addEventListener('click', () => {
+        console.log('?E');
+        renderDialog('Zapisać zmiany?').then((res) => {
+            if (!res)
+                return;
+            this.saveAll();
+        });
+    });
+    document.getElementById('reset').addEventListener('click', () => {
+        renderDialog('Reset spowoduje utratę obecnego grafiku przy kolejnym zapisie. Kontynuować?').then((res) => {
+            if (!res)
+                return;
+            this.resetSchedule();
+            this.scheduleController.createLiveSchedule(this.state.workingSchedule);
+        });
     });
 };
 const app = new App();

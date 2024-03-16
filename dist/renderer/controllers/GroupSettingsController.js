@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _GroupSettingsController_instances, _GroupSettingsController_init, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_handleEmployeeRemove, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_renderCalendarPreview, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems, _GroupSettingsController_handlePlanSubmit;
+var _GroupSettingsController_instances, _GroupSettingsController_init, _GroupSettingsController_handleSelectedEmployee, _GroupSettingsController_handleEmployeeRemove, _GroupSettingsController_renderEmployee, _GroupSettingsController_addEmployeeViewHandlers, _GroupSettingsController_handleFormInput, _GroupSettingsController_handleFormSubmit, _GroupSettingsController_cleanup, _GroupSettingsController_renderEmptyForm, _GroupSettingsController_renderCalendarPreview, _GroupSettingsController_addAndSelectEmployee, _GroupSettingsController_renderWindow, _GroupSettingsController_updateListItems;
 import ModalService from '../services/ModalService.js';
 import { AbstractController } from './AbstractController.js';
 import { renderDialog } from '../helpers/yesNoDialog.js';
@@ -13,10 +13,9 @@ import Employee from '../models/Employee.js';
 import { renderEmployeeForm, addPositionDropdownHandlers, } from '../helpers/renderEmployeeForm.js';
 import CalendarPreviewView from '../views/groupSettingsViews/CalendarPreviewView.js';
 import CalendarService from '../services/CalendarService.js';
-import { daySpanFromForm } from '../helpers/daySpanFromForm.js';
 import FormError from '../errors/FormError.js';
 import HoverBoxService from '../services/HoverBox.js';
-import { CONFIG } from '../config.js';
+import { EntityManager } from '../services/EntityManager.js';
 class GroupSettingsController extends AbstractController {
     constructor(app) {
         super();
@@ -32,7 +31,6 @@ class GroupSettingsController extends AbstractController {
             handleFormInput: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_handleFormInput).bind(this),
             handleFormSubmit: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_handleFormSubmit).bind(this),
             renderEmptyForm: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmptyForm).bind(this),
-            handlePlanSubmit: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_handlePlanSubmit).bind(this),
             renderWindow: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).bind(this),
             cleanup: __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_cleanup).bind(this),
         };
@@ -109,9 +107,6 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
 }, _GroupSettingsController_addEmployeeViewHandlers = function _GroupSettingsController_addEmployeeViewHandlers() {
     this.employeeForm?.addEventListener('input', this.boundHandlers.handleFormInput);
     this.employeeForm?.addEventListener('submit', this.boundHandlers.handleFormSubmit);
-    document
-        .getElementById('plan-shifts')
-        ?.addEventListener('submit', this.boundHandlers.handlePlanSubmit);
     // Add Planning input
     addPositionDropdownHandlers();
 }, _GroupSettingsController_handleFormInput = function _GroupSettingsController_handleFormInput(e) {
@@ -165,14 +160,19 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.selectedItem = undefined;
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_addEmployeeViewHandlers).call(this);
-}, _GroupSettingsController_renderCalendarPreview = function _GroupSettingsController_renderCalendarPreview() {
+}, _GroupSettingsController_renderCalendarPreview = async function _GroupSettingsController_renderCalendarPreview() {
     const parent = document.getElementById('calendar-preview');
     if (!parent)
         throw new Error('Something went wrong!');
     this.CalendarPreviewView = new CalendarPreviewView(parent);
     this.CalendarPreviewView.renderSpinner();
-    const calendarData = this.selectedEmployee.getPreferencesForMonth(this.app.state.year, this.app.state.month);
-    this.CalendarPreviewView.render(calendarData);
+    const shifts = (await EntityManager.find('schedules', {
+        year: CalendarService.year,
+        month: CalendarService.month,
+    }));
+    const shiftData = shifts[0]?.data[shifts[0].employees.findIndex((emp) => emp.id === this.selectedEmployee?.getId())].map((d) => d.shiftType) ??
+        this.selectedEmployee.getPreferencesForMonth(this.app.state.year, this.app.state.month).preferences;
+    this.CalendarPreviewView.render(shiftData);
     const btnPrev = this.modalService
         .getWriteableElement()
         .querySelector('#btn-month-prev');
@@ -223,29 +223,5 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         return;
     targetedElement.classList.add('employee-selected');
     this.selectedItem = targetedElement;
-}, _GroupSettingsController_handlePlanSubmit = async function _GroupSettingsController_handlePlanSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    if (!form)
-        return;
-    try {
-        const data = new FormData(form);
-        const parsedData = {
-            shiftType: data.get('plannedShift')?.toString(),
-            start: data.get('begin').toString(),
-            end: data.get('end').toString(),
-        };
-        const dayspan = daySpanFromForm(parsedData.start, parsedData.end);
-        const res = await renderDialog(`Zatwierdzić ${CONFIG.SHIFT_TYPES[parsedData.shiftType].translation} w okresie ${parsedData.start} - ${parsedData.end} dla ${this.selectedEmployee?.getName()}?`);
-        if (!res)
-            return;
-        dayspan.forEach((d) => {
-            this.selectedEmployee?.addCustomPreference(d.year, d.month, d.day, parsedData.shiftType);
-        });
-        __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderCalendarPreview).call(this);
-    }
-    catch (err) {
-        return;
-    }
 };
 export default GroupSettingsController;

@@ -3,7 +3,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
-    asar: true,
+    // asar: true,
   },
   rebuildConfig: {},
   makers: [
@@ -34,7 +34,7 @@ module.exports = {
       [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
       [FuseV1Options.EnableNodeCliInspectArguments]: false,
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
+      // [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
 };

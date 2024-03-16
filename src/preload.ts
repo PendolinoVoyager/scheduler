@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('db', {
     ipcRenderer.invoke('db:update', collection, id, data),
   find: (collection: string, query: any) =>
     ipcRenderer.invoke('db:find', collection, query),
+  saveDatabase: () => ipcRenderer.invoke('db:saveDatabase'),
 });
 
 contextBridge.exposeInMainWorld('darkMode', {

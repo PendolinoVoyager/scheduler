@@ -10,6 +10,7 @@ interface DB extends Window {
   insert: (collection: string, data: any) => void;
   update: (collection: string, id: number, data: any) => void;
   delete: (collection: string, id: number) => void;
+  saveDatabase: () => void;
 }
 interface Versions extends Window {
   node: () => string;

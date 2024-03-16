@@ -72,6 +72,9 @@ _HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addShif
     target.classList.add('selected');
     this.selectedShiftElement = target;
     this.selectedShift = target.dataset.shift;
+    if (this.mainController.selected) {
+        this.boundHandlers.updateSelected();
+    }
     if (this.selectedShift === 'Custom')
         this.boundHandlers.calculateTimeInput();
 }, _HeaderUtilsController_calculateTimeInput = function _HeaderUtilsController_calculateTimeInput() {

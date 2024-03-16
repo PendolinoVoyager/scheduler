@@ -9,6 +9,7 @@ class EntityManagerC {
             await window.db.insert(collection, entity.exportJSON());
         else
             await window.db.update(collection, entity.getId(), entity.exportJSON());
+        window.db.saveDatabase();
     }
     async getOne(collection, id) {
         return await window.db.getOne(collection, id);

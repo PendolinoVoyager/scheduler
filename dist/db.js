@@ -77,4 +77,7 @@ module.exports = {
             console.error(err);
         }
     },
+    saveDatabase: async function () {
+        await db.saveDatabase();
+    },
 };

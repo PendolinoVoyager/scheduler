@@ -3,15 +3,16 @@ import { MonthlyShiftTypes } from '../../models/EmployeeTypes.js';
 import CalendarService from '../../services/CalendarService.js';
 import { ShiftTypes } from '../../models/types.js';
 export default class CalendarPreviewView extends View {
-  data!: MonthlyShiftTypes;
+  data!: MonthlyShiftTypes['preferences'];
   calendarService = CalendarService;
   constructor(parentElement: HTMLElement) {
     super(parentElement);
   }
   generateMarkup(): string {
+    console.log(this.data);
     return `
     <div class="container-card flex-column">
-    <div class="flex-row"">
+    <div class="flex-column"">
      <div id="btns-month-preview">
          <div id="btn-month-prev">
              <i class="fas fa-chevron-left"></i>
@@ -30,7 +31,7 @@ export default class CalendarPreviewView extends View {
       ${new Array(this.calendarService.getStartingDay())
         .fill('<div></div>')
         .join('')}
-       ${this.data.preferences
+       ${this.data
          .map(
            (key, i) =>
              `<div class="calendar-preview-day ${this.selectShiftClass(key)}">${

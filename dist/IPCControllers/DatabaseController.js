@@ -26,5 +26,6 @@ module.exports = class DatabaseController extends IPCController {
         this.ipcMain.handle('db:find', (e, collection, query) => {
             return db.find(collection, query);
         });
+        this.ipcMain.handle('db:saveDatabase', () => db.saveDatabase());
     }
 };

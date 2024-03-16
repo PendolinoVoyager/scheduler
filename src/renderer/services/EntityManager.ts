@@ -17,11 +17,12 @@ class EntityManagerC {
     if (!doc) await window.db.insert(collection, entity.exportJSON());
     else
       await window.db.update(collection, entity.getId(), entity.exportJSON());
+    window.db.saveDatabase();
   }
   async getOne(collection: string, id: number) {
     return await window.db.getOne(collection, id);
   }
-  async find(collection: string, query: any) {
+  async find(collection: string, query: any): Promise<any[]> {
     return await window.db.find(collection, query);
   }
   async getAll(collection: string) {
