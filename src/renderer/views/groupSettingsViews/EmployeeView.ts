@@ -15,7 +15,7 @@ export default class EmployeeView extends View {
         ${renderEmployeeForm(this.data)}
   
 
-        <div id="calendar-preview">
+        <div id="calendar-preview" class="container-card">
 
         </div>
     </div>

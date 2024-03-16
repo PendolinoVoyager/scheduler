@@ -125,10 +125,21 @@ export class App extends EventTarget {
       );
       this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+    let unloadAllowed = false;
 
     window.addEventListener('beforeunload', async (e) => {
-      await this.saveAll();
-      e.returnValue = false;
+      if (!unloadAllowed) {
+        e.preventDefault();
+        e.returnValue = '';
+
+        const res = await renderDialog('Wyjść? Pamiętaj o zapisaniu.');
+        if (res) {
+          unloadAllowed = true;
+          window.close();
+        } else {
+          delete e['returnValue'];
+        }
+      }
     });
   }
   #addNavbarControllers() {

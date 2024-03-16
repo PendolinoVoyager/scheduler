@@ -105,9 +105,20 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
         this.state.workingSchedule.fillRowfromPreference(this.state.group.getEmployees().at(-1).getId());
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+    let unloadAllowed = false;
     window.addEventListener('beforeunload', async (e) => {
-        await this.saveAll();
-        e.returnValue = false;
+        if (!unloadAllowed) {
+            e.preventDefault();
+            e.returnValue = '';
+            const res = await renderDialog('Wyjść? Pamiętaj o zapisaniu.');
+            if (res) {
+                unloadAllowed = true;
+                window.close();
+            }
+            else {
+                delete e['returnValue'];
+            }
+        }
     });
 }, _App_addNavbarControllers = function _App_addNavbarControllers() {
     navbarHandlers.forEach(({ itemId, ctorData }) => {

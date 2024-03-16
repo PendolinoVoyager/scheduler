@@ -22,11 +22,9 @@ const navbarHandlers = [
                             .split('-');
                         if (month == null || year == null)
                             return;
-                        if (this.state.unsavedChanges) {
-                            const res = await renderDialog('Zmienić grafik? Poprzednia praca nie została zapisana.');
-                            if (!res)
-                                return;
-                        }
+                        const res = await renderDialog('Zmienić grafik? Pamiętaj o zapisaniu swojej pracy.');
+                        if (!res)
+                            return;
                         this.selectDate(+year, +month);
                         await ModalService.requestClose();
                     },

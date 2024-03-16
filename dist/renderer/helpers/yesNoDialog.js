@@ -5,8 +5,8 @@ export async function renderDialog(prompt = 'Confirm?') {
     <div class="dialog-container" id="dialog">
     <div id="message">${prompt}</div>
     <div class="dialog-buttons">
-        <div role="button" id="yesButton" class="box-sharp">Yes</div>
-        <div role="button" id="noButton" class="box-sharp">No</div>
+        <div role="button" id="yesButton" class="box-sharp">Tak</div>
+        <div role="button" id="noButton" class="box-sharp">Nie</div>
     </div>
     </div>
     `);

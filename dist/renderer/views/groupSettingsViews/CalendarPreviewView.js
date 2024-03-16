@@ -8,7 +8,7 @@ export default class CalendarPreviewView extends View {
     generateMarkup() {
         console.log(this.data);
         return `
-    <div class="container-card flex-column">
+    <div class="container-card2 flex-column">
     <div class="flex-column"">
      <div id="btns-month-preview">
          <div id="btn-month-prev">
