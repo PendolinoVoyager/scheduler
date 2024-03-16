@@ -61,7 +61,9 @@ module.exports = {
     },
     update: async function (collection, id, data) {
         try {
-            db.getCollection(collection).findAndUpdate({ id }, data);
+            db.getCollection(collection).findAndUpdate({ id }, (doc) => {
+                Object.assign(doc, data);
+            });
         }
         catch (err) {
             console.error(err);

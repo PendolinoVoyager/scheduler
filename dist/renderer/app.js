@@ -3,20 +3,17 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _App_instances, _App_init, _App_addNavbarControllers, _App_assignTestGroup;
+var _App_instances, _App_init, _App_addNavbarControllers;
 import './config.js';
 import DarkModeController from './controllers/DarkModeController.js';
-import ModalService from './services/ModalService.js';
-import HoverBoxService from './services/HoverBox.js';
 import GroupSettingsController from './controllers/GroupSettingsController.js';
 import ScheduleController from './controllers/scheduleControllers/ScheduleController.js';
 import { Schedule } from './models/Schedule.js';
-import { CONFIG } from './config.js';
-import Employee from './models/Employee.js';
 import Group from './models/Group.js';
 import navbarHandlers from './controllers/modalController/NavbarData.js';
 import { ModalController } from './controllers/modalController/ModalController.js';
 import { EntityManager } from './services/EntityManager.js';
+import { renderDialog } from './helpers/yesNoDialog.js';
 export class App extends EventTarget {
     constructor() {
         super();
@@ -29,43 +26,53 @@ export class App extends EventTarget {
             workingSchedule: null,
             unsavedChanges: false,
         };
-        //Services
-        this.ModalService = ModalService;
-        this.HoverBoxService = HoverBoxService;
         //Controllers
         this.darkModeController = new DarkModeController();
         this.groupSettingsController = new GroupSettingsController(this);
         this.scheduleController = new ScheduleController();
         __classPrivateFieldGet(this, _App_instances, "m", _App_init).call(this);
-        __classPrivateFieldGet(this, _App_instances, "m", _App_assignTestGroup).call(this);
-        this.state.year = new Date().getFullYear();
         this.createNewSchedule();
     }
     async selectDate(year, month) {
         this.state.year = year;
         this.state.month = month;
-        this.saveAndCreateSchedule();
+        await this.saveAll();
+        await this.createNewSchedule();
     }
-    async saveAndCreateSchedule() {
+    async saveAll() {
+        if (this.state.group.getEmployees().length === 0)
+            return;
+        await EntityManager.persist('groups', this.state.group);
+        for (const emp of this.state.group.getEmployees()) {
+            await EntityManager.persist('employees', emp);
+        }
         await EntityManager.persist('schedules', this.state.workingSchedule);
-        this.createNewSchedule();
     }
     async createNewSchedule() {
-        console.log(await this.recoverSchedule());
-        this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
-        this.state.workingSchedule.disableFreeDaysInPoland();
+        const data = await EntityManager.recoverWhole(this.state.year, this.state.month);
+        console.log(data);
+        if (data.status === 'fail') {
+            this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+            this.state.workingSchedule.disableFreeDaysInPoland();
+        }
+        if (data.status === 'partial') {
+            this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+            this.state.workingSchedule.setId(data.scheduleJSON.id);
+            try {
+                Schedule.assignCellData(this.state.workingSchedule, data.scheduleJSON.data);
+            }
+            catch (err) {
+                this.state.workingSchedule = new Schedule(this.state.group, this.state.year, this.state.month);
+                this.state.workingSchedule.setId(data.scheduleJSON.id);
+            }
+            this.state.workingSchedule.disableFreeDaysInPoland();
+        }
+        if (data.status === 'success') {
+            this.state.group = data.recovered.group;
+            this.state.workingSchedule = data.recovered.schedule;
+        }
+        this.groupSettingsController.group = this.state.group;
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
-    }
-    async recoverSchedule() {
-        const schedule = await EntityManager.find('schedules', {
-            year: { $eq: this.state.year },
-            month: { $eq: this.state.month },
-        });
-        return schedule;
-    }
-    async recoverGroup(id) {
-        const group = await EntityManager.getOne('groups', id);
-        return group;
     }
 }
 _App_instances = new WeakSet(), _App_init = function _App_init() {
@@ -91,6 +98,18 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
         this.state.workingSchedule.fillRowfromPreference(this.state.group.getEmployees().at(-1).getId());
         this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+    document.getElementById('save').addEventListener('click', () => {
+        console.log('?E');
+        renderDialog('Zapisać zmiany?').then((res) => {
+            if (!res)
+                return;
+            this.saveAll();
+        });
+    });
+    window.addEventListener('beforeunload', async (e) => {
+        await this.saveAll();
+        e.returnValue = false;
+    });
 }, _App_addNavbarControllers = function _App_addNavbarControllers() {
     navbarHandlers.forEach(({ itemId, ctorData }) => {
         const controller = new ModalController(ctorData.viewClass, ctorData.handlers, ctorData.onClose);
@@ -100,20 +119,5 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
             return;
         navItem.addEventListener('click', controller.show.bind(controller, this));
     });
-}, _App_assignTestGroup = function _App_assignTestGroup() {
-    const testGroup = new Group();
-    testGroup.addEmployee(new Employee('Anna Nowa', {
-        shiftPreference: Object.keys(CONFIG.SHIFT_TYPES)[1],
-        position: 'Kierownik',
-        disabled: true,
-    }));
-    testGroup.getEmployees()[0].addCustomPreference(2024, 3, 1, 'Afternoon');
-    testGroup.getEmployees()[0].addCustomPreference(2024, 3, 2, 'None');
-    testGroup.getEmployees()[0].addCustomPreference(2024, 3, 3, 'Vacation');
-    testGroup.addEmployee(new Employee('Jan Dupa'));
-    testGroup.addEmployee(new Employee('Tadeusz Kościuszko'));
-    testGroup.addEmployee(new Employee('Jacek Bawełna'));
-    testGroup.addEmployee(new Employee('Pan Kierownik'));
-    return testGroup;
 };
 const app = new App();

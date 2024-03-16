@@ -210,6 +210,7 @@ describe('Schedule', () => {
       const sut = new Schedule(group, 2024, 2);
       sut.disableDay(1);
       const expected: ScheduleJSON = {
+        id: sut.getId(),
         groupId: group.getId(),
         employees: [
           {

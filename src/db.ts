@@ -62,7 +62,9 @@ module.exports = {
     data: Object
   ) {
     try {
-      db.getCollection(collection).findAndUpdate({ id }, data);
+      db.getCollection(collection).findAndUpdate({ id }, (doc: Object) => {
+        Object.assign(doc, data);
+      });
     } catch (err) {
       console.error(err);
     }

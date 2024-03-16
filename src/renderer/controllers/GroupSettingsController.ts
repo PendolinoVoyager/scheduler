@@ -16,7 +16,6 @@ import FormError from '../errors/FormError.js';
 import HoverBoxService from '../services/HoverBox.js';
 import { CONFIG } from '../config.js';
 import { App } from '../app.js';
-import DragList from '../helpers/DragList.js';
 
 export default class GroupSettingsController extends AbstractController {
   public modalService: typeof ModalService;

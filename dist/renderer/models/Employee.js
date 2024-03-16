@@ -148,6 +148,9 @@ class Employee extends AbstractEmployee {
             employmentType: this.employmentType,
         };
     }
+    static recover(data) {
+        return new Employee(data.name, { ...data });
+    }
 }
 _Employee_instances = new WeakSet(), _Employee_createGroupedPreference = function _Employee_createGroupedPreference(year, month) {
     const newPreferenceMonth = {

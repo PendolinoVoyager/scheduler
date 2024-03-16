@@ -1,3 +1,4 @@
+import { EntityManager } from '../services/EntityManager.js';
 import Employee from './Employee.js';
 import Entity from './Entity.js';
 

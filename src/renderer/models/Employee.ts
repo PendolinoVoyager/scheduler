@@ -223,4 +223,7 @@ export default class Employee extends AbstractEmployee {
       employmentType: this.employmentType,
     };
   }
+  static recover(data: EmployeeJSON) {
+    return new Employee(data.name, { ...data });
+  }
 }

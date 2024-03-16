@@ -11,7 +11,7 @@ import Group from './models/Group.js';
 import navbarHandlers from './controllers/modalController/NavbarData.js';
 import { ModalController } from './controllers/modalController/ModalController.js';
 import { EntityManager } from './services/EntityManager.js';
-import Entity from './models/Entity.js';
+import { renderDialog } from './helpers/yesNoDialog.js';
 
 interface State {
   group: Group;
@@ -29,9 +29,6 @@ export class App extends EventTarget {
     workingSchedule: null,
     unsavedChanges: false,
   };
-  //Services
-  public ModalService = ModalService;
-  public HoverBoxService = HoverBoxService;
   //Controllers
   public darkModeController = new DarkModeController();
   public groupSettingsController = new GroupSettingsController(this);
@@ -40,47 +37,71 @@ export class App extends EventTarget {
   constructor() {
     super();
     this.#init();
-
-    this.#assignTestGroup();
-    this.state.year = new Date().getFullYear();
-
     this.createNewSchedule();
   }
 
   async selectDate(year: number, month: number) {
     this.state.year = year;
     this.state.month = month;
-
-    this.saveAndCreateSchedule();
+    await this.saveAll();
+    await this.createNewSchedule();
   }
-  async saveAndCreateSchedule() {
+  async saveAll() {
+    if (this.state.group.getEmployees().length === 0) return;
+    await EntityManager.persist<Group>('groups', this.state.group!);
+    for (const emp of this.state.group!.getEmployees()) {
+      await EntityManager.persist<Employee>('employees', emp);
+    }
     await EntityManager.persist<Schedule>(
       'schedules',
       this.state.workingSchedule!
     );
-    this.createNewSchedule();
   }
+
   async createNewSchedule() {
-    console.log(await this.recoverSchedule());
-    this.state.workingSchedule = new Schedule(
-      this.state.group,
+    const data = await EntityManager.recoverWhole(
       this.state.year,
       this.state.month
     );
-    this.state.workingSchedule.disableFreeDaysInPoland();
+    console.log(data);
+    if (data.status === 'fail') {
+      this.state.workingSchedule = new Schedule(
+        this.state.group,
+        this.state.year,
+        this.state.month
+      );
+      this.state.workingSchedule.disableFreeDaysInPoland();
+    }
+    if (data.status === 'partial') {
+      this.state.workingSchedule = new Schedule(
+        this.state.group,
+        this.state.year,
+        this.state.month
+      );
+      this.state.workingSchedule.setId(data.scheduleJSON!.id);
+      try {
+        Schedule.assignCellData(
+          this.state.workingSchedule,
+          data.scheduleJSON!.data
+        );
+      } catch (err) {
+        this.state.workingSchedule = new Schedule(
+          this.state.group,
+          this.state.year,
+          this.state.month
+        );
+        this.state.workingSchedule.setId(data.scheduleJSON!.id);
+      }
+      this.state.workingSchedule.disableFreeDaysInPoland();
+    }
+    if (data.status === 'success') {
+      this.state.group = data.recovered!.group;
+      this.state.workingSchedule = data.recovered!.schedule;
+    }
+    this.groupSettingsController.group = this.state.group;
     this.scheduleController.createLiveSchedule(this.state.workingSchedule!);
   }
-  async recoverSchedule() {
-    const schedule = await EntityManager.find('schedules', {
-      year: { $eq: this.state.year },
-      month: { $eq: this.state.month },
-    });
-    return schedule;
-  }
-  async recoverGroup(id: Entity['id']) {
-    const group = await EntityManager.getOne('groups', id);
-    return group;
-  }
+
   #init() {
     this.#addNavbarControllers();
     //Settings controller
@@ -110,6 +131,17 @@ export class App extends EventTarget {
       );
       this.scheduleController.createLiveSchedule(this.state.workingSchedule);
     });
+    document.getElementById('save')!.addEventListener('click', () => {
+      console.log('?E');
+      renderDialog('Zapisać zmiany?').then((res) => {
+        if (!res) return;
+        this.saveAll();
+      });
+    });
+    window.addEventListener('beforeunload', async (e) => {
+      await this.saveAll();
+      e.returnValue = false;
+    });
   }
   #addNavbarControllers() {
     navbarHandlers.forEach(({ itemId, ctorData }) => {
@@ -123,26 +155,6 @@ export class App extends EventTarget {
       if (!navItem) return;
       navItem.addEventListener('click', controller.show.bind(controller, this));
     });
-  }
-
-  #assignTestGroup() {
-    const testGroup = new Group();
-    testGroup.addEmployee(
-      new Employee('Anna Nowa', {
-        shiftPreference: Object.keys(CONFIG.SHIFT_TYPES)[1],
-        position: 'Kierownik',
-        disabled: true,
-      })
-    );
-    testGroup.getEmployees()[0].addCustomPreference(2024, 3, 1, 'Afternoon');
-    testGroup.getEmployees()[0].addCustomPreference(2024, 3, 2, 'None');
-    testGroup.getEmployees()[0].addCustomPreference(2024, 3, 3, 'Vacation');
-
-    testGroup.addEmployee(new Employee('Jan Dupa'));
-    testGroup.addEmployee(new Employee('Tadeusz Kościuszko'));
-    testGroup.addEmployee(new Employee('Jacek Bawełna'));
-    testGroup.addEmployee(new Employee('Pan Kierownik'));
-    return testGroup;
   }
 }
 const app = new App();

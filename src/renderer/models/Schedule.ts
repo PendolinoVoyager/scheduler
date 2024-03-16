@@ -107,6 +107,7 @@ export class Schedule extends AbstractSchedule {
    */
   exportJSON(): ScheduleJSON {
     return {
+      id: this.id,
       groupId: this.group.getId(),
       employees: this.group.getEmployees().map((emp) => {
         return {
@@ -147,5 +148,10 @@ export class Schedule extends AbstractSchedule {
         ...tip,
       ];
     });
+  }
+  recover(scheduleJSON: ScheduleJSON) {
+    Schedule.assignCellData(this, scheduleJSON.data);
+    this.disabledDays = new Set(scheduleJSON.disabledDays);
+    this.setId(scheduleJSON.id);
   }
 }
