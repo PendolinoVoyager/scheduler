@@ -41,5 +41,44 @@ describe('ScheduleValidator', () => {
       );
     });
   });
-  describe('validators', () => {});
+  describe('validators', () => {
+    describe('11h rest', () => {
+      test.each([
+        { endTime: 23, startTime: 10, expected: null },
+        { endTime: 23, startTime: 14, expected: null },
+        { endTime: 20, startTime: 5, expected: 'truthy' },
+        { endTime: undefined, startTime: undefined, expected: null },
+        { endTime: undefined, startTime: 5, expected: null },
+        { endTime: 23, startTime: undefined, expected: null },
+      ])(
+        'ending shift $endTime and start $startTime returns $expected',
+        ({ startTime, endTime, expected }) => {
+          const group = createGroup(1);
+          const employee = group.getEmployees()[0];
+          const schedule = new Schedule(group, 2024, 2);
+          const sut = new ScheduleValidatorC();
+
+          schedule.getCell(employee.getId(), 1).endTime = endTime;
+          schedule.getCell(employee.getId(), 2).startTime = startTime;
+          const cells = [
+            schedule.getCell(employee.getId(), 1),
+            schedule.getCell(employee.getId(), 2),
+          ];
+          if (expected) {
+            expect(
+              sut.validators
+                .find((val) => val.name === '11h rest')
+                ?.validator(cells)
+            ).toBeTruthy();
+          } else {
+            expect(
+              sut.validators
+                .find((val) => val.name === '11h rest')
+                ?.validator(cells)
+            ).toBeNull();
+          }
+        }
+      );
+    });
+  });
 });
