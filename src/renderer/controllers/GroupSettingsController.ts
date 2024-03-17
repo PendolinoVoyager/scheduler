@@ -168,9 +168,8 @@ export default class GroupSettingsController extends AbstractController {
     this.selectedItem?.classList.remove('modified');
     this.#renderWindow();
     this.#updateListItems();
-    this.#renderEmployee(
-      this.group.findEmployee(this.selectedEmployee!.getId())
-    );
+    this.#renderEmployee(this.selectedEmployee!);
+    EntityManager.persist('employees', this.selectedEmployee!);
   }
   #cleanup() {
     this.isModifying = false;

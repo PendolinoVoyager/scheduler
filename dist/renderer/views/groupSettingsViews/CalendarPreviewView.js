@@ -6,7 +6,6 @@ export default class CalendarPreviewView extends View {
         this.calendarService = CalendarService;
     }
     generateMarkup() {
-        console.log(this.data);
         return `
     <div class="container-card2 flex-column">
     <div class="flex-column"">

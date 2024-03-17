@@ -1,9 +1,10 @@
-import { CONFIG } from '../config';
-import { calcRestTime, calcShiftHours } from '../helpers/calcShiftHours';
-import Entity from '../models/Entity';
+import { CONFIG } from '../config.js';
+import { calcRestTime, calcShiftHours } from '../helpers/calcShiftHours.js';
+import Entity from '../models/Entity.js';
 import { Schedule } from '../models/Schedule.js';
-import { CellData } from '../models/types';
-//
+import { ScheduleJSON } from '../models/ScheduleTypes.js';
+import { CellData } from '../models/types.js';
+import CalendarService from './CalendarService.js';
 type ValidatorNotice = {
   type: 'warning' | 'critical';
   description: string;
@@ -14,33 +15,13 @@ type ValidatorNotice = {
 interface ScheduleValidatorI {
   validate: (schedule: Schedule) => ValidatorNotice[];
   getStats: (schedule: Schedule) => { hours: number; workingDays: number };
+  mockDisabledDays: (cells: CellData[], disabled: number[]) => CellData[];
 }
 type Validator = {
   name: string;
   timespan: 'day' | 'two-day' | 'week' | 'month';
   validator: (cells: CellData[]) => ValidatorNotice | null;
 };
-export class ScheduleValidatorC implements ScheduleValidatorI {
-  constructor() {}
-  validate(schedule: Schedule) {
-    const notices: ValidatorNotice[] = [];
-    // Run all validators by timespan.
-    // If day is disabled: mock undefined startTime/endTime cell
-    return notices;
-  }
-  getStats(schedule: Schedule) {
-    const hours = schedule
-      .getCells()
-      .flat()
-      .reduce((total, cell) => total + calcShiftHours(cell), 0);
-    const workingDays = schedule.length - schedule.getDisabledDays().length;
-
-    return { hours, workingDays };
-  }
-
-  public validators: Validator[] = validators;
-}
-export const ScheduleValidator = new ScheduleValidatorC();
 
 export const validators: Validator[] = [
   {
@@ -148,9 +129,86 @@ export const validators: Validator[] = [
           type: 'warning',
           employee: cells[0].id,
           description: `Pracownik ${cells[0].id} pracuje przeciętnie wiecęcej niż ${CONFIG.WORK_LAWS.AVERAGE_SHIFT_HOURS}h dziennie (${workingTime}).`,
-          timespan: 'week',
+          timespan: 'month',
         };
       return null;
     },
   },
 ];
+
+export class ScheduleValidatorC implements ScheduleValidatorI {
+  validate(schedule: Schedule) {
+    const scheduleJSON = schedule.exportJSON();
+    const notices: ValidatorNotice[] = [];
+    const monthValidators: Validator[] = validators.filter(
+      (validator) => validator.timespan === 'month'
+    );
+
+    // Run all validators by timespan.
+    scheduleJSON.data.forEach((cellRow, rowIndex) => {
+      cellRow.forEach((cell, cellIndex) => {
+        const relevantValidators = validators.filter(
+          (validator) =>
+            validator.timespan === 'day' ||
+            (validator.timespan === 'two-day' && cellRow[cellIndex + 1]) ||
+            (validator.timespan === 'week' &&
+              CalendarService.getDOW(
+                scheduleJSON.year,
+                scheduleJSON.month,
+                cell.day
+              ) === 1 &&
+              cellIndex < cellRow.length - 7)
+        );
+
+        relevantValidators.forEach((validator) => {
+          let data;
+          if (
+            validator.name.includes('disabled') &&
+            !schedule.getGroup().getEmployees()[rowIndex].isDisabled()
+          )
+            return;
+          if (validator.timespan === 'day') data = [cell];
+          if (validator.timespan === 'two-day')
+            data = [cell, cellRow[cellIndex + 1]];
+          if (validator.timespan === 'week')
+            data = cellRow.slice(cellIndex, cellIndex + 7);
+          this.mockDisabledDays(data!, scheduleJSON.disabledDays);
+          const notice = validator.validator(data!);
+          notice && notices.push(notice);
+        });
+      });
+
+      // Run monthly validators only once per employee
+      if (rowIndex === 0) {
+        monthValidators.forEach((validator) => {
+          const notice = validator.validator(
+            scheduleJSON.data[rowIndex].filter(
+              (cell) => !scheduleJSON.disabledDays.includes(cell.day)
+            )
+          );
+          notice && notices.push(notice);
+        });
+      }
+    });
+    console.log(notices);
+    return notices;
+  }
+  getStats(schedule: Schedule) {
+    const hours = schedule
+      .getCells()
+      .flat()
+      .reduce((total, cell) => total + calcShiftHours(cell), 0);
+    const workingDays = schedule.length - schedule.getDisabledDays().length;
+
+    return { hours, workingDays };
+  }
+  mockDisabledDays(cells: CellData[], disabled: number[]) {
+    return cells.map((cell) =>
+      disabled.includes(cell.day)
+        ? { shiftType: 'None', id: cell.id, day: cell.day }
+        : cell
+    );
+  }
+  public validators: Validator[] = validators;
+}
+export const ScheduleValidator = new ScheduleValidatorC();

@@ -9,7 +9,6 @@ export default class CalendarPreviewView extends View {
     super(parentElement);
   }
   generateMarkup(): string {
-    console.log(this.data);
     return `
     <div class="container-card2 flex-column">
     <div class="flex-column"">

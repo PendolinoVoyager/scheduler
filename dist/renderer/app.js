@@ -133,7 +133,6 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
         }));
     });
     document.getElementById('save').addEventListener('click', () => {
-        console.log('?E');
         renderDialog('Zapisać zmiany?').then((res) => {
             if (!res)
                 return;

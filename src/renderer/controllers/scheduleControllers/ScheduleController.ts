@@ -8,6 +8,8 @@ import MouseScheduleController from './MouseHandler.js';
 import KeyboardScheduleController from './KeyboardHandler.js';
 import HeaderUtilsController from './HeaderUtilsController.js';
 import View from '../../views/View.js';
+import { ScheduleValidator } from '../../services/ScheduleValidator.js';
+import { CONFIG } from '../../config.js';
 
 export default class ScheduleController extends AbstractController {
   cellsView: View;
@@ -94,6 +96,7 @@ export default class ScheduleController extends AbstractController {
     );
     this.selectedElement!.outerHTML = markdown;
     this.#updateSelectedClass();
+    CONFIG.RUN_VALIDATORS && ScheduleValidator.validate(this.workingSchedule);
   }
   toggleDisabledColumn(day: number) {
     if (!this.workingSchedule) throw new Error('No schedule to work with.');

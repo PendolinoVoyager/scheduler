@@ -162,7 +162,6 @@ export class App extends EventTarget {
     });
 
     document.getElementById('save')!.addEventListener('click', () => {
-      console.log('?E');
       renderDialog('Zapisać zmiany?').then((res) => {
         if (!res) return;
         this.saveAll();

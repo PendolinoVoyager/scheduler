@@ -1,25 +1,6 @@
-import calcShiftHours from '../helpers/calcShiftHours';
-export class ScheduleValidatorC {
-    constructor() {
-        this.validators = validators;
-    }
-    validate(schedule) {
-        return [];
-    }
-    getStats(schedule) {
-        const hours = schedule
-            .getCells()
-            .flat()
-            .reduce((total, cell) => total + calcShiftHours(cell), 0);
-        const workingDays = schedule.length - schedule.getDisabledDays().length;
-        return { hours, workingDays };
-    }
-}
-export default new ScheduleValidatorC();
-//11h day rest
-//35h week rest
-//7h niepelnosprawny i nie wiecej niz 7 * 5 w tygodniu
-// dni pracujace * 8 - nie moze wiecej pracowac w miesiacu
+import { CONFIG } from '../config.js';
+import { calcRestTime, calcShiftHours } from '../helpers/calcShiftHours.js';
+import CalendarService from './CalendarService.js';
 export const validators = [
     {
         name: '11h rest',
@@ -29,17 +10,160 @@ export const validators = [
                 throw new Error('TypeError: expected 2 cells, got ' + cells.length);
             if (!cells[1].startTime || !cells[0].endTime)
                 return null;
-            const time = 24 - cells[0].endTime + cells[1].startTime;
-            console.log(time);
-            if (time < 11)
+            //First expression checks if 1st cell takes place overnight
+            const time = calcRestTime(cells);
+            if (time == null)
+                return null;
+            if (time < CONFIG.WORK_LAWS.MIN_DAY_REST)
                 return {
                     type: 'warning',
                     employee: cells[0].id,
-                    description: `Pracownik ${cells[0].id} przed dniem ${cells[1].day} nie odpoczywał co najmniej 11 godzin.`,
+                    description: `Pracownik ${cells[0].id} przed dniem ${cells[1].day} nie odpoczywał co najmniej ${CONFIG.WORK_LAWS.MIN_DAY_REST} godzin (${time}h).`,
                     timespan: 'two-day',
                     cell: { employeeId: cells[0].id, day: cells[1].day },
                 };
             return null;
         },
     },
+    {
+        name: '35h rest',
+        timespan: 'week',
+        validator: (cells) => {
+            if (cells.length !== 7)
+                throw new Error('TypeError: expected 7 cells, got ' + cells.length);
+            let maxRest = 0;
+            for (let i = 0; i < cells.length - 1; i++) {
+                const currentCell = cells[i];
+                const nextCell = cells[i + 1];
+                let restTime = calcRestTime([currentCell, nextCell]);
+                // If the next day is free add the free time in the following day before shift start
+                if (!nextCell.startTime && i < cells.length - 1)
+                    restTime += cells[i + 2].startTime ?? 24;
+                if (restTime > maxRest)
+                    maxRest = restTime;
+                if (restTime >= CONFIG.WORK_LAWS.MIN_WEEK_REST)
+                    break;
+            }
+            if (maxRest < CONFIG.WORK_LAWS.MIN_WEEK_REST)
+                return {
+                    type: 'warning',
+                    employee: cells[0].id,
+                    description: `Pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} nie odpoczywał co najmniej ${CONFIG.WORK_LAWS.MIN_WEEK_REST} godzin (${maxRest}h}).`,
+                    timespan: 'week',
+                };
+            return null;
+        },
+    },
+    {
+        name: '7h disabled',
+        timespan: 'day',
+        validator: (cells) => {
+            if (cells.length !== 1)
+                throw new Error('TypeError: expected 1 cell, got ' + cells.length);
+            const workingTime = calcShiftHours(cells[0]);
+            if (workingTime > CONFIG.WORK_LAWS.MAX_DISABLED_WORKDAY)
+                return {
+                    type: 'warning',
+                    employee: cells[0].id,
+                    description: `Niepełnosprawny pracownik ${cells[0].id} w dniu ${cells[0].day} pracuje więcej niż ${CONFIG.WORK_LAWS.MAX_DISABLED_WORKDAY} godzin (${workingTime}h).`,
+                    timespan: 'day',
+                    cell: { employeeId: cells[0].id, day: cells[0].day },
+                };
+            return null;
+        },
+    },
+    {
+        name: '35h disabled',
+        timespan: 'week',
+        validator: (cells) => {
+            if (cells.length !== 7)
+                throw new Error('TypeError: expected 7 cells, got ' + cells.length);
+            const workingTime = cells.reduce((total, cell) => total + calcShiftHours(cell), 0);
+            if (workingTime > CONFIG.WORK_LAWS.MAX_DISABLED_WORKWEEK)
+                return {
+                    type: 'warning',
+                    employee: cells[0].id,
+                    description: `Niepełnosprawny pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} pracuje więcej niż ${CONFIG.WORK_LAWS.MAX_DISABLED_WORKWEEK}h (${workingTime}).`,
+                    timespan: 'week',
+                };
+            return null;
+        },
+    },
+    {
+        name: 'month summary',
+        timespan: 'month',
+        /**
+         * Needs to exclude disabled days.
+         */
+        validator: (cells) => {
+            const workingTime = cells.reduce((total, cell) => total + calcShiftHours(cell), 0) /
+                cells.length;
+            if (workingTime > CONFIG.WORK_LAWS.AVERAGE_SHIFT_HOURS)
+                return {
+                    type: 'warning',
+                    employee: cells[0].id,
+                    description: `Pracownik ${cells[0].id} pracuje przeciętnie wiecęcej niż ${CONFIG.WORK_LAWS.AVERAGE_SHIFT_HOURS}h dziennie (${workingTime}).`,
+                    timespan: 'month',
+                };
+            return null;
+        },
+    },
 ];
+export class ScheduleValidatorC {
+    constructor() {
+        this.validators = validators;
+    }
+    validate(schedule) {
+        const scheduleJSON = schedule.exportJSON();
+        const notices = [];
+        const monthValidators = validators.filter((validator) => validator.timespan === 'month');
+        // Run all validators by timespan.
+        scheduleJSON.data.forEach((cellRow, rowIndex) => {
+            cellRow.forEach((cell, cellIndex) => {
+                const relevantValidators = validators.filter((validator) => validator.timespan === 'day' ||
+                    (validator.timespan === 'two-day' && cellRow[cellIndex + 1]) ||
+                    (validator.timespan === 'week' &&
+                        CalendarService.getDOW(scheduleJSON.year, scheduleJSON.month, cell.day) === 1 &&
+                        cellIndex < cellRow.length - 7));
+                relevantValidators.forEach((validator) => {
+                    let data;
+                    if (validator.name.includes('disabled') &&
+                        !schedule.getGroup().getEmployees()[rowIndex].isDisabled())
+                        return;
+                    if (validator.timespan === 'day')
+                        data = [cell];
+                    if (validator.timespan === 'two-day')
+                        data = [cell, cellRow[cellIndex + 1]];
+                    if (validator.timespan === 'week')
+                        data = cellRow.slice(cellIndex, cellIndex + 7);
+                    this.mockDisabledDays(data, scheduleJSON.disabledDays);
+                    const notice = validator.validator(data);
+                    notice && notices.push(notice);
+                });
+            });
+            // Run monthly validators only once per employee
+            if (rowIndex === 0) {
+                monthValidators.forEach((validator) => {
+                    const notice = validator.validator(scheduleJSON.data[rowIndex].filter((cell) => !scheduleJSON.disabledDays.includes(cell.day)));
+                    notice && notices.push(notice);
+                });
+            }
+        });
+        console.log(notices);
+        return notices;
+    }
+    getStats(schedule) {
+        const hours = schedule
+            .getCells()
+            .flat()
+            .reduce((total, cell) => total + calcShiftHours(cell), 0);
+        const workingDays = schedule.length - schedule.getDisabledDays().length;
+        return { hours, workingDays };
+    }
+    mockDisabledDays(cells, disabled) {
+        return cells.map((cell) => disabled.includes(cell.day)
+            ? { shiftType: 'None', id: cell.id, day: cell.day }
+            : cell);
+    }
+}
+export const ScheduleValidator = new ScheduleValidatorC();

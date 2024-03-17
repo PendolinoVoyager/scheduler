@@ -139,7 +139,8 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
     this.selectedItem?.classList.remove('modified');
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderWindow).call(this);
     __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_updateListItems).call(this);
-    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, this.group.findEmployee(this.selectedEmployee.getId()));
+    __classPrivateFieldGet(this, _GroupSettingsController_instances, "m", _GroupSettingsController_renderEmployee).call(this, this.selectedEmployee);
+    EntityManager.persist('employees', this.selectedEmployee);
 }, _GroupSettingsController_cleanup = function _GroupSettingsController_cleanup() {
     this.isModifying = false;
     this.selectedEmployee = this.group.getEmployees()[0];

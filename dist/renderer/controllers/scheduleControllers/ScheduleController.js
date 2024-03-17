@@ -10,6 +10,8 @@ import CalendarService from '../../services/CalendarService.js';
 import MouseScheduleController from './MouseHandler.js';
 import KeyboardScheduleController from './KeyboardHandler.js';
 import HeaderUtilsController from './HeaderUtilsController.js';
+import { ScheduleValidator } from '../../services/ScheduleValidator.js';
+import { CONFIG } from '../../config.js';
 class ScheduleController extends AbstractController {
     constructor() {
         super();
@@ -84,6 +86,7 @@ class ScheduleController extends AbstractController {
         const markdown = this.cellsView.generateCell(this.selected, this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id) + 1);
         this.selectedElement.outerHTML = markdown;
         __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
+        CONFIG.RUN_VALIDATORS && ScheduleValidator.validate(this.workingSchedule);
     }
     toggleDisabledColumn(day) {
         if (!this.workingSchedule)

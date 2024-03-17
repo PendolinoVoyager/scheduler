@@ -49,5 +49,12 @@ export const DEFAULT_CONFIG = {
         },
     },
     MOUSE_BOX: false,
+    WORK_LAWS: {
+        MIN_DAY_REST: 11,
+        MIN_WEEK_REST: 35,
+        MAX_DISABLED_WORKDAY: 7,
+        MAX_DISABLED_WORKWEEK: 35,
+        AVERAGE_SHIFT_HOURS: 8,
+    },
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);
