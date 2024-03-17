@@ -1,3 +1,4 @@
+import { CONFIG } from '../src/renderer/config';
 import { Schedule } from '../src/renderer/models/Schedule';
 import { ScheduleValidatorC } from '../src/renderer/services/ScheduleValidator';
 import { arrangeTestSchedule, createGroup } from './testHelpers';
@@ -15,10 +16,10 @@ describe('ScheduleValidator', () => {
     });
     describe('calculates worked hours', () => {
       test.each([
-        { startTime: 2, endTime: 3, expected: 29 },
+        { startTime: 2, endTime: 3, expected: 25 },
         { startTime: undefined, endTime: undefined, expected: 0 },
         { startTime: 1, endTime: undefined, expected: 0 },
-        { startTime: 3, endTime: 2, expected: 29 * 23 },
+        { startTime: 3, endTime: 2, expected: 25 * 23 },
       ])(
         '$startTime to $endTime for 29 days returns $expected',
         ({ startTime, endTime, expected }) => {
@@ -92,7 +93,7 @@ describe('ScheduleValidator', () => {
             { startTime: 5, endTime: 14 },
             { startTime: 5, endTime: 14 },
           ],
-          expected: 'truthy',
+          expected: CONFIG.WORK_LAWS.MIN_WEEK_REST < 15 ? null : 'truthy',
         },
         {
           shifts: [
@@ -104,7 +105,7 @@ describe('ScheduleValidator', () => {
             { startTime: 5, endTime: 14 },
             { startTime: 5, endTime: 14 },
           ],
-          expected: 'truthy',
+          expected: CONFIG.WORK_LAWS.MIN_WEEK_REST < 29 ? null : 'truthy',
         },
         {
           shifts: [
@@ -116,7 +117,7 @@ describe('ScheduleValidator', () => {
             { startTime: 5, endTime: 14 },
             { startTime: 5, endTime: 14 },
           ],
-          expected: 'truthy',
+          expected: CONFIG.WORK_LAWS.MIN_WEEK_REST < 30 ? null : 'truthy',
         },
         {
           shifts: [
@@ -128,7 +129,7 @@ describe('ScheduleValidator', () => {
             { startTime: 5, endTime: 14 },
             { startTime: 5, endTime: 14 },
           ],
-          expected: null,
+          expected: CONFIG.WORK_LAWS.MIN_WEEK_REST < 39 ? null : 'truthy',
         },
       ])('7 shifts return $expected', ({ shifts, expected }) => {
         const group = createGroup(1);

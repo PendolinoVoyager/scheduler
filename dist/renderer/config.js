@@ -20,15 +20,15 @@ export const DEFAULT_CONFIG = {
     SHIFT_TYPES: {
         Morning: {
             translation: 'Poranek',
-            startTime: 5.5,
-            endTime: 14.5,
+            startTime: 5,
+            endTime: 14,
             shortcut: '1',
-            customHours: [{ day: 1, startTime: 5, endTime: 14.5 }],
+            // customHours: /*[{ day: 1, startTime: 5, endTime: 14.5 }]*/
         },
         Afternoon: {
             translation: 'Popołudnie',
-            startTime: 14,
-            endTime: 23,
+            startTime: 14.5,
+            endTime: 22.5,
             shortcut: '2',
         },
         None: {
@@ -51,10 +51,11 @@ export const DEFAULT_CONFIG = {
     MOUSE_BOX: false,
     WORK_LAWS: {
         MIN_DAY_REST: 11,
-        MIN_WEEK_REST: 35,
+        MIN_WEEK_REST: 25,
         MAX_DISABLED_WORKDAY: 7,
         MAX_DISABLED_WORKWEEK: 35,
         AVERAGE_SHIFT_HOURS: 8,
     },
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);
+// 7:15 - 14:15 . 14: 21

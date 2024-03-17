@@ -29,13 +29,8 @@ const navbarHandlers: {
               .date.toString()
               .split('-');
             if (month == null || year == null) return;
-            const res = await renderDialog(
-              'Zmienić grafik? Pamiętaj o zapisaniu swojej pracy.'
-            );
 
-            if (!res) return;
-
-            this.selectDate(+year, +month);
+            await this.selectDate(+year, +month);
             await ModalService.requestClose();
           },
         },

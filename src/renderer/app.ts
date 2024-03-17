@@ -176,6 +176,9 @@ export class App extends EventTarget {
         this.scheduleController.createLiveSchedule(this.state.workingSchedule!);
       });
     });
+    document.getElementById('print')!.addEventListener('click', () => {
+      window.print();
+    });
   }
 }
 const app = new App();

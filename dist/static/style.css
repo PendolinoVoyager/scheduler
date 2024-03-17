@@ -233,7 +233,7 @@ main {
 }
 
 #calendar {
-  max-width: 100%;
+  min-width: 100%;
   min-height: 200px;
   display: grid;
   box-shadow: var(--shadow);
@@ -421,11 +421,13 @@ main {
   color: white;
 }
 .flex-column {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 .flex-row {
+  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -515,7 +517,7 @@ select {
   background-color: var(--color-danger);
 }
 .warning {
-  background-color: var(--color-warning);
+  text-decoration: underline var(--color-warning);
 }
 
 #calendar-header {
@@ -525,8 +527,6 @@ select {
 #calendar-body {
   display: grid;
   grid-template-columns: 1fr;
-  place-content: center;
-  min-height: 50vh;
   overflow-x: scroll;
   overflow-y: hidden;
   position: relative;
@@ -550,17 +550,19 @@ select {
   box-shadow: var(--shadow);
   user-select: none;
   border-radius: 0;
-  line-height: 1rem;
+  line-height: 0.5rem;
 }
-.cell-employee-name {
-  font-size: small;
+.schedule-employee-name {
+  font-size: medium;
   padding: 0;
-  margin: 0;
+  margin: 0.5rem 0 0 0.5rem;
+  line-height: 1rem;
 }
 .schedule-employee-position {
   font-size: smaller;
-  margin: 0;
   padding: 0;
+  margin: 0.5rem 0 0 0.5rem;
+  line-height: 1rem;
 
   color: var(--color-primary);
 }
@@ -619,4 +621,23 @@ select {
 }
 #calendar-header .box-sharp {
   font-size: smaller;
+}
+
+.vr {
+  width: 1px;
+  height: 4rem;
+  max-width: 100%;
+  border-right: 1px solid var(--text-primary);
+  border-radius: 0;
+}
+#calendar-notices ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 1rem;
+  padding-left: 0;
+}
+.validator-notice {
+  list-style: none;
+  display: block;
 }

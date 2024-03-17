@@ -171,7 +171,9 @@ _GroupSettingsController_instances = new WeakSet(), _GroupSettingsController_ini
         year: CalendarService.year,
         month: CalendarService.month,
     }));
-    const shiftData = shifts[0]?.data[shifts[0].employees.findIndex((emp) => emp.id === this.selectedEmployee?.getId())].map((d) => d.shiftType) ??
+    const shiftData = shifts
+        ?.at(0)
+        ?.data[shifts[0]?.employees?.findIndex((emp) => emp.id === this.selectedEmployee?.getId())]?.map((d) => d.shiftType) ??
         this.selectedEmployee.getPreferencesForMonth(this.app.state.year, this.app.state.month).preferences;
     this.CalendarPreviewView.render(shiftData);
     const btnPrev = this.modalService

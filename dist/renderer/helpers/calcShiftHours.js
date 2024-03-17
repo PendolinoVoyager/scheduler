@@ -13,6 +13,6 @@ export function calcRestTime(cells) {
         return 48 - cells[0].endTime;
     if (!cells[0].startTime && cells[1].startTime)
         return 24 + cells[1].startTime;
-    const restTime = (cells[1].startTime - cells[0].endTime) % 24;
+    const restTime = 24 - cells[0].endTime + cells[1].startTime;
     return restTime >= 0 ? restTime : restTime + 24;
 }

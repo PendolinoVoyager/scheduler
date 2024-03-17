@@ -206,11 +206,13 @@ export default class GroupSettingsController extends AbstractController {
     })) as ScheduleJSON[];
 
     const shiftData =
-      shifts[0]?.data[
-        shifts[0].employees.findIndex(
-          (emp) => emp.id === this.selectedEmployee?.getId()
-        )
-      ].map((d) => d.shiftType) ??
+      shifts
+        ?.at(0)
+        ?.data[
+          shifts[0]?.employees?.findIndex(
+            (emp) => emp.id === this.selectedEmployee?.getId()
+          )
+        ]?.map((d) => d.shiftType) ??
       this.selectedEmployee!.getPreferencesForMonth(
         this.app.state.year,
         this.app.state.month

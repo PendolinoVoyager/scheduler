@@ -1,0 +1,48 @@
+#navbar-top,
+#calendar-header,
+#calendar-notices {
+  display: none;
+}
+#navbar-top {
+  visibility: none;
+}
+#calendar {
+  border: none;
+  box-shadow: none;
+
+  margin: 0;
+  padding: 0;
+}
+#calendar-body {
+  margin: auto;
+  display: grid;
+  overflow: hidden;
+  padding: 0;
+  font-size: smaller;
+}
+
+.cell-employee {
+  background-color: white;
+  box-shadow: none;
+  border: 1px solid black;
+  min-height: auto;
+  line-height: 1.5rem;
+}
+
+.schedule-employee-name,
+.schedule-employee-position {
+  margin: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.cell {
+  border: 1px solid black;
+  color: black;
+  text-shadow: none;
+  transition: none;
+}
+
+.disabled {
+  visibility: hidden;
+}

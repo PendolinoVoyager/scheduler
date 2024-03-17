@@ -5,6 +5,8 @@ import { Schedule } from '../src/renderer/models/Schedule';
 import View from '../src/renderer/views/View';
 import CellsView from '../src/renderer/views/scheduleViews/CellsView';
 import ShiftButtonsView from '../src/renderer/views/scheduleViews/ShiftButtonsView';
+import ValidatorNoticesView from '../src/renderer/views/scheduleViews/ValidatorNoticesView';
+import ValidatorUtilsView from '../src/renderer/views/scheduleViews/ValidatorUtilsView';
 
 export function createGroup(numEmployees: number) {
   const group = new Group();
@@ -34,8 +36,13 @@ export function createScheduleController() {
   controller.titleElement = document.createElement('h1');
   controller.headerUtilsController.shiftSelectElement =
     document.createElement('div');
+  controller.headerUtilsController.validatorUtilsElement =
+    document.createElement('div');
+  controller.headerUtilsController.validatorUtilsView =
+    createMockView(ValidatorUtilsView);
   controller.headerUtilsController.shiftButtonsView =
     createMockView(ShiftButtonsView);
-
+  //@ts-expect-error
+  controller.validatorNoticesView = createMockView(ValidatorNoticesView);
   return controller;
 }

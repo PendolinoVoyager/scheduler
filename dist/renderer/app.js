@@ -147,5 +147,8 @@ _App_instances = new WeakSet(), _App_init = function _App_init() {
             this.scheduleController.createLiveSchedule(this.state.workingSchedule);
         });
     });
+    document.getElementById('print').addEventListener('click', () => {
+        window.print();
+    });
 };
 const app = new App();

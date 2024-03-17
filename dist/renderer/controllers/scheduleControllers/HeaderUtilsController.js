@@ -3,9 +3,12 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _HeaderUtilsController_instances, _HeaderUtilsController_addShiftButtonsHandlers, _HeaderUtilsController_shiftSelectClick, _HeaderUtilsController_calculateTimeInput;
+var _HeaderUtilsController_instances, _HeaderUtilsController_addValidatorUtilsHandlers, _HeaderUtilsController_addShiftButtonsHandlers, _HeaderUtilsController_shiftSelectClick, _HeaderUtilsController_calculateTimeInput;
+import { CONFIG } from '../../config.js';
 import { hourToNumber } from '../../helpers/numberToHour.js';
+import { ScheduleValidator } from '../../services/ScheduleValidator.js';
 import ShiftButtonsView from '../../views/scheduleViews/ShiftButtonsView.js';
+import ValidatorUtilsView from '../../views/scheduleViews/ValidatorUtilsView.js';
 import { AbstractController } from '../AbstractController.js';
 class HeaderUtilsController extends AbstractController {
     constructor(mainController) {
@@ -18,6 +21,8 @@ class HeaderUtilsController extends AbstractController {
         this.startTimeInput = null;
         this.endTimeInput = null;
         this.shiftButtonsView = new ShiftButtonsView(this.shiftSelectElement);
+        this.validatorUtilsElement = document.getElementById('validator-utils');
+        this.validatorUtilsView = new ValidatorUtilsView(this.validatorUtilsElement);
         this.selectedShiftElement = null;
         this.selectedShift = null;
         this.customTime = {
@@ -39,21 +44,37 @@ class HeaderUtilsController extends AbstractController {
         };
     }
     bind() {
-        this.shiftButtonsView.parentElement.classList.remove('hidden');
+        this.shiftSelectElement.classList.remove('hidden');
         this.shiftButtonsView.render(undefined);
+        this.validatorUtilsElement.classList.remove('hidden');
+        this.validatorUtilsView.render(ScheduleValidator.getStats(this.mainController.workingSchedule));
         this.startTimeInput = this.shiftSelectElement.querySelector('input[name="start"]');
         this.endTimeInput =
             this.shiftSelectElement.querySelector('input[name="end"]');
         [this.startTimeInput, this.endTimeInput].forEach((el) => el?.addEventListener('change', this.boundHandlers.calculateTimeInput));
         __classPrivateFieldGet(this, _HeaderUtilsController_instances, "m", _HeaderUtilsController_addShiftButtonsHandlers).call(this);
+        __classPrivateFieldGet(this, _HeaderUtilsController_instances, "m", _HeaderUtilsController_addValidatorUtilsHandlers).call(this);
     }
     unbind() {
         this.shiftButtonsView.clear();
-        this.shiftButtonsView.parentElement.classList.add('hidden');
+        this.shiftSelectElement.classList.add('hidden');
+        this.validatorUtilsElement.classList.add('hidden');
+        this.validatorUtilsView.clear();
         this.removeEventListener('select-change', this.boundHandlers.updateSelected);
     }
 }
-_HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addShiftButtonsHandlers = function _HeaderUtilsController_addShiftButtonsHandlers() {
+_HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addValidatorUtilsHandlers = function _HeaderUtilsController_addValidatorUtilsHandlers() {
+    const onValidation = () => {
+        CONFIG.RUN_VALIDATORS = this.validatorUtilsElement.querySelector('input[name="validate"]').checked;
+        this.mainController.handleValidation();
+    };
+    this.validatorUtilsElement
+        .querySelector('#btn-validate')
+        ?.addEventListener('click', onValidation.bind(this));
+    this.validatorUtilsElement
+        .querySelector('input[name="validate"]')
+        ?.addEventListener('change', onValidation.bind(this));
+}, _HeaderUtilsController_addShiftButtonsHandlers = function _HeaderUtilsController_addShiftButtonsHandlers() {
     this.shiftSelectElement.addEventListener('click', this.boundHandlers.shiftSelectClick);
     this.addEventListener('select-change', this.boundHandlers.updateSelected);
 }, _HeaderUtilsController_shiftSelectClick = function _HeaderUtilsController_shiftSelectClick(e) {

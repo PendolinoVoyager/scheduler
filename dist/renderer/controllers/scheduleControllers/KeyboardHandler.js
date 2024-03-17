@@ -54,7 +54,7 @@ _KeyboardScheduleController_instances = new WeakSet(), _KeyboardScheduleControll
             direction.x -= 1;
             break;
         case 'Tab':
-            direction.x += 1;
+            this.mainController.headerUtilsController.startTimeInput?.focus();
             break;
     }
     let targetRow = this.mainController.selectedElement?.dataset.row ?? 0;

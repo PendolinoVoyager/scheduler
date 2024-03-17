@@ -1,5 +1,8 @@
+import { CONFIG } from '../../config.js';
 import { hourToNumber } from '../../helpers/numberToHour.js';
+import { ScheduleValidator } from '../../services/ScheduleValidator.js';
 import ShiftButtonsView from '../../views/scheduleViews/ShiftButtonsView.js';
+import ValidatorUtilsView from '../../views/scheduleViews/ValidatorUtilsView.js';
 import { AbstractController } from '../AbstractController.js';
 import ScheduleController from './ScheduleController.js';
 
@@ -13,6 +16,11 @@ export default class HeaderUtilsController extends AbstractController {
   public endTimeInput: HTMLInputElement | null = null;
   public shiftButtonsView: ShiftButtonsView = new ShiftButtonsView(
     this.shiftSelectElement
+  );
+  public validatorUtilsElement: HTMLElement =
+    document.getElementById('validator-utils')!;
+  public validatorUtilsView: ValidatorUtilsView = new ValidatorUtilsView(
+    this.validatorUtilsElement
   );
   public selectedShiftElement: HTMLElement | null = null;
   public selectedShift: string | null = null;
@@ -37,8 +45,13 @@ export default class HeaderUtilsController extends AbstractController {
     super();
   }
   bind() {
-    this.shiftButtonsView.parentElement.classList.remove('hidden');
+    this.shiftSelectElement.classList.remove('hidden');
     this.shiftButtonsView.render(undefined);
+    this.validatorUtilsElement.classList.remove('hidden');
+    this.validatorUtilsView.render(
+      ScheduleValidator.getStats(this.mainController.workingSchedule!)
+    );
+
     this.startTimeInput = this.shiftSelectElement.querySelector(
       'input[name="start"]'
     );
@@ -47,7 +60,25 @@ export default class HeaderUtilsController extends AbstractController {
     [this.startTimeInput, this.endTimeInput].forEach((el) =>
       el?.addEventListener('change', this.boundHandlers.calculateTimeInput)
     );
+
     this.#addShiftButtonsHandlers();
+    this.#addValidatorUtilsHandlers();
+  }
+  #addValidatorUtilsHandlers() {
+    const onValidation = () => {
+      CONFIG.RUN_VALIDATORS = (
+        this.validatorUtilsElement.querySelector(
+          'input[name="validate"]'
+        )! as HTMLInputElement
+      ).checked;
+      this.mainController.handleValidation();
+    };
+    this.validatorUtilsElement
+      .querySelector('#btn-validate')
+      ?.addEventListener('click', onValidation.bind(this));
+    this.validatorUtilsElement
+      .querySelector('input[name="validate"]')
+      ?.addEventListener('change', onValidation.bind(this));
   }
   #addShiftButtonsHandlers() {
     this.shiftSelectElement.addEventListener(
@@ -87,7 +118,9 @@ export default class HeaderUtilsController extends AbstractController {
   }
   unbind() {
     this.shiftButtonsView.clear();
-    this.shiftButtonsView.parentElement.classList.add('hidden');
+    this.shiftSelectElement.classList.add('hidden');
+    this.validatorUtilsElement.classList.add('hidden');
+    this.validatorUtilsView.clear();
     this.removeEventListener(
       'select-change',
       this.boundHandlers.updateSelected

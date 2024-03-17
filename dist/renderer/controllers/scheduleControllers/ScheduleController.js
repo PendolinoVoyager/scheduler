@@ -12,6 +12,7 @@ import KeyboardScheduleController from './KeyboardHandler.js';
 import HeaderUtilsController from './HeaderUtilsController.js';
 import { ScheduleValidator } from '../../services/ScheduleValidator.js';
 import { CONFIG } from '../../config.js';
+import ValidatorNoticesView from '../../views/scheduleViews/ValidatorNoticesView.js';
 class ScheduleController extends AbstractController {
     constructor() {
         super();
@@ -23,6 +24,7 @@ class ScheduleController extends AbstractController {
         this.workingSchedule = null;
         this.titleElement = document.getElementById('main-info');
         this.cellsView = new CellsView(document.getElementById('calendar-body'));
+        this.validatorNoticesView = new ValidatorNoticesView(document.getElementById('calendar-notices'));
         this.mouseController = new MouseScheduleController(this);
         this.keyboardController = new KeyboardScheduleController(this);
         this.headerUtilsController = new HeaderUtilsController(this);
@@ -51,6 +53,7 @@ class ScheduleController extends AbstractController {
             if (e.detail.src !== this.headerUtilsController)
                 this.headerUtilsController.dispatchEvent(newEvent);
         });
+        CONFIG.RUN_VALIDATORS && this.handleValidation();
     }
     /**
      * Should only be used alone to render archived schedules.
@@ -86,7 +89,7 @@ class ScheduleController extends AbstractController {
         const markdown = this.cellsView.generateCell(this.selected, this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id) + 1);
         this.selectedElement.outerHTML = markdown;
         __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
-        CONFIG.RUN_VALIDATORS && ScheduleValidator.validate(this.workingSchedule);
+        CONFIG.RUN_VALIDATORS && this.handleValidation();
     }
     toggleDisabledColumn(day) {
         if (!this.workingSchedule)
@@ -96,6 +99,7 @@ class ScheduleController extends AbstractController {
         else
             this.workingSchedule.disableDay(day);
         this.renderRawCellData(this.workingSchedule.exportJSON());
+        CONFIG.RUN_VALIDATORS && this.handleValidation();
     }
     teardown() {
         this.mouseController.unbind();
@@ -106,6 +110,21 @@ class ScheduleController extends AbstractController {
         this.workingSchedule = null;
         this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
         this.cellsView.renderSpinner();
+    }
+    handleValidation() {
+        const notices = ScheduleValidator.validate(this.workingSchedule);
+        const stats = ScheduleValidator.getStats(this.workingSchedule);
+        const totalHoursElement = document.getElementById('total-hours');
+        if (totalHoursElement)
+            totalHoursElement.innerText = 'Godziny łącznie: ' + stats.hours;
+        const workingDaysElement = document.getElementById('working-days');
+        if (workingDaysElement)
+            workingDaysElement.innerText = 'Dni pracujące: ' + stats.workingDays;
+        this.validatorNoticesView.render({
+            notices,
+            employees: this.workingSchedule.getGroup().getEmployees(),
+        });
+        //calc hours for employees and display it
     }
 }
 _ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass() {

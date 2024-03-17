@@ -37,8 +37,8 @@ export const validators = [
                 const nextCell = cells[i + 1];
                 let restTime = calcRestTime([currentCell, nextCell]);
                 // If the next day is free add the free time in the following day before shift start
-                if (!nextCell.startTime && i < cells.length - 1)
-                    restTime += cells[i + 2].startTime ?? 24;
+                if (!nextCell.startTime && i < cells.length - 2)
+                    restTime += cells[i + 2]?.startTime ?? 24;
                 if (restTime > maxRest)
                     maxRest = restTime;
                 if (restTime >= CONFIG.WORK_LAWS.MIN_WEEK_REST)
@@ -48,7 +48,7 @@ export const validators = [
                 return {
                     type: 'warning',
                     employee: cells[0].id,
-                    description: `Pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} nie odpoczywał co najmniej ${CONFIG.WORK_LAWS.MIN_WEEK_REST} godzin (${maxRest}h}).`,
+                    description: `Pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} nie odpoczywał co najmniej ${CONFIG.WORK_LAWS.MIN_WEEK_REST} godzin (${maxRest.toPrecision(2)}h).`,
                     timespan: 'week',
                 };
             return null;
@@ -102,7 +102,7 @@ export const validators = [
                 return {
                     type: 'warning',
                     employee: cells[0].id,
-                    description: `Pracownik ${cells[0].id} pracuje przeciętnie wiecęcej niż ${CONFIG.WORK_LAWS.AVERAGE_SHIFT_HOURS}h dziennie (${workingTime}).`,
+                    description: `Pracownik ${cells[0].id} pracuje przeciętnie wiecęcej niż ${CONFIG.WORK_LAWS.AVERAGE_SHIFT_HOURS}h dziennie (${workingTime.toPrecision(2)}).`,
                     timespan: 'month',
                 };
             return null;
@@ -136,27 +136,26 @@ export class ScheduleValidatorC {
                         data = [cell, cellRow[cellIndex + 1]];
                     if (validator.timespan === 'week')
                         data = cellRow.slice(cellIndex, cellIndex + 7);
-                    this.mockDisabledDays(data, scheduleJSON.disabledDays);
+                    data = this.mockDisabledDays(data, scheduleJSON.disabledDays);
                     const notice = validator.validator(data);
                     notice && notices.push(notice);
                 });
             });
             // Run monthly validators only once per employee
-            if (rowIndex === 0) {
-                monthValidators.forEach((validator) => {
-                    const notice = validator.validator(scheduleJSON.data[rowIndex].filter((cell) => !scheduleJSON.disabledDays.includes(cell.day)));
-                    notice && notices.push(notice);
-                });
-            }
+            monthValidators.forEach((validator) => {
+                const notice = validator.validator(scheduleJSON.data[rowIndex].filter((cell) => !scheduleJSON.disabledDays.includes(cell.day)));
+                notice && notices.push(notice);
+            });
         });
-        console.log(notices);
         return notices;
     }
     getStats(schedule) {
         const hours = schedule
             .getCells()
             .flat()
-            .reduce((total, cell) => total + calcShiftHours(cell), 0);
+            .reduce((total, cell) => schedule.getDisabledDays().includes(cell.day)
+            ? total
+            : total + calcShiftHours(cell), 0);
         const workingDays = schedule.length - schedule.getDisabledDays().length;
         return { hours, workingDays };
     }

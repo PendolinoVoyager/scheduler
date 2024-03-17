@@ -13,6 +13,7 @@
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
     />
     <link href="./style.css" rel="stylesheet" />
+    <link href="./print.css" rel="stylesheet" media="print" />
 
     <script type="module" src="../renderer/app.js"></script>
     <title>Grafik</title>
@@ -36,7 +37,7 @@
       <div id="btn-manage-group" class="nav-item">
         <i class="fas fa-plus"></i>&nbsp;Zarządzaj&nbsp;grupą
       </div>
-
+      <div id="print" class="nav-item"><i class="fas fa-print"></i> Drukuj</div>
       <div class="nav-item"><i class="fas fa-gear"></i> Ustawienia</div>
       <div class="nav-item"><i class="fas fa-question-circle"></i> Pomoc</div>
 
@@ -57,8 +58,10 @@
             id="shift-select"
             class="container-card flex-column hidden"
           ></div>
+          <div id="validator-utils" class="container-card hidden"></div>
         </div>
         <div id="calendar-body" tabindex="1"></div>
+        <div id="calendar-notices"></div>
       </div>
     </main>
   </body>

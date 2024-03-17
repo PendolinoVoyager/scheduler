@@ -1,5 +1,4 @@
 import { App } from '../../app.js';
-import { renderDialog } from '../../helpers/yesNoDialog.js';
 import ModalService from '../../services/ModalService.js';
 import SelectMonthView from '../../views/navbarViews/SelectMonthView.js';
 const navbarHandlers = [
@@ -22,10 +21,7 @@ const navbarHandlers = [
                             .split('-');
                         if (month == null || year == null)
                             return;
-                        const res = await renderDialog('Zmienić grafik? Pamiętaj o zapisaniu swojej pracy.');
-                        if (!res)
-                            return;
-                        this.selectDate(+year, +month);
+                        await this.selectDate(+year, +month);
                         await ModalService.requestClose();
                     },
                 },
