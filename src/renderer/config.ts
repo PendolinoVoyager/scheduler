@@ -4,7 +4,15 @@ import { ShiftTypes } from './models/types.js';
 type Config = {
   DEFAULT_SHIFT: keyof ShiftTypes;
   RUN_VALIDATORS: boolean;
+
   POSITIONS: string[];
+  WORK_LAWS: {
+    MIN_DAY_REST: number;
+    MIN_WEEK_REST: number;
+    MAX_DISABLED_WORKDAY: number;
+    MAX_DISABLED_WORKWEEK: number;
+    AVERAGE_SHIFT_HOURS: number;
+  };
   DEFAULT_EMPLOYMENT_TYPE: EmploymentType;
   EMPLOYMENT_TYPE_HOURS: { TYPE: EmploymentType; HOURS: number }[];
   EMPLOYEE_NAME_VALIDATOR: RegExp;
@@ -64,5 +72,12 @@ export const DEFAULT_CONFIG: Config = {
     },
   },
   MOUSE_BOX: false,
+  WORK_LAWS: {
+    MIN_DAY_REST: 11,
+    MIN_WEEK_REST: 35,
+    MAX_DISABLED_WORKDAY: 7,
+    MAX_DISABLED_WORKWEEK: 35,
+    AVERAGE_SHIFT_HOURS: 8,
+  },
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);

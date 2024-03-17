@@ -1,3 +1,0 @@
-xdescribe('scheduleKeyboardController', () => {
-  test('placeholder', () => {});
-});
