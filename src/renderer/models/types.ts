@@ -5,6 +5,10 @@ type CustomHours = {
   startTime: number;
   endTime: number;
 };
+type DisabledHours = {
+  startTime: number;
+  endTime: number;
+};
 
 export interface ShiftInfo {
   translation: string;
@@ -12,6 +16,7 @@ export interface ShiftInfo {
   endTime?: number;
   customHours?: CustomHours[];
   shortcut?: string;
+  disabled?: DisabledHours;
 }
 export type CellData = {
   shiftType: keyof ShiftTypes;

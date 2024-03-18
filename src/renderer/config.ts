@@ -46,6 +46,7 @@ export const DEFAULT_CONFIG: Config = {
       startTime: 5,
       endTime: 14,
       shortcut: '1',
+      disabled: { startTime: 7.25, endTime: 14.25 },
       // customHours: /*[{ day: 1, startTime: 5, endTime: 14.5 }]*/
     },
     Afternoon: {
@@ -53,6 +54,7 @@ export const DEFAULT_CONFIG: Config = {
       startTime: 14.5,
       endTime: 22.5,
       shortcut: '2',
+      disabled: { startTime: 14, endTime: 21 },
     },
     None: {
       translation: 'Wolne',

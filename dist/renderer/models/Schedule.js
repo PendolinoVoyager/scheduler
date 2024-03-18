@@ -1,4 +1,3 @@
-import { CONFIG } from '../config.js';
 import { getShiftHours } from '../helpers/getShiftHours.js';
 import CalendarService from '../services/CalendarService.js';
 import { AbstractSchedule } from './ScheduleTypes.js';
@@ -30,13 +29,14 @@ export class Schedule extends AbstractSchedule {
     fillFromShiftType(id, day, shiftType) {
         this.validateColRow(id, day);
         const employeeIndex = this.group.findEmployeeIndex(id);
+        const employee = this.group.findEmployee(id);
         const dayOfWeek = new Date(this.year, this.month - 1, day).getDay();
-        const customHours = CONFIG.SHIFT_TYPES[shiftType]?.customHours?.find((ch) => ch.day === dayOfWeek);
+        const { startTime, endTime } = getShiftHours(shiftType, dayOfWeek, employee.isDisabled());
         const cellData = {
             shiftType,
             day,
-            startTime: customHours?.startTime ?? CONFIG.SHIFT_TYPES[shiftType].startTime,
-            endTime: customHours?.endTime ?? CONFIG.SHIFT_TYPES[shiftType].endTime,
+            startTime,
+            endTime,
             id,
         };
         if (employeeIndex >= this.cells.length) {
@@ -47,13 +47,14 @@ export class Schedule extends AbstractSchedule {
     updateCell(id, day, data) {
         this.validateColRow(id, day);
         const employeeIndex = this.group.findEmployeeIndex(id);
+        const employee = this.group.getEmployees()[employeeIndex];
         if (Object.keys(data).includes('id'))
             throw new Error("Can't change to id " + id);
         if (data.startTime || data.endTime)
             this.cells[employeeIndex][day - 1].shiftType = 'Custom';
         Object.assign(this.cells[employeeIndex][day - 1], data);
         if (data.shiftType && data.shiftType !== 'Custom') {
-            const { startTime, endTime } = getShiftHours(data.shiftType, CalendarService.getDOW(this.year, this.month, day));
+            const { startTime, endTime } = getShiftHours(data.shiftType, CalendarService.getDOW(this.year, this.month, day), employee.isDisabled());
             this.cells[employeeIndex][day - 1].startTime = startTime;
             this.cells[employeeIndex][day - 1].endTime = endTime;
         }

@@ -142,7 +142,8 @@ export default class ScheduleController extends AbstractController {
     const stats = ScheduleValidator.getStats(this.workingSchedule!);
     const totalHoursElement = document.getElementById('total-hours');
     if (totalHoursElement)
-      totalHoursElement.innerText = 'Godziny łącznie: ' + stats.hours;
+      totalHoursElement.innerText =
+        'Godziny łącznie: ' + stats.hours.toPrecision(2);
     const workingDaysElement = document.getElementById('working-days');
     if (workingDaysElement)
       workingDaysElement.innerText = 'Dni pracujące: ' + stats.workingDays;
