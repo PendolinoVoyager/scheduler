@@ -44,7 +44,7 @@ export default class CellsView extends View {
     }<br>${numberToHour(cellData.endTime)}</div>`;
   }
   #generateEmployee(row: number): string {
-    return `<div class="cell-employee flex-column"><span class="schedule-employee-name">${Employee.getInitials(
+    return `<div class="cell-employee flex-column" data-row="${row}"><span class="schedule-employee-name">${Employee.getInitials(
       this.data.employees[row].name
     )}</span>
     <span class="schedule-employee-position schedule-employee-secondary">${

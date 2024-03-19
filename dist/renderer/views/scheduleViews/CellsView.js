@@ -37,7 +37,7 @@ _CellsView_instances = new WeakSet(), _CellsView_generateRow = function _CellsVi
             .map((cell) => this.generateCell(cell, row + 1))
             .join(''));
 }, _CellsView_generateEmployee = function _CellsView_generateEmployee(row) {
-    return `<div class="cell-employee flex-column"><span class="schedule-employee-name">${Employee.getInitials(this.data.employees[row].name)}</span>
+    return `<div class="cell-employee flex-column" data-row="${row}"><span class="schedule-employee-name">${Employee.getInitials(this.data.employees[row].name)}</span>
     <span class="schedule-employee-position schedule-employee-secondary">${this.data.employees[row].position || 'Brak'}</span> <span class="schedule-employee-secondary">${this.data.employees[row].hours}h</span>
     </div>`;
 }, _CellsView_generateHeader = function _CellsView_generateHeader() {

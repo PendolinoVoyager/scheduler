@@ -17,6 +17,8 @@ export default class ScheduleController extends AbstractController {
   scheduleData: ScheduleJSON | null = null;
   selected: CellData | null = null;
   selectedElement: HTMLElement | null = null;
+  selectedEmployeeCell: HTMLElement | null = null;
+
   previousSelectedElement: HTMLElement | null = null;
   workingSchedule: Schedule | null = null;
   titleElement: HTMLElement = document.getElementById('main-info')!;
@@ -80,12 +82,12 @@ export default class ScheduleController extends AbstractController {
     if (this.scheduleData.disabledDays.includes(day))
       throw new Error('Cannot select disabled day: ' + day);
     this.selected = this.scheduleData.data[row][day - 1];
-    this.#updateSelectedClass();
+    this.#updateSelectedClass(row, day);
     return this.selected;
   }
   unselect() {
     this.selected = null;
-    this.#updateSelectedClass();
+    this.#updateSelectedClass(-1, -1);
   }
   updateSelected(newData: Partial<ExcludeId<CellData>>): void {
     if (!this.workingSchedule) throw new Error('No schedule to work with.');
@@ -95,13 +97,15 @@ export default class ScheduleController extends AbstractController {
       this.selected.day,
       newData
     );
-
+    const row = this.workingSchedule
+      .getGroup()
+      .findEmployeeIndex(this.selected.id);
     const markdown = (this.cellsView as CellsView).generateCell(
       this.selected,
-      this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id) + 1
+      row + 1
     );
     this.selectedElement!.outerHTML = markdown;
-    this.#updateSelectedClass();
+    this.#updateSelectedClass(row, this.selected.day);
     CONFIG.RUN_VALIDATORS && this.handleValidation();
   }
   toggleDisabledColumn(day: number) {
@@ -122,19 +126,29 @@ export default class ScheduleController extends AbstractController {
     this.cellsView.parentElement.style.gridTemplateColumns = '1fr';
     this.cellsView.renderSpinner();
   }
-  #updateSelectedClass() {
+  #updateSelectedClass(row: number, day: number) {
     this.selectedElement?.classList.remove('selected');
     this.previousSelectedElement?.classList.remove('selected');
     this.previousSelectedElement = this.selectedElement;
     //@ts-ignore
     this.selectedElement = [...this.cellsView.parentElement.children].find(
-      (child) =>
-        (child as HTMLElement)?.dataset?.day === `${this.selected?.day}` &&
-        (child as HTMLElement)?.dataset?.row ===
-          `${this.workingSchedule!.getGroup().findEmployeeIndex(
-            this.selected!.id
-          )}`
+      (child) => {
+        //@ts-ignore
+        if (+(child as HTMLElement).dataset.row !== row) return;
+        //Means it's employee
+        if (!(child as HTMLElement).dataset.day) {
+          if (child.classList.contains('cell-employee'))
+            //@ts-ignore
+            (child as HTMLElement).lastElementChild!.textContent =
+              this.workingSchedule
+                ?.getStats() //@ts-ignore
+                ?.hours?.at(row);
+        }
+        //@ts-ignore
+        return +(child as HTMLElement)?.dataset?.day === day;
+      }
     );
+    console.log(this.selectedElement);
     this.selectedElement?.classList.add('selected');
   }
   handleValidation() {

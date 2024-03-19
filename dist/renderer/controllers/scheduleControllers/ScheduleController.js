@@ -20,6 +20,7 @@ class ScheduleController extends AbstractController {
         this.scheduleData = null;
         this.selected = null;
         this.selectedElement = null;
+        this.selectedEmployeeCell = null;
         this.previousSelectedElement = null;
         this.workingSchedule = null;
         this.titleElement = document.getElementById('main-info');
@@ -73,12 +74,12 @@ class ScheduleController extends AbstractController {
         if (this.scheduleData.disabledDays.includes(day))
             throw new Error('Cannot select disabled day: ' + day);
         this.selected = this.scheduleData.data[row][day - 1];
-        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
+        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this, row, day);
         return this.selected;
     }
     unselect() {
         this.selected = null;
-        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
+        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this, -1, -1);
     }
     updateSelected(newData) {
         if (!this.workingSchedule)
@@ -86,9 +87,12 @@ class ScheduleController extends AbstractController {
         if (!this.selected)
             throw new Error('No cell selected.');
         this.workingSchedule.updateCell(this.selected.id, this.selected.day, newData);
-        const markdown = this.cellsView.generateCell(this.selected, this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id) + 1);
+        const row = this.workingSchedule
+            .getGroup()
+            .findEmployeeIndex(this.selected.id);
+        const markdown = this.cellsView.generateCell(this.selected, row + 1);
         this.selectedElement.outerHTML = markdown;
-        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this);
+        __classPrivateFieldGet(this, _ScheduleController_instances, "m", _ScheduleController_updateSelectedClass).call(this, row, this.selected.day);
         CONFIG.RUN_VALIDATORS && this.handleValidation();
     }
     toggleDisabledColumn(day) {
@@ -144,14 +148,28 @@ class ScheduleController extends AbstractController {
         });
     }
 }
-_ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass() {
+_ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass(row, day) {
     this.selectedElement?.classList.remove('selected');
     this.previousSelectedElement?.classList.remove('selected');
     this.previousSelectedElement = this.selectedElement;
     //@ts-ignore
-    this.selectedElement = [...this.cellsView.parentElement.children].find((child) => child?.dataset?.day === `${this.selected?.day}` &&
-        child?.dataset?.row ===
-            `${this.workingSchedule.getGroup().findEmployeeIndex(this.selected.id)}`);
+    this.selectedElement = [...this.cellsView.parentElement.children].find((child) => {
+        //@ts-ignore
+        if (+child.dataset.row !== row)
+            return;
+        //Means it's employee
+        if (!child.dataset.day) {
+            if (child.classList.contains('cell-employee'))
+                //@ts-ignore
+                child.lastElementChild.textContent =
+                    this.workingSchedule
+                        ?.getStats() //@ts-ignore
+                        ?.hours?.at(row);
+        }
+        //@ts-ignore
+        return +child?.dataset?.day === day;
+    });
+    console.log(this.selectedElement);
     this.selectedElement?.classList.add('selected');
 };
 export default ScheduleController;
