@@ -148,7 +148,6 @@ export default class ScheduleController extends AbstractController {
         return +(child as HTMLElement)?.dataset?.day === day;
       }
     );
-    console.log(this.selectedElement);
     this.selectedElement?.classList.add('selected');
   }
   handleValidation() {

@@ -169,7 +169,6 @@ _ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelecte
         //@ts-ignore
         return +child?.dataset?.day === day;
     });
-    console.log(this.selectedElement);
     this.selectedElement?.classList.add('selected');
 };
 export default ScheduleController;
