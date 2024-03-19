@@ -4,7 +4,7 @@ import { ShiftTypes } from './models/types.js';
 type Config = {
   DEFAULT_SHIFT: keyof ShiftTypes;
   RUN_VALIDATORS: boolean;
-
+  SHOW_VALIDATION_ERRORS: boolean;
   POSITIONS: string[];
   WORK_LAWS: {
     MIN_DAY_REST: number;
@@ -25,6 +25,7 @@ type Config = {
 export const DEFAULT_CONFIG: Config = {
   DEFAULT_SHIFT: 'Morning',
   RUN_VALIDATORS: true,
+  SHOW_VALIDATION_ERRORS: true,
   POSITIONS: [
     'Kierownik',
     'Zastępca kierownika',
@@ -83,4 +84,3 @@ export const DEFAULT_CONFIG: Config = {
   },
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);
-// 7:15 - 14:15 . 14: 21

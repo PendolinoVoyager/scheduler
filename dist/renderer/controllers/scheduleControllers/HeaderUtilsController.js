@@ -6,7 +6,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _HeaderUtilsController_instances, _HeaderUtilsController_addValidatorUtilsHandlers, _HeaderUtilsController_addShiftButtonsHandlers, _HeaderUtilsController_shiftSelectClick, _HeaderUtilsController_calculateTimeInput;
 import { CONFIG } from '../../config.js';
 import { hourToNumber } from '../../helpers/numberToHour.js';
-import { ScheduleValidator } from '../../services/ScheduleValidator.js';
 import ShiftButtonsView from '../../views/scheduleViews/ShiftButtonsView.js';
 import ValidatorUtilsView from '../../views/scheduleViews/ValidatorUtilsView.js';
 import { AbstractController } from '../AbstractController.js';
@@ -47,7 +46,7 @@ class HeaderUtilsController extends AbstractController {
         this.shiftSelectElement.classList.remove('hidden');
         this.shiftButtonsView.render(undefined);
         this.validatorUtilsElement.classList.remove('hidden');
-        this.validatorUtilsView.render(ScheduleValidator.getStats(this.mainController.workingSchedule));
+        this.validatorUtilsView.render(this.mainController.workingSchedule.getStats());
         this.startTimeInput = this.shiftSelectElement.querySelector('input[name="start"]');
         this.endTimeInput =
             this.shiftSelectElement.querySelector('input[name="end"]');
@@ -66,6 +65,7 @@ class HeaderUtilsController extends AbstractController {
 _HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addValidatorUtilsHandlers = function _HeaderUtilsController_addValidatorUtilsHandlers() {
     const onValidation = () => {
         CONFIG.RUN_VALIDATORS = this.validatorUtilsElement.querySelector('input[name="validate"]').checked;
+        CONFIG.SHOW_VALIDATION_ERRORS = this.validatorUtilsElement.querySelector('input[name="show-errors"]')?.checked;
         this.mainController.handleValidation();
     };
     this.validatorUtilsElement
@@ -73,6 +73,9 @@ _HeaderUtilsController_instances = new WeakSet(), _HeaderUtilsController_addVali
         ?.addEventListener('click', onValidation.bind(this));
     this.validatorUtilsElement
         .querySelector('input[name="validate"]')
+        ?.addEventListener('change', onValidation.bind(this));
+    this.validatorUtilsElement
+        .querySelector('input[name="show-errors"]')
         ?.addEventListener('change', onValidation.bind(this));
 }, _HeaderUtilsController_addShiftButtonsHandlers = function _HeaderUtilsController_addShiftButtonsHandlers() {
     this.shiftSelectElement.addEventListener('click', this.boundHandlers.shiftSelectClick);

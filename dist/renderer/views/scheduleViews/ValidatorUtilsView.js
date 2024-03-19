@@ -11,6 +11,8 @@ export default class ValidatorUtilsView extends View {
             <div class="flex-row">
                 <label for="validate" >Walidacja w czasie rzeczywistym</label>
                 <input type="checkbox"${CONFIG.RUN_VALIDATORS ? 'checked' : ''} name="validate">
+                <label for="show-errors" >Pokazuj błędy</label>
+                <input type="checkbox"${CONFIG.SHOW_VALIDATION_ERRORS ? 'checked' : ''} name="show-errors">
             </div>
             <button class="box-sharp" id="btn-validate">Waliduj</button>
         </div>

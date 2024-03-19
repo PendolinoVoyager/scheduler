@@ -113,11 +113,10 @@ class ScheduleController extends AbstractController {
     }
     handleValidation() {
         const notices = ScheduleValidator.validate(this.workingSchedule);
-        const stats = ScheduleValidator.getStats(this.workingSchedule);
+        const stats = this.workingSchedule.getStats();
         const totalHoursElement = document.getElementById('total-hours');
         if (totalHoursElement)
-            totalHoursElement.innerText =
-                'Godziny łącznie: ' + stats.hours.toPrecision(2);
+            totalHoursElement.innerText = 'Godziny łącznie: ' + stats.hours;
         const workingDaysElement = document.getElementById('working-days');
         if (workingDaysElement)
             workingDaysElement.innerText = 'Dni pracujące: ' + stats.workingDays;
@@ -126,6 +125,23 @@ class ScheduleController extends AbstractController {
             employees: this.workingSchedule.getGroup().getEmployees(),
         });
         //calc hours for employees and display it
+        //highlight cells (add class warning) NEED TO REFACTOR ASAP SLOW AS HELL
+        [...this.cellsView.parentElement.children].forEach((child) => {
+            child.classList.remove('warning');
+            if (!CONFIG.SHOW_VALIDATION_ERRORS)
+                return;
+            const day = child.dataset.day;
+            const row = child.dataset.row;
+            if (!day || !row)
+                return;
+            const id = this.workingSchedule
+                ?.getGroup()
+                ?.getEmployees()[+row].getId();
+            const notice = notices.find((notice) => notice.cell?.day === +day && notice.cell.employeeId === id);
+            if (!notice)
+                return;
+            child.classList.add('warning');
+        });
     }
 }
 _ScheduleController_instances = new WeakSet(), _ScheduleController_updateSelectedClass = function _ScheduleController_updateSelectedClass() {

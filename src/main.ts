@@ -1,23 +1,25 @@
+const { app, BrowserWindow, ipcMain } = require('electron');
+try {
+  if (require('electron-squirrel-startup')) app.quit();
+} catch (err) {}
 //@ts-ignore
 const { db, dbInit } = require('./db');
 const ThemeController = require('./IPCControllers/ThemeController');
 const DatabaseController = require('./IPCControllers/DatabaseController');
-const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
-if (require('electron-squirrel-startup')) app.quit();
+const env = process.env.NODE_ENV ?? 'production';
 const createWindow = () => {
   const win = new BrowserWindow({
-    skipTaskbar: true,
-    titleBarStyle: 'hidden',
-    icon: `${__dirname}/../icon.png`,
+    icon: path.join(__dirname, '..', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      devTools: env === 'development',
     },
+    autoHideMenuBar: env !== 'development',
   });
 
   win.maximize();
-  win.loadFile(`${__dirname}/static/index.html`);
-
+  win.loadFile(path.join(__dirname, 'static', 'index.html')); // Using path.join for platform independence
   return win;
 };
 // App initialization

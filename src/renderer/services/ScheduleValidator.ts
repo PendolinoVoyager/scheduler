@@ -9,11 +9,10 @@ export type ValidatorNotice = {
   description: string;
   employee: Entity['id'];
   timespan: 'day' | 'two-day' | 'week' | 'month';
-  cell?: { employeeId: Entity['id']; day: number };
+  cell?: { employeeId: number; day: number };
 };
 interface ScheduleValidatorI {
   validate: (schedule: Schedule) => ValidatorNotice[];
-  getStats: (schedule: Schedule) => { hours: number; workingDays: number };
   mockDisabledDays: (cells: CellData[], disabled: number[]) => CellData[];
 }
 type Validator = {
@@ -112,7 +111,7 @@ export const validators: Validator[] = [
         return {
           type: 'warning',
           employee: cells[0].id,
-          description: `Niepełnosprawny pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} pracuje więcej niż ${CONFIG.WORK_LAWS.MAX_DISABLED_WORKWEEK}h (${workingTime}).`,
+          description: `Niepełnosprawny pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} pracuje więcej niż ${CONFIG.WORK_LAWS.MAX_DISABLED_WORKWEEK}h (${workingTime}h).`,
           timespan: 'week',
         };
       return null;
@@ -199,21 +198,7 @@ export class ScheduleValidatorC implements ScheduleValidatorI {
     });
     return notices;
   }
-  getStats(schedule: Schedule) {
-    const hours = schedule
-      .getCells()
-      .flat()
-      .reduce(
-        (total, cell) =>
-          schedule.getDisabledDays().includes(cell.day)
-            ? total
-            : total + calcShiftHours(cell),
-        0
-      );
-    const workingDays = schedule.length - schedule.getDisabledDays().length;
 
-    return { hours, workingDays };
-  }
   mockDisabledDays(cells: CellData[], disabled: number[]) {
     return cells.map((cell) =>
       disabled.includes(cell.day)

@@ -2,6 +2,7 @@ import { EmploymentType } from './models/EmployeeTypes.js';
 export const DEFAULT_CONFIG = {
     DEFAULT_SHIFT: 'Morning',
     RUN_VALIDATORS: true,
+    SHOW_VALIDATION_ERRORS: true,
     POSITIONS: [
         'Kierownik',
         'Zastępca kierownika',
@@ -60,4 +61,3 @@ export const DEFAULT_CONFIG = {
     },
 };
 export const CONFIG = Object.assign({}, DEFAULT_CONFIG);
-// 7:15 - 14:15 . 14: 21

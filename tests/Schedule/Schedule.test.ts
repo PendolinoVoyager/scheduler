@@ -1,4 +1,5 @@
 import { CONFIG } from '../../src/renderer/config';
+import { calcShiftHours } from '../../src/renderer/helpers/calcShiftHours';
 import { getShiftHours } from '../../src/renderer/helpers/getShiftHours';
 import Employee from '../../src/renderer/models/Employee';
 import Group from '../../src/renderer/models/Group';
@@ -209,6 +210,7 @@ describe('Schedule', () => {
       const emp2 = group.getEmployees()[1];
       const sut = new Schedule(group, 2024, 2);
       sut.disableDay(1);
+      const hoursPerShift = calcShiftHours(sut.getCells()[0][0]);
       const expected: ScheduleJSON = {
         id: sut.getId(),
         groupId: group.getId(),
@@ -216,17 +218,20 @@ describe('Schedule', () => {
           {
             id: emp1.getId(),
             name: emp1.getName(),
+            hours: hoursPerShift * 29,
             position: emp1.getPosition(),
           },
           {
             id: emp2.getId(),
             name: emp2.getName(),
+            hours: hoursPerShift * 29,
             position: emp2.getPosition(),
           },
         ],
         year: 2024,
         month: 2,
         length: 29,
+        totalHours: hoursPerShift * sut.getGroup().getEmployees().length * 29,
         disabledDays: [1],
         data: sut.getCells(),
       };

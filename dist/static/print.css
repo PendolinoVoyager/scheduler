@@ -25,28 +25,29 @@
   background-color: white;
   box-shadow: none;
   border: 1px solid black;
-  border-left: none;
-  border-top: none;
   min-height: auto;
-  line-height: 1.5rem;
   border-radius: 0;
 }
-
+.cell-employee.flex-column {
+  gap: 1px;
+}
 .schedule-employee-name {
-  margin: 0.5rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  margin: 2px 1px 0 2px;
+  line-height: 1rem;
   font-size: smaller;
+  color: black;
 }
 .schedule-employee-position {
   display: none;
 }
+.schedule-employee-secondary {
+  margin: 2px 1px 0 2px;
 
+  color: black;
+}
 .cell {
   border: 1px solid black;
   color: black;
-  border-left: none;
-  border-top: none;
   border-radius: 0;
   padding: 1px;
   text-shadow: none;
@@ -54,13 +55,14 @@
   font-weight: normal;
 }
 .cell-header {
-  border-bottom: 1px solid black;
   border-radius: 0;
 }
 .disabled {
   border: none;
   border-radius: 0;
 
-  border-right: 1px solid black;
   /* visibility: hidden; */
+}
+.warning {
+  text-decoration: none;
 }

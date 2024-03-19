@@ -517,7 +517,7 @@ select {
   background-color: var(--color-danger);
 }
 .warning {
-  text-decoration: underline var(--color-warning);
+  text-decoration: underline wavy var(--color-warning);
 }
 
 #calendar-header {
@@ -530,6 +530,7 @@ select {
   overflow-x: scroll;
   overflow-y: hidden;
   position: relative;
+  padding-bottom: 1rem;
 }
 #calendar-body:focus-visible {
   outline: none;
@@ -552,18 +553,20 @@ select {
   border-radius: 0;
   line-height: 0.5rem;
 }
+.cell-employee.flex-column {
+  gap: 1px;
+}
 .schedule-employee-name {
   font-size: medium;
   padding: 0;
   margin: 0.5rem 0 0 0.5rem;
   line-height: 1rem;
 }
-.schedule-employee-position {
+.schedule-employee-secondary {
   font-size: smaller;
   padding: 0;
   margin: 0.5rem 0 0 0.5rem;
   line-height: 1rem;
-
   color: var(--color-primary);
 }
 

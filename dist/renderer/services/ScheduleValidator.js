@@ -83,7 +83,7 @@ export const validators = [
                 return {
                     type: 'warning',
                     employee: cells[0].id,
-                    description: `Niepełnosprawny pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} pracuje więcej niż ${CONFIG.WORK_LAWS.MAX_DISABLED_WORKWEEK}h (${workingTime}).`,
+                    description: `Niepełnosprawny pracownik ${cells[0].id} w tygodniu ${cells[0].day} - ${cells[6].day} pracuje więcej niż ${CONFIG.WORK_LAWS.MAX_DISABLED_WORKWEEK}h (${workingTime}h).`,
                     timespan: 'week',
                 };
             return null;
@@ -148,16 +148,6 @@ export class ScheduleValidatorC {
             });
         });
         return notices;
-    }
-    getStats(schedule) {
-        const hours = schedule
-            .getCells()
-            .flat()
-            .reduce((total, cell) => schedule.getDisabledDays().includes(cell.day)
-            ? total
-            : total + calcShiftHours(cell), 0);
-        const workingDays = schedule.length - schedule.getDisabledDays().length;
-        return { hours, workingDays };
     }
     mockDisabledDays(cells, disabled) {
         return cells.map((cell) => disabled.includes(cell.day)

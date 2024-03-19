@@ -37,7 +37,7 @@ export default class CellsView extends View {
         ? 'W'
         : CONFIG.SHIFT_TYPES[cellData.shiftType].translation;
 
-    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" data-day="${
+    return `<div class="cell ${cellData.shiftType.toLowerCase()} flex-column" style="gap: 3px" data-day="${
       cellData.day
     }" data-row="${row - 1}">${
       numberToHour(cellData.startTime) || altText
@@ -47,9 +47,11 @@ export default class CellsView extends View {
     return `<div class="cell-employee flex-column"><span class="schedule-employee-name">${Employee.getInitials(
       this.data.employees[row].name
     )}</span>
-    <span class="schedule-employee-position">${
+    <span class="schedule-employee-position schedule-employee-secondary">${
       this.data.employees[row].position || 'Brak'
-    }</span>
+    }</span> <span class="schedule-employee-secondary">${
+      this.data.employees[row].hours
+    }h</span>
     </div>`;
   }
   #generateHeader(): string {

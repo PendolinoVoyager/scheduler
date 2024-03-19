@@ -49,7 +49,7 @@ export default class HeaderUtilsController extends AbstractController {
     this.shiftButtonsView.render(undefined);
     this.validatorUtilsElement.classList.remove('hidden');
     this.validatorUtilsView.render(
-      ScheduleValidator.getStats(this.mainController.workingSchedule!)
+      this.mainController.workingSchedule!.getStats()
     );
 
     this.startTimeInput = this.shiftSelectElement.querySelector(
@@ -71,6 +71,11 @@ export default class HeaderUtilsController extends AbstractController {
           'input[name="validate"]'
         )! as HTMLInputElement
       ).checked;
+      CONFIG.SHOW_VALIDATION_ERRORS = (
+        this.validatorUtilsElement.querySelector(
+          'input[name="show-errors"]'
+        )! as HTMLInputElement
+      )?.checked;
       this.mainController.handleValidation();
     };
     this.validatorUtilsElement
@@ -78,6 +83,9 @@ export default class HeaderUtilsController extends AbstractController {
       ?.addEventListener('click', onValidation.bind(this));
     this.validatorUtilsElement
       .querySelector('input[name="validate"]')
+      ?.addEventListener('change', onValidation.bind(this));
+    this.validatorUtilsElement
+      .querySelector('input[name="show-errors"]')
       ?.addEventListener('change', onValidation.bind(this));
   }
   #addShiftButtonsHandlers() {

@@ -19,6 +19,5 @@ export function getShiftHours(
       (ch: { day: number }) => ch.day === dayOfWeek
     )?.endTime ??
     CONFIG.SHIFT_TYPES[shift].endTime;
-  console.log(startTime);
   return { startTime, endTime };
 }

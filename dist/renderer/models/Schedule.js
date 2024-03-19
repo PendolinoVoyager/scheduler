@@ -1,3 +1,4 @@
+import { calcShiftHours } from '../helpers/calcShiftHours.js';
 import { getShiftHours } from '../helpers/getShiftHours.js';
 import CalendarService from '../services/CalendarService.js';
 import { AbstractSchedule } from './ScheduleTypes.js';
@@ -83,20 +84,35 @@ export class Schedule extends AbstractSchedule {
      * Note: returned ScheduleJSON.data is a reference to Schedule.cells.
      *
      */
+    getStats() {
+        const hours = [];
+        this.cells.forEach((cellRow) => {
+            hours.push(cellRow.reduce((total, current) => total + calcShiftHours(current), 0));
+        });
+        const workingDays = this.length - this.getDisabledDays().length;
+        return {
+            totalHours: hours.reduce((total, current) => total + current, 0),
+            hours,
+            workingDays,
+        };
+    }
     exportJSON() {
+        const { totalHours, hours, workingDays } = this.getStats();
         return {
             id: this.id,
             groupId: this.group.getId(),
-            employees: this.group.getEmployees().map((emp) => {
+            employees: this.group.getEmployees().map((emp, i) => {
                 return {
                     id: emp.getId(),
                     name: emp.getName(),
+                    hours: hours[i],
                     position: emp.getPosition(),
                 };
             }),
             year: this.year,
             month: this.month,
             length: this.length,
+            totalHours: totalHours,
             disabledDays: this.getDisabledDays(),
             data: this.cells,
         };
