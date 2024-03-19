@@ -1,6 +1,6 @@
 # Employee Scheduling App
 
-Welcome to our Employee Scheduling App! This application is designed to simplify the process of scheduling employees for shifts.
+Welcome to Employee Scheduler Appi! This application is designed to get a quick overview on employee shifts.
 ## Initial release - only supports pre-defined shifts. If for some reason you want to use this app change shifts in config.ts in src/renderer/ directory. 
 
 ## Features
